@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<!-- 
+/******************************************************************************** 
+  * Copyright PHOENIX CONTACT Software GmbH
+  * 
+  * This program and the accompanying materials are made available under the
+  * terms of the Eclipse Public License 2.0 which is available at
+  * http://www.eclipse.org/legal/epl-2.0.
+  * 
+  * SPDX-License-Identifier: EPL-2.0 
+  ******************************************************************************** 
+-->
+<plugin>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.phoenixcontact.plcnext.common.preferences.PLCnextPreferencePage"
+            id="com.phoenixcontact.plcnext.common.preferences.PLCnextPreferencePage"
+            name="PLCnext">
+      </page>
+      <page
+            category="com.phoenixcontact.plcnext.common.preferences.PLCnextPreferencePage"
+            class="com.phoenixcontact.plcnext.common.preferences.CommandReceiverPreferencePage"
+            id="com.phoenixcontact.plcnext.common.preferences.CommandReceiverPreferencePage"
+            name="Command Line Tool">
+      </page>
+      <page
+            category="com.phoenixcontact.plcnext.common.preferences.PLCnextPreferencePage"
+            class="com.phoenixcontact.plcnext.common.preferences.SdksPreferencePage"
+            id="com.phoenixcontact.plcnext.common.preferences.SdksPreferencePage"
+            name="SDKs">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.phoenixcontact.plcnext.common.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.phoenixcontact.plcnext.common.PLCProjectCategory"
+            name="PLCnext Technology">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="com.phoenixcontact.plcnext.common.Startup">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.ui.main.toolbar">
+         <toolbar
+               id="com.phoenixcontact.plcnext.common.plcnexttoolbar">
+            <command
+                  commandId="com.phoenixcontact.plcnext.common.recomputecommand"
+                  icon="icons/Common.Clone.16.png"
+                  style="push"
+                  tooltip="Recompute cached plcncli information">
+               <visibleWhen
+                     checkEnabled="true">
+               </visibleWhen>
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="com.phoenixcontact.plcnext.common.RecomputeCacheHandler"
+            id="com.phoenixcontact.plcnext.common.recomputecommand"
+            name="Recompute plcncli Information">
+      </command>
+   </extension>
+
+</plugin>

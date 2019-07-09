@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<!-- 
+/******************************************************************************** 
+  * Copyright PHOENIX CONTACT Software GmbH
+  * 
+  * This program and the accompanying materials are made available under the
+  * terms of the Eclipse Public License 2.0 which is available at
+  * http://www.eclipse.org/legal/epl-2.0.
+  * 
+  * SPDX-License-Identifier: EPL-2.0 
+  ******************************************************************************** 
+-->
+<plugin>
+   <extension
+         point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
+      <toolChain
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.base"
+            isAbstract="false"
+            name="PLCnext C++ Toolchain"
+            supportsManagedBuild="true">
+         <builder
+               buildRunner="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.InternalBuildRunnerExtension"
+               buildfileGenerator="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.PlcmakefileGenerator"
+               errorParsers="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextErrorParser"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.builder"
+               isAbstract="false"
+               isSystem="false"
+               isVariableCaseSensitive="false"
+               name="PLCnCLI Builder"
+               supportsManagedBuild="true">
+         </builder>
+         <tool
+               command="build"
+               commandLinePattern="${COMMAND} ${FLAGS}"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool"
+               isAbstract="false"
+               isHidden="false"
+               name="PLCnCLI - Build"
+               natureFilter="ccnature"
+               supportsManagedBuild="true">
+            <inputType
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.inputtype"
+                  languageId="org.eclipse.cdt.core.g++"
+                  multipleOfType="true"
+                  sources="cpp,hpp">
+            </inputType>
+            <outputType
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.outputtype"
+                  outputs="so,o"
+                  primaryOutput="true">
+            </outputType>
+            <option
+                  browseType="directory"
+                  command="-p "
+                  defaultValue=" &quot;${ProjDirPath}&quot;"
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionprojectlocation"
+                  name="Project Location"
+                  resourceFilter="project"
+                  value=" &quot;${ProjDirPath}&quot;"
+                  valueType="string">
+            </option>
+            <optionCategory
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optioncategory"
+                  name="Build Settings">
+            </optionCategory>
+            <option
+                  category="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optioncategory"
+                  command="--verbose"
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionverbose"
+                  isAbstract="false"
+                  name="Verbose output"
+                  resourceFilter="project"
+                  valueType="boolean">
+            </option>
+            <option
+                  category="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optioncategory"
+                  command="-b "
+                  defaultValue="Release"
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionbuildtype"
+                  isAbstract="false"
+                  name="BuildType"
+                  resourceFilter="all"
+                  tip="Release or Debug"
+                  valueType="enumerated">
+               <enumeratedOptionValue
+                     command="-b Release"
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionbuildtype.release"
+                     isDefault="true"
+                     name="Release">
+               </enumeratedOptionValue>
+               <enumeratedOptionValue
+                     command="-b Debug"
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionbuildtype.debug"
+                     name="Debug">
+               </enumeratedOptionValue>
+            </option>
+            <option
+                  category="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optioncategory"
+                  command="-t "
+                  fieldEditor="com.phoenixcontact.plcnext.cplusplus.toolchains.selectmultitargetoptioneditor"
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optiontarget"
+                  isAbstract="false"
+                  name="Target"
+                  resourceFilter="project"
+                  tip="target for which the build shall be executed"
+                  valueType="string">
+            </option>
+            <option
+                  category="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optioncategory"
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionother"
+                  isAbstract="false"
+                  name="Additional options"
+                  resourceFilter="project"
+                  tip="additional options can be specified here and will be appendend to build command"
+                  valueType="string">
+            </option>
+         </tool>
+         <targetPlatform
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.targetPlatform"
+               isAbstract="false"
+               superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.targetPlatform.2152">
+         </targetPlatform>
+         <tool
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.helpertool"
+               isAbstract="true"
+               isHidden="true"
+               isSystem="true"
+               name="PLCnCLI"
+               supportsManagedBuild="true">
+            <option
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.helpertool.optioninclude"
+                  isAbstract="false"
+                  name="Include"
+                  resourceFilter="all"
+                  useByScannerDiscovery="true"
+                  valueType="includePath">
+            </option>
+            <inputType
+                  dependencyContentType="org.eclipse.cdt.core.cxxSource"
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.helpertool.inputtype"
+                  languageId="org.eclipse.cdt.core.g++"
+                  multipleOfType="true">
+            </inputType>
+            <outputType
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.helpertool.outputtype"
+                  outputs="typemeta"
+                  primaryOutput="true">
+            </outputType>
+         </tool>
+         <supportedProperties>
+            <property
+                  id="org.eclipse.cdt.build.core.buildArtefactType">
+               <value
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue">
+               </value>
+            </property>
+         </supportedProperties>
+      </toolChain>
+      <projectType
+            buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.projectType"
+            isAbstract="false"
+            isTest="false">
+         <configuration
+               buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
+               errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.configuration.release"
+               languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider;com.phoenixcontact.plcnext.cplusplus.toolchains.languageprovider"
+               name="Release all targets">
+            <toolChain
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release"
+                  isAbstract="false"
+                  name="PLCnext C++ Toolchain"
+                  superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.base"
+                  supportsManagedBuild="true">
+               <tool
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release.metacodetool"
+                     isAbstract="false"
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool">
+               </tool>
+               <tool
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release.metadatatool"
+                     isAbstract="false"
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool">
+               </tool>
+               <tool
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release.librarybuilder"
+                     isAbstract="false"
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder">
+               </tool>
+            </toolChain>
+         </configuration>
+         <configuration
+               buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
+               errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.configuration.release1"
+               languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider;com.phoenixcontact.plcnext.cplusplus.toolchains.languageprovider"
+               name="Release all targets">
+            <toolChain
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1"
+                  isAbstract="false"
+                  name="PLCnext C++ App Project Toolchain"
+                  superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.base"
+                  supportsManagedBuild="true">
+               <tool
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1.metacodetool"
+                     isAbstract="false"
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool">
+               </tool>
+               <tool
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1.metadatatool"
+                     isAbstract="false"
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool">
+               </tool>
+            </toolChain>
+         </configuration>
+      </projectType>
+      <targetPlatform
+            archList="arm"
+            binaryParser="org.eclipse.cdt.core.ELF"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.targetPlatform.2152"
+            isAbstract="false"
+            name="PlcNext"
+            osList="all">
+      </targetPlatform>
+      <tool
+            command="generate library"
+            commandLinePattern="${COMMAND} ${FLAGS}"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder"
+            isAbstract="false"
+            name="PLCnCLI - Library Builder"
+            natureFilter="ccnature"
+            supportsManagedBuild="true">
+         <inputType
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.inputtype"
+               languageId="org.eclipse.cdt.core.g++"
+               multipleOfType="true">
+         </inputType>
+         <outputType
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.outputtype"
+               outputs="so"
+               primaryOutput="true">
+         </outputType>
+         <option
+               browseType="directory"
+               command="-p "
+               defaultValue=" &quot;${ProjDirPath}&quot;"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.optionprojectlocation"
+               name="Project Location"
+               resourceFilter="project"
+               value=" &quot;${ProjDirPath}&quot;"
+               valueType="string">
+         </option>
+         <optionCategory
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optioncategory"
+               name="Library Build Settings">
+         </optionCategory>
+         <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optioncategory"
+               command="-t"
+               fieldEditor="com.phoenixcontact.plcnext.cplusplus.toolchains.selectmultitargetoptioneditor"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optiontarget"
+               isAbstract="false"
+               name="Targets"
+               resourceFilter="project"
+               valueType="string">
+         </option>
+         <option
+               command="-s"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionsources"
+               isAbstract="false"
+               name="Source Directories"
+               resourceFilter="project"
+               valueHandler="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.SourceDirectoriesOptionValueHandler"
+               valueType="string">
+         </option>
+         <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optioncategory"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionother"
+               isAbstract="false"
+               name="Additional options"
+               tip="additional options can be specified here and will be appendend to command options"
+               valueType="string">
+         </option>
+      </tool>
+      <tool
+            command="generate code"
+            commandLinePattern="${COMMAND} ${FLAGS}"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool"
+            isAbstract="false"
+            isHidden="false"
+            name="PLCnCLI - Metacode Generation"
+            natureFilter="ccnature"
+            supportsManagedBuild="true">
+         <inputType
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.inputtype"
+               languageId="org.eclipse.cdt.core.g++"
+               multipleOfType="true">
+         </inputType>
+         <outputType
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.outputtype"
+               outputs="cpp"
+               primaryOutput="true">
+         </outputType>
+         <option
+               browseType="directory"
+               command="-p "
+               defaultValue=" &quot;${ProjDirPath}&quot;"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.optionprojectlocation"
+               name="Project Location"
+               resourceFilter="project"
+               value=" &quot;${ProjDirPath}&quot;"
+               valueType="string">
+         </option>
+         <optionCategory
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.optioncategory"
+               name="Code Generation Settings">
+         </optionCategory>
+         <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.optioncategory"
+               command="--verbose"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.optionverbose"
+               isAbstract="false"
+               name="Verbose output"
+               resourceFilter="project"
+               valueType="boolean">
+         </option>
+         <option
+               command="-s"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.optionsources"
+               isAbstract="false"
+               name="Source Directories"
+               resourceFilter="project"
+               valueHandler="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.SourceDirectoriesOptionValueHandler"
+               valueType="string">
+         </option>
+         <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.optioncategory"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.optionother"
+               isAbstract="false"
+               name="Additional options"
+               resourceFilter="project"
+               tip="additional options can be specified here and will be appendend to command options"
+               valueType="string">
+         </option>
+      </tool>
+      <tool
+            command="generate config"
+            commandLinePattern="${COMMAND} ${FLAGS}"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool"
+            isAbstract="false"
+            isHidden="false"
+            name="PLCnCLI - Metadata Generation"
+            natureFilter="ccnature"
+            supportsManagedBuild="true">
+         <inputType
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.inputtype"
+               languageId="org.eclipse.cdt.core.g++"
+               multipleOfType="true">
+         </inputType>
+         <outputType
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.outputtype"
+               outputs="typemeta"
+               primaryOutput="true">
+         </outputType>
+         <option
+               browseType="directory"
+               command="-p "
+               defaultValue=" &quot;${ProjDirPath}&quot;"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optionprojectlocation"
+               name="Project Location"
+               resourceFilter="project"
+               value=" &quot;${ProjDirPath}&quot;"
+               valueType="string">
+         </option>
+         <optionCategory
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optioncategory"
+               name="Meta Generation Settings">
+         </optionCategory>
+         <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optioncategory"
+               command="--verbose"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optionverbose"
+               isAbstract="false"
+               name="Verbose output"
+               resourceFilter="project"
+               valueType="boolean">
+         </option>
+         <option
+               command="-s"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optionsources"
+               isAbstract="false"
+               name="Source Directories"
+               resourceFilter="project"
+               valueHandler="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.SourceDirectoriesOptionValueHandler"
+               valueType="string">
+         </option>
+         <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optioncategory"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optionother"
+               isAbstract="false"
+               name="Additional options"
+               resourceFilter="project"
+               tip="additional options can be specified here and will be appendend to command options"
+               valueType="string">
+         </option>
+      </tool>
+   </extension>
+   <extension
+         point="org.eclipse.cdt.core.LanguageSettingsProvider">
+      <provider
+            class="org.eclipse.cdt.core.language.settings.providers.LanguageSettingsGenericProvider"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.languageprovider"
+            name="PLCnext Language Settings Provider"
+            prefer-non-shared="true">
+         <language-scope
+               id="org.eclipse.cdt.core.g++">
+         </language-scope>
+      </provider>
+   </extension>
+   <extension
+         point="org.eclipse.cdt.managedbuilder.ui.buildDefinitionsUI">
+      <fieldEditor
+            class="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.SelectMultiTargetOptionEditor"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.selectmultitargetoptioneditor">
+      </fieldEditor>
+   </extension>
+   <extension
+         point="org.eclipse.cdt.managedbuilder.core.buildProperties">
+      <propertyValue
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
+            name="PLCnext Project"
+            property="org.eclipse.cdt.build.core.buildArtefactType">
+      </propertyValue>
+   </extension>
+   <extension
+         id="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextErrorParserExtension"
+         name="PLCnext Error Parser Extension"
+         point="org.eclipse.cdt.core.ErrorParser">
+      <errorparser
+            class="org.eclipse.cdt.core.errorparsers.RegexErrorParser"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextErrorParser"
+            name="PLCnext Error Parser">
+            <pattern
+               description-expr="PLCnCLI Build Error: $0"
+               eat-processed-line="true"
+               file-expr=""
+               line-expr=""
+               regex=".*make.*\[.*\] Error [-]{0,1}\d*.*"
+               severity="Warning"
+               variable-expr=""/>
+         <pattern description-expr="" eat-processed-line="true" file-expr="" line-expr="" regex="\[cmake\]:(.*?):(\d+):(\d+:)? .*\(Each undeclared identifier is reported only once.*" severity="Ignore"/>
+         <pattern description-expr="" eat-processed-line="true" file-expr="" line-expr="" regex="\[cmake\]:(.*?):(\d+):(\d+:)? .*for each function it appears in.\).*" severity="Ignore"/>
+         <pattern description-expr="" eat-processed-line="true" file-expr="" line-expr="" regex="\[cmake\]:(.*?):(\d+):(\d+:)? .*this will be reported only once per input file.*" severity="Ignore"/>
+         <pattern
+               description-expr="PLCnCLI Build Error: $4"
+               eat-processed-line="true"
+               file-expr="$1"
+               line-expr="$2"
+               regex="\[cmake\]:(.*?):(\d+):(\d+:)? [Ee]rror: ([`&apos;&quot;](.*)[&apos;&quot;] undeclared .*)"
+               severity="Error"
+               variable-expr="$5"/>
+         <pattern
+               description-expr="PLCnCLI Build Error: $4"
+               eat-processed-line="true"
+               file-expr="$1"
+               line-expr="$2"
+               regex="\[cmake\]:(.*?):(\d+):(\d+:)? [Ee]rror: (conflicting types for .*[`&apos;&quot;](.*)[&apos;&quot;].*)"
+               severity="Error"
+               variable-expr="$5"/>
+         <pattern description-expr="PLCnCLI Build Error: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:(.*?):(\d+):(\d+:)? (parse error before.*[`&apos;&quot;](.*)[&apos;&quot;].*)" severity="Error" variable-expr="$5"/>
+         <pattern description-expr="PLCnCLI Build Warning: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:(.*?):(\d+):(\d+:)? [Ww]arning: ([`&apos;&quot;](.*)[&apos;&quot;] defined but not used.*)" severity="Warning" variable-expr="$5"/>
+         <pattern description-expr="PLCnCLI Build Warning: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:(.*?):(\d+):(\d+:)? [Ww]arning: (conflicting types for .*[`&apos;&quot;](.*)[&apos;&quot;].*)" severity="Warning" variable-expr="$5"/>
+         <pattern description-expr="PLCnCLI Build Warning: $5" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:(.*?):(\d+):(\d+:)? ([Ww]arning:)?\s*(the use of [`&apos;&quot;](.*)[&apos;&quot;] is dangerous, better use [`&apos;&quot;](.*)[&apos;&quot;].*)" severity="Warning" variable-expr="$6"/>
+         <pattern description-expr="PLCnCLI Build Info: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:(.*?):(\d+):(\d+:)?\s*(.*((instantiated)|(required)) from .*)" severity="Info"/>
+         <pattern
+               description-expr="PLCnCLI Build Error: $7"
+               eat-processed-line="true"
+               file-expr="$1"
+               line-expr="$2"
+               regex="\[cmake\]:(.*?):(\d+):(\d+:)?\s*(([Ee]rror)|(ERROR)): (.*)"
+               severity="Error"
+               variable-expr="$3"/>
+         <pattern description-expr="PLCnCLI Build Warning: $7" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:(.*?):(\d+):(\d+:)?\s*(([Ww]arning)|(WARNING)): (.*)" severity="Warning"/>
+         <pattern description-expr="PLCnCLI Build Info: $9" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:(.*?):(\d+):(\d+:)?\s*(([Nn]ote)|(NOTE)|([Ii]nfo)|(INFO)): (.*)" severity="Info"/>
+         <pattern description-expr="PLCnCLI Build Error: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:(.*?):(\d+):(\d+:)? (.*)" severity="Error"/>
+         <pattern
+               description-expr="PLCnCLI Code Error: $5"
+               eat-processed-line="true"
+               file-expr="$1"
+               line-expr="$2"
+               regex="(.*)\((\d+),(\d+)\): error(.*):(.*)"
+               severity="Error"
+               variable-expr="$3">
+         </pattern>
+      </errorparser>
+   </extension>
+  <!--<extension
+         point="org.eclipse.cdt.managedbuilder.core.buildProperties">
+      <propertyType
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionbuildtype"
+            name="BuildType">
+      </propertyType>
+      <propertyValue
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildProperties.propertyType.release"
+            name="Release"
+            property="com.phoenixcontact.plcnext.cplusplus.toolchains.buildProperties.propertyType.buildType">
+      </propertyValue>
+      <propertyValue
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.buildProperties.propertyType.debug"
+            name="Debug"
+            property="com.phoenixcontact.plcnext.cplusplus.toolchains.buildProperties.propertyType.buildType">
+      </propertyValue>
+   </extension>-->
+</plugin>

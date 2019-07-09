@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PLCnext Technology C++
+Bundle-SymbolicName: com.phoenixcontact.plcnext.branding
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: PHOENIX CONTACT GmbH & Co. KG
+Automatic-Module-Name: com.phoenixcontact.plcnext.branding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

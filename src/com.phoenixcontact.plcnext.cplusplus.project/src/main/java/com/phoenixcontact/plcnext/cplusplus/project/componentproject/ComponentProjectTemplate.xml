@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/******************************************************************************** 
+  * Copyright PHOENIX CONTACT Software GmbH
+  * 
+  * This program and the accompanying materials are made available under the
+  * terms of the Eclipse Public License 2.0 which is available at
+  * http://www.eclipse.org/legal/epl-2.0.
+  * 
+  * SPDX-License-Identifier: EPL-2.0 
+  ******************************************************************************** 
+-->
+<template type="ProjTempl" version="1.0"
+	supplier="Phoenix Contact Software GmbH" revision="1.0"
+	id="ComponentProjectTemplate" label="PLCnext C++ Project for Component App" description="This will create a PLCnext C++ project for component apps"
+	help="help.html">
+	
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)" />
+		<simple name="path" value="src" />
+	</process>
+	
+	<process type="org.eclipse.cdt.core.CreateFolder">
+		<simple name="projectName" value="$(projectName)" />
+		<simple name="path" value="bin" />
+	</process>
+	
+	<process
+		type="org.eclipse.cdt.managedbuilder.core.AppendToMBSStringListOptionValues">
+		<simple name="projectName" value="$(projectName)" />
+		<complex-array name="resourcePaths">
+			<element>
+				<simple name="id" value=".*linker\.libraries\.libraries.*" />
+				<simple-array name="values">
+					<element value="euser.lib" />
+				</simple-array>
+				<simple name="path" value="" />
+			</element>
+		</complex-array>
+	</process>
+	
+	<process 
+	type="com.phoenixcontact.plcnext.cplusplus.project.CLIFExecuteNewProject">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="projectType" value="APP"/>
+	</process> 
+	
+</template>

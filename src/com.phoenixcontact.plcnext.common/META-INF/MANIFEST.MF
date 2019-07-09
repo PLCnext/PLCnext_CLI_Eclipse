@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PLCnext Technology with plcncli
+Bundle-SymbolicName: com.phoenixcontact.plcnext.common;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: PHOENIX CONTACT GmbH & Co. KG
+Automatic-Module-Name: com.phoenixcontact.plcnext.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: com.phoenixcontact.plcnext.common,
+ com.phoenixcontact.plcnext.common.clicheck,
+ com.phoenixcontact.plcnext.common.commands,
+ com.phoenixcontact.plcnext.common.commands.results,
+ com.phoenixcontact.plcnext.common.plcncliclient,
+ com.phoenixcontact.plcnext.common.preferences
+Bundle-Activator: com.phoenixcontact.plcnext.common.Activator
+Require-Bundle: com.google.gson;bundle-version="2.8.2",
+ org.eclipse.core.filesystem;bundle-version="1.7.100",
+ org.eclipse.core.resources;bundle-version="3.13.0",
+ org.eclipse.core.runtime;bundle-version="3.14.0",
+ org.eclipse.e4.core.di;bundle-version="1.7.0",
+ org.eclipse.e4.core.contexts;bundle-version="1.7.0",
+ org.eclipse.ui;bundle-version="3.109.100",
+ org.eclipse.ui.console;bundle-version="3.8.0"
+Bundle-ActivationPolicy: lazy

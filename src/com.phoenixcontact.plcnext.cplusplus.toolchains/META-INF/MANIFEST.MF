@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PLCnext Toolchains
+Bundle-SymbolicName: com.phoenixcontact.plcnext.cplusplus.toolchains;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: PHOENIX CONTACT GmbH & Co. KG
+Automatic-Module-Name: com.phoenixcontact.plcnext.cplusplus.toolchains
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.google.gson;bundle-version="2.8.2",
+ com.phoenixcontact.plcnext.common;bundle-version="1.0.0",
+ org.eclipse.cdt.core;bundle-version="6.5.0",
+ org.eclipse.cdt.managedbuilder.core;bundle-version="8.6.0",
+ org.eclipse.cdt.managedbuilder.ui;bundle-version="9.1.0",
+ org.eclipse.core.runtime;bundle-version="3.14.0",
+ org.eclipse.e4.core.contexts;bundle-version="1.7.0",
+ org.eclipse.e4.core.di;bundle-version="1.7.0",
+ org.eclipse.ui;bundle-version="3.109.100"
+Import-Package: org.eclipse.core.resources
+Export-Package: com.phoenixcontact.plcnext.cplusplus.toolchains
+Bundle-Activator: com.phoenixcontact.plcnext.cplusplus.toolchains.Activator
+Bundle-ActivationPolicy: lazy

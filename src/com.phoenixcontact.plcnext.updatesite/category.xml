@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.phoenixcontact.plcnext.cplusplus.feature_1.0.0.qualifier.jar" id="com.phoenixcontact.plcnext.cplusplus.feature" version="1.0.0.qualifier">
+      <category name="com.phoenixcontact.plcnext.feature.category"/>
+   </feature>
+   <category-def name="com.phoenixcontact.plcnext.feature.category" label="PLCnext Technology">
+      <description>
+         Features for the PLCnext Technology
+      </description>
+   </category-def>
+</site>
