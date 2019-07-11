@@ -63,7 +63,7 @@ import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GenerateCodeCommand;
-import com.phoenixcontact.plcnext.common.commands.GetNameCommand;
+import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.project.PlcProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
@@ -133,8 +133,8 @@ public class WizardImportPlcProjectPage extends WizardPage
 		copyFilesButton.setText("&Copy files into workspace");
 		copyFilesButton.setSelection(true);
 
-		copyFilesButton.addListener(SWT.Selection , event -> validatePage());
-		
+		copyFilesButton.addListener(SWT.Selection, event -> validatePage());
+
 		browseButton.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
@@ -211,12 +211,12 @@ public class WizardImportPlcProjectPage extends WizardPage
 		}
 
 		setErrorMessage(null);
-		
-		if(!copyFilesButton.getSelection())
+
+		if (!copyFilesButton.getSelection())
 		{
 			setMessage(warningFilesNotCopied, WARNING);
 			return;
-	}
+		}
 		setMessage(standardMessage);
 	}
 
@@ -285,19 +285,21 @@ public class WizardImportPlcProjectPage extends WizardPage
 		ICommandManager commandManager = host.getExport(ICommandManager.class);
 
 		Map<String, String> options = new HashMap<>();
-		options.put(GetNameCommand.OPTION_PATH, projectFileLocation);
+		options.put(GetProjectInformationCommand.OPTION_PATH, projectFileLocation);
 
 		String name;
 		try
 		{
 			name = commandManager
-					.executeCommand(commandManager.createCommand(options, GetNameCommand.class), false, monitor).convertToGetNameCommandResult().getName();
+					.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), false,
+							monitor)
+					.convertToGetProjectInformationCommandResult().getName();
 		} catch (ProcessExitedWithErrorException e1)
 		{
 			return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"The specified location does not contain a valid plcncli project.", e1);
 		}
-			subMonitor.worked(2);
+		subMonitor.worked(2);
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IProject project = workspace.getRoot().getProject(name);
@@ -338,21 +340,21 @@ public class WizardImportPlcProjectPage extends WizardPage
 
 		try
 		{
-				subMonitor.worked(1);
+			subMonitor.worked(1);
 			// create c project and add ccnature
-				CCorePlugin.getDefault().createCProject(description, project, subMonitor.split(2), project.getName());
-				CCProjectNature.addCCNature(project, subMonitor.split(2));
+			CCorePlugin.getDefault().createCProject(description, project, subMonitor.split(2), project.getName());
+			CCProjectNature.addCCNature(project, subMonitor.split(2));
 
 			// add managed build nature and plprojectnature
 			ManagedBuildManager.createBuildInfo(project);
-				ManagedCProjectNature.addManagedNature(project, subMonitor.split(2));
-				ManagedCProjectNature.addNature(project, PlcProjectNature.NATURE_ID, subMonitor.split(2));
-				ManagedCProjectNature.addManagedBuilder(project, subMonitor.split(2));
+			ManagedCProjectNature.addManagedNature(project, subMonitor.split(2));
+			ManagedCProjectNature.addNature(project, PlcProjectNature.NATURE_ID, subMonitor.split(2));
+			ManagedCProjectNature.addManagedBuilder(project, subMonitor.split(2));
 
 			IProjectType projectType = ManagedBuildManager
 					.getProjectType("com.phoenixcontact.plcnext.cplusplus.toolchains.projectType");
 			IManagedProject managedProject = ManagedBuildManager.createManagedProject(project, projectType);
-				subMonitor.worked(1);
+			subMonitor.worked(1);
 
 			// copy configurations and mark src as source folder
 			IFolder srcFolder = project.getFolder("src");
@@ -374,10 +376,10 @@ public class WizardImportPlcProjectPage extends WizardPage
 			}
 
 			ManagedBuildManager.getBuildInfo(project).setValid(true);
-				subMonitor.worked(1);
+			subMonitor.worked(1);
 
 			new ToolchainConfigurator().configureProject(name, monitor);
-				subMonitor.worked(3);
+			subMonitor.worked(3);
 
 		} catch (BuildException | ProcessExitedWithErrorException e)
 		{
@@ -387,28 +389,27 @@ public class WizardImportPlcProjectPage extends WizardPage
 			return e.getStatus();
 		}
 
-			Map<String, String> generateOptions = new HashMap<>();
-			generateOptions.put(GenerateCodeCommand.OPTION_PATH, project.getLocation().toOSString());
-			Command generateCommand = commandManager.createCommand(generateOptions, GenerateCodeCommand.class);
-			try
-			{
-				commandManager.executeCommand(generateCommand, false, monitor);
-			} catch (ProcessExitedWithErrorException e)
-			{
-				return new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-						"PLCnCLI code generation could not be executed. \n Project might have unresolved inclusions.",
-						e);
-			}
+		Map<String, String> generateOptions = new HashMap<>();
+		generateOptions.put(GenerateCodeCommand.OPTION_PATH, project.getLocation().toOSString());
+		Command generateCommand = commandManager.createCommand(generateOptions, GenerateCodeCommand.class);
+		try
+		{
+			commandManager.executeCommand(generateCommand, false, monitor);
+		} catch (ProcessExitedWithErrorException e)
+		{
+			return new Status(IStatus.WARNING, Activator.PLUGIN_ID,
+					"PLCnCLI code generation could not be executed. \n Project might have unresolved inclusions.", e);
+		}
 
-			try
-			{
-				RefreshScopeManager refreshManager = RefreshScopeManager.getInstance();
-				IWorkspaceRunnable runnable = refreshManager.getRefreshRunnable(project);
-				ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, null);
-			} catch (CoreException e)
-			{
-				Activator.getDefault().logError("Error while refreshing workspace.", e);
-			}
+		try
+		{
+			RefreshScopeManager refreshManager = RefreshScopeManager.getInstance();
+			IWorkspaceRunnable runnable = refreshManager.getRefreshRunnable(project);
+			ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, null);
+		} catch (CoreException e)
+		{
+			Activator.getDefault().logError("Error while refreshing workspace.", e);
+		}
 
 		subMonitor.done();
 		monitor.done();

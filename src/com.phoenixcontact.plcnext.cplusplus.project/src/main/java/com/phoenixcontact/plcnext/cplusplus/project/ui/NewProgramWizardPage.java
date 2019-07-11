@@ -39,13 +39,9 @@ import com.phoenixcontact.plcnext.common.CliNotExistingException;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
-import com.phoenixcontact.plcnext.common.commands.GetComponentsCommand;
-import com.phoenixcontact.plcnext.common.commands.GetNamespaceCommand;
-import com.phoenixcontact.plcnext.common.commands.GetProgramsCommand;
+import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetComponentsCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetProgramsCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetProjectNamespaceCommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.project.PlcProjectNature;
@@ -87,7 +83,7 @@ public class NewProgramWizardPage extends WizardPage
 	{
 		BusyIndicator.showWhile(null, new Runnable()
 		{
-			
+
 			@Override
 			public void run()
 			{
@@ -141,7 +137,8 @@ public class NewProgramWizardPage extends WizardPage
 	{
 		projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		// remove closed projects from list
-		projects = Arrays.stream(projects).filter(p -> {
+		projects = Arrays.stream(projects).filter(p ->
+		{
 			try
 			{
 				return p != null && p.isOpen() && p.hasNature(PlcProjectNature.NATURE_ID);
@@ -209,10 +206,13 @@ public class NewProgramWizardPage extends WizardPage
 							getContainer().getShell().close();
 						} catch (ProcessExitedWithErrorException e1)
 						{
-							Activator.getDefault().logError("Error while trying to execute clif command.\n"
-									+ e1.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error).map(m -> m.getMessage()).collect(Collectors.joining("\n")), e1);
+							Activator.getDefault()
+									.logError("Error while trying to execute clif command.\n" + e1.getMessages()
+											.stream().filter(m -> m.getMessageType() == MessageType.error)
+											.map(m -> m.getMessage()).collect(Collectors.joining("\n")), e1);
 							MessageDialog.openError(getShell(), "Error while trying to execute clif command.",
-									e1.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error).map(m -> m.getMessage()).collect(Collectors.joining("\n"))
+									e1.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error)
+											.map(m -> m.getMessage()).collect(Collectors.joining("\n"))
 											+ "\nSee log for more details.");
 							getContainer().getShell().close();
 						}
@@ -244,8 +244,11 @@ public class NewProgramWizardPage extends WizardPage
 			getContainer().getShell().close();
 		} catch (ProcessExitedWithErrorException e1)
 		{
-			Activator.getDefault().logError("Error while trying to execute clif command.\n"
-					+ e1.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error).map(m -> m.getMessage()).collect(Collectors.joining("\n")), e1);
+			Activator.getDefault()
+					.logError("Error while trying to execute clif command.\n"
+							+ e1.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error)
+									.map(m -> m.getMessage()).collect(Collectors.joining("\n")),
+							e1);
 			MessageDialog.openError(getShell(), "Could not create new component wizard",
 					"The wizard could not be created. See log for more details.");
 			getContainer().getShell().close();
@@ -263,34 +266,30 @@ public class NewProgramWizardPage extends WizardPage
 		}
 
 		Map<String, String> options = new HashMap<String, String>();
-		options.put(GetComponentsCommand.OPTION_PATH, project.getLocation().toOSString());
+		options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
 		List<String> sourceEntries = FindSourcesUtil.findSourceEntries(getProject());
-		String sourceFolder = null;
 		if (sourceEntries != null)
 		{
-			sourceFolder = sourceEntries.stream()
-					.collect(Collectors.joining(","));
+			String sourceFolder = sourceEntries.stream().collect(Collectors.joining(","));
 			if (sourceFolder != null && !sourceFolder.isEmpty())
-				options.put(GetComponentsCommand.OPTION_SOURCES, sourceFolder);
+				options.put(GetProjectInformationCommand.OPTION_SOURCES, sourceFolder);
 		}
-		Command command = commandManager.createCommand(options, GetComponentsCommand.class);
+		Command command = commandManager.createCommand(options, GetProjectInformationCommand.class);
 		CommandResult commandResult = commandManager.executeCommand(command, false, null);
-		GetComponentsCommandResult getComponentsResult = commandResult.convertToGetComponentsCommandResult();
+		GetProjectInformationCommandResult getProjectInformationResult = commandResult
+				.convertToGetProjectInformationCommandResult();
 		List<String> comps = new ArrayList<String>();
-		Arrays.stream(getComponentsResult.getComponents()).forEach(c -> 
-			{
-				programAndComponentNames.add(c.getName());
-				comps.add(c.getNamespace()+"::"+c.getName());
-			});
-		
-		command = commandManager.createCommand(options, GetProgramsCommand.class);
-		commandResult = commandManager.executeCommand(command, false, null);
-		GetProgramsCommandResult getProgramsResult = commandResult.convertToGetProgramsCommandResult();
-		Arrays.stream(getProgramsResult.getPrograms()).forEach(p -> 
-			{
-				programAndComponentNames.add(p.getName());
-			});
-		
+		getProjectInformationResult.getComponents().forEach(c ->
+		{
+			programAndComponentNames.add(c.getName());
+			comps.add(c.getNamespace() + "::" + c.getName());
+		});
+
+		getProjectInformationResult.getPrograms().forEach(p ->
+		{
+			programAndComponentNames.add(p.getName());
+		});
+
 		components = comps.toArray(new String[0]);
 		if (components.length == 0)
 		{
@@ -303,9 +302,22 @@ public class NewProgramWizardPage extends WizardPage
 		componentCombo.setItems(components);
 		componentCombo.pack();
 		componentCombo.select(0);
-		
 
-		setNamespace(sourceFolder);
+		if (namespaceText != null)
+		{
+			String namespace = getProjectInformationResult.getNamespace();
+			if (namespace != null && !namespace.isEmpty())
+			{
+				if (namespaceText.getText().isEmpty() || namespaceText.getText().equals(temp))
+				{
+					temp = namespace;
+					namespaceText.setText(namespace);
+				} else
+				{
+					temp = namespace;
+				}
+			}
+		}
 	}
 
 	private void setComplete()
@@ -372,38 +384,6 @@ public class NewProgramWizardPage extends WizardPage
 	protected String getComponentName()
 	{
 		return components[componentCombo.getSelectionIndex()];
-	}
-
-	private void setNamespace(String sources) throws CliNotExistingException, ProcessExitedWithErrorException
-	{
-		if (namespaceText != null)
-		{
-			IProject project = getProject();
-			if (project != null)
-			{
-				Map<String, String> options = new HashMap<String, String>();
-				options.put(GetNamespaceCommand.OPTION_PATH, project.getLocation().toOSString());
-				if(sources != null && !sources.isEmpty())
-				{
-					options.put(GetNamespaceCommand.OPTION_SOURCES, sources);
-				}
-				Command command = commandManager.createCommand(options, GetNamespaceCommand.class);
-				CommandResult result = commandManager.executeCommand(command, false, null);
-				GetProjectNamespaceCommandResult commandResult = result.convertToGetProjectNamespaceCommandResult();
-				String namespace = commandResult.getNamespace();
-				if (namespace != null && !namespace.isEmpty())
-				{
-					if (namespaceText.getText().isEmpty() || namespaceText.getText().equals(temp))
-					{
-						temp = namespace;
-						namespaceText.setText(namespace);
-					} else
-					{
-						temp = namespace;
-					}
-				}
-			}
-		}
 	}
 
 	private void namespaceModified()

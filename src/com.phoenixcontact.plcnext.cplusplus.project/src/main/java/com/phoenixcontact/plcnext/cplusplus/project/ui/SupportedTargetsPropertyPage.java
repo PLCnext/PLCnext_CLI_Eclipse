@@ -58,10 +58,10 @@ import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.MutexSchedulingRule;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
-import com.phoenixcontact.plcnext.common.commands.GetProjectTargetsCommand;
+import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.GetTargetsCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetProjectTargetsCommandResult.ProjectTarget;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.ProjectTarget;
 import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult.Target;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 
@@ -381,15 +381,14 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 		{
 			Map<String, String> options = new HashMap<String, String>();
 
-			options.put(GetProjectTargetsCommand.OPTION_PATH, project.getLocation().toOSString());
-			options.put(GetProjectTargetsCommand.OPTION_SHORT, null);
+			options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
 
 			try
 			{
 				CommandResult commandResult = commandManager
-						.executeCommand(commandManager.createCommand(options, GetProjectTargetsCommand.class), false,
+						.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), false,
 								null);
-				ProjectTarget[] targets = commandResult.convertToGetProjectTargetsCommandResult().getTargets();
+				ProjectTarget[] targets = commandResult.convertToGetProjectInformationCommandResult().getTargets();
 				List<String> results = new ArrayList<String>();
 				for (ProjectTarget target : targets)
 					{

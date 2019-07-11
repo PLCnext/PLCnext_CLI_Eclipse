@@ -23,11 +23,11 @@ import com.phoenixcontact.plcnext.common.EclipseContextHelper;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
-import com.phoenixcontact.plcnext.common.commands.GetProjectTargetsCommand;
+import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.GetSettingCommand;
 import com.phoenixcontact.plcnext.common.commands.GetTargetsCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetProjectTargetsCommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetSettingCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetSettingCommandResult.Setting;
 import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult;
@@ -84,11 +84,10 @@ public class UpdateMessageConsumer extends Job
 			try
 			{
 				Map<String, String> options = new HashMap<String, String>();
-				options.put(GetProjectTargetsCommand.OPTION_PATH, message.getProject());
-				options.put(GetProjectTargetsCommand.OPTION_SHORT, null);
+				options.put(GetProjectInformationCommand.OPTION_PATH, message.getProject());
 				CommandResult result = commandManager
-						.executeCommand(commandManager.createCommand(options, GetProjectTargetsCommand.class), monitor);
-				GetProjectTargetsCommandResult commandResult = result.convertToGetProjectTargetsCommandResult();
+						.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), monitor);
+				GetProjectInformationCommandResult commandResult = result.convertToGetProjectInformationCommandResult();
 				Target[] targets = commandResult.getTargets();
 				
 				// TODO currently nothing is done with the information, that the project target has changed

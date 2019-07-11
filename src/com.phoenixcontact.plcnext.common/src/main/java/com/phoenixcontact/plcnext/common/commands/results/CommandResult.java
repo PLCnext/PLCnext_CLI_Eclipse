@@ -44,20 +44,6 @@ public class CommandResult
 		return messages;
 	}
 	
-	public GetComponentsCommandResult convertToGetComponentsCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetComponentsCommandResult.convertResultToJson(stdout);
-		return convertTo(GetComponentsCommandResult.class);
-	}
-	
-	public GetProgramsCommandResult convertToGetProgramsCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetProgramsCommandResult.convertResultToJson(stdout);
-		return convertTo(GetProgramsCommandResult.class);
-	}
-	
 	public GetCompilerSpecsCommandResult convertToGetCompilerSpecsCommandResult()
 	{
 		if(reply == null && stdout != null)
@@ -72,25 +58,11 @@ public class CommandResult
 		return convertTo(GetIncludePathsCommandResult.class);
 	}
 	
-	public GetNameCommandResult convertToGetNameCommandResult()
+	public GetProjectInformationCommandResult convertToGetProjectInformationCommandResult()
 	{
 		if(reply == null && stdout != null)
-			return GetNameCommandResult.convertResultToJson(stdout);
-		return convertTo(GetNameCommandResult.class);
-	}
-	
-	public GetProjectNamespaceCommandResult convertToGetProjectNamespaceCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetProjectNamespaceCommandResult.convertResultToJson(stdout);
-		return convertTo(GetProjectNamespaceCommandResult.class);
-	}
-	
-	public GetProjectTargetsCommandResult convertToGetProjectTargetsCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetProjectTargetsCommandResult.convertResultToJson(stdout);
-		return convertTo(GetProjectTargetsCommandResult.class);
+			return GetProjectInformationCommandResult.convertResultToJson(stdout);
+		return convertTo(GetProjectInformationCommandResult.class);
 	}
 	
 	public GetSdksCommandResult convertToGetSdksCommandResult()

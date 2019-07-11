@@ -51,11 +51,11 @@ import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.GetCompilerSpecsCommand;
 import com.phoenixcontact.plcnext.common.commands.GetIncludePathsCommand;
-import com.phoenixcontact.plcnext.common.commands.GetProjectTargetsCommand;
+import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult.Compiler.Macro;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult.IncludePath;
-import com.phoenixcontact.plcnext.common.commands.results.GetProjectTargetsCommandResult.ProjectTarget;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.ProjectTarget;
 
 /**
  * Class which implements needed configurations for the toolchain
@@ -498,13 +498,12 @@ public class ToolchainConfigurator
 
 			// use command line tool to get list of available targets for selected project
 			Map<String, String> options = new HashMap<String, String>();
-			options.put(GetProjectTargetsCommand.OPTION_PATH, project.getLocation().toOSString());
-			options.put(GetProjectTargetsCommand.OPTION_SHORT, null);
+			options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
 
 			ProjectTarget[] projectTargets = commandManager
-					.executeCommand(commandManager.createCommand(options, GetProjectTargetsCommand.class), false,
+					.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), false,
 							monitor)
-					.convertToGetProjectTargetsCommandResult().getTargets();
+					.convertToGetProjectInformationCommandResult().getTargets();
 
 			for (ProjectTarget target : projectTargets)
 			{

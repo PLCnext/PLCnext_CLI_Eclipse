@@ -18,7 +18,6 @@ import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
@@ -39,17 +38,11 @@ import com.phoenixcontact.plcnext.common.CliNotExistingException;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
-import com.phoenixcontact.plcnext.common.commands.GetAppComponentsCommand;
-import com.phoenixcontact.plcnext.common.commands.GetComponentsCommand;
-import com.phoenixcontact.plcnext.common.commands.GetNamespaceCommand;
-import com.phoenixcontact.plcnext.common.commands.GetProgramsCommand;
+import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetComponentsCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetProgramsCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetProjectNamespaceCommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
-import com.phoenixcontact.plcnext.cplusplus.project.componentproject.PlcnextAppProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.FindSourcesUtil;
 
 /**
@@ -258,33 +251,20 @@ public class NewComponentWizardPage extends WizardPage
 		if (project != null)
 		{
 			Map<String, String> options = new HashMap<String, String>();
-			options.put(GetComponentsCommand.OPTION_PATH, project.getLocation().toOSString());
+			options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
 			List<String> sourceEntries = FindSourcesUtil.findSourceEntries(project);
-			String sourceFolder = null;
 			if (sourceEntries != null)
 			{
-				sourceFolder = sourceEntries.stream().collect(Collectors.joining(","));
+				String sourceFolder = sourceEntries.stream().collect(Collectors.joining(","));
 				if (sourceFolder != null && !sourceFolder.isEmpty())
-					options.put(GetComponentsCommand.OPTION_SOURCES, sourceFolder);
+					options.put(GetProjectInformationCommand.OPTION_SOURCES, sourceFolder);
 			}
-			Command command = null;
-			try
-			{
-				if (project.hasNature(PlcnextAppProjectNature.NATURE_ID))
-				{
-					command = commandManager.createCommand(options, GetAppComponentsCommand.class);
-				} else
-				{
-					command = commandManager.createCommand(options, GetComponentsCommand.class);
-				}
-			} catch (CoreException e)
-			{
-				command = commandManager.createCommand(options, GetComponentsCommand.class);
-			}
+			Command command = commandManager.createCommand(options, GetProjectInformationCommand.class);
 
 			CommandResult commandResult = commandManager.executeCommand(command, false, null);
-			GetComponentsCommandResult getComponentsResult = commandResult.convertToGetComponentsCommandResult();
-			List<String> results = Arrays.stream(getComponentsResult.getComponents()).map(c -> c.getName())
+			GetProjectInformationCommandResult getProjectInformationResult = commandResult
+					.convertToGetProjectInformationCommandResult();
+			List<String> results = getProjectInformationResult.getComponents().stream().map(c -> c.getName())
 					.collect(Collectors.toList());
 
 			for (String result : results)
@@ -297,16 +277,29 @@ public class NewComponentWizardPage extends WizardPage
 			// this way no two components with same name in different namespaces can be
 			// created
 
-			command = commandManager.createCommand(options, GetProgramsCommand.class);
-			commandResult = commandManager.executeCommand(command, false, null);
-			GetProgramsCommandResult getProgramsResult = commandResult.convertToGetProgramsCommandResult();
-			results = Arrays.stream(getProgramsResult.getPrograms()).map(p -> p.getName()).collect(Collectors.toList());
+			results = getProjectInformationResult.getPrograms().stream().map(p -> p.getName())
+					.collect(Collectors.toList());
 			for (String result : results)
 			{
 				programAndComponentNames.add(result);
 			}
 
-			setNamespace(sourceFolder);
+			if (namespaceText != null)
+			{
+				String namespace = getProjectInformationResult.getNamespace();
+				if (namespace != null && !namespace.isEmpty())
+				{
+					if (namespaceText.getText().isEmpty() || namespaceText.getText().equals(temp))
+					{
+						temp = namespace;
+						namespaceText.setText(namespace);
+					} else
+					{
+						temp = namespace;
+					}
+				}
+
+			}
 
 		}
 	}
@@ -349,38 +342,6 @@ public class NewComponentWizardPage extends WizardPage
 	{
 		setErrorMessage("An entity with this name exists already");
 		setPageComplete(false);
-	}
-
-	private void setNamespace(String sources) throws CliNotExistingException, ProcessExitedWithErrorException
-	{
-		if (namespaceText != null)
-		{
-			IProject project = getProject();
-			if (project != null)
-			{
-				Map<String, String> options = new HashMap<String, String>();
-				options.put(GetNamespaceCommand.OPTION_PATH, project.getLocation().toOSString());
-				if (sources != null && !sources.isEmpty())
-				{
-					options.put(GetNamespaceCommand.OPTION_SOURCES, sources);
-				}
-				Command command = commandManager.createCommand(options, GetNamespaceCommand.class);
-				CommandResult result = commandManager.executeCommand(command, false, null);
-				GetProjectNamespaceCommandResult commandResult = result.convertToGetProjectNamespaceCommandResult();
-				String namespace = commandResult.getNamespace();
-				if (namespace != null && !namespace.isEmpty())
-				{
-					if (namespaceText.getText().isEmpty() || namespaceText.getText().equals(temp))
-					{
-						temp = namespace;
-						namespaceText.setText(namespace);
-					} else
-					{
-						temp = namespace;
-					}
-				}
-			}
-		}
 	}
 
 	private void namespaceModified()
