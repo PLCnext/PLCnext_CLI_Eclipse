@@ -64,8 +64,11 @@ import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GenerateCodeCommand;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.PLCnCLIProjectType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.project.PlcProjectNature;
+import com.phoenixcontact.plcnext.cplusplus.project.componentproject.PlcnextAppProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
 
 /**
@@ -288,12 +291,15 @@ public class WizardImportPlcProjectPage extends WizardPage
 		options.put(GetProjectInformationCommand.OPTION_PATH, projectFileLocation);
 
 		String name;
+		PLCnCLIProjectType type = PLCnCLIProjectType.project;
 		try
 		{
-			name = commandManager
+			GetProjectInformationCommandResult projectInfo = commandManager
 					.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), false,
 							monitor)
-					.convertToGetProjectInformationCommandResult().getName();
+					.convertToGetProjectInformationCommandResult();
+			name = projectInfo.getName();
+			type = projectInfo.getType();
 		} catch (ProcessExitedWithErrorException e1)
 		{
 			return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
@@ -348,11 +354,20 @@ public class WizardImportPlcProjectPage extends WizardPage
 			// add managed build nature and plprojectnature
 			ManagedBuildManager.createBuildInfo(project);
 			ManagedCProjectNature.addManagedNature(project, subMonitor.split(2));
-			ManagedCProjectNature.addNature(project, PlcProjectNature.NATURE_ID, subMonitor.split(2));
+			if (type == PLCnCLIProjectType.appproject)
+				ManagedCProjectNature.addNature(project, PlcnextAppProjectNature.NATURE_ID, subMonitor.split(2));
+			else
+				ManagedCProjectNature.addNature(project, PlcProjectNature.NATURE_ID, subMonitor.split(2));
 			ManagedCProjectNature.addManagedBuilder(project, subMonitor.split(2));
 
-			IProjectType projectType = ManagedBuildManager
-					.getProjectType("com.phoenixcontact.plcnext.cplusplus.toolchains.projectType");
+			IProjectType projectType;
+			if (type == PLCnCLIProjectType.appproject)
+				projectType = ManagedBuildManager
+						.getProjectType("com.phoenixcontact.plcnext.cplusplus.toolchains.appprojectType");
+			else
+				projectType = ManagedBuildManager
+						.getProjectType("com.phoenixcontact.plcnext.cplusplus.toolchains.projectType");
+
 			IManagedProject managedProject = ManagedBuildManager.createManagedProject(project, projectType);
 			subMonitor.worked(1);
 

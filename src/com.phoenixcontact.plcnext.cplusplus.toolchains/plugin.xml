@@ -175,43 +175,19 @@
                   superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.base"
                   supportsManagedBuild="true">
                <tool
-                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release.metacodetool"
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool"
                      isAbstract="false"
-                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool">
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.base">
                </tool>
                <tool
-                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release.metadatatool"
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool"
                      isAbstract="false"
-                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool">
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.base">
                </tool>
                <tool
-                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release.librarybuilder"
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder"
                      isAbstract="false"
-                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder">
-               </tool>
-            </toolChain>
-         </configuration>
-         <configuration
-               buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
-               errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;"
-               id="com.phoenixcontact.plcnext.cplusplus.toolchains.configuration.release1"
-               languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider;com.phoenixcontact.plcnext.cplusplus.toolchains.languageprovider"
-               name="Release all targets">
-            <toolChain
-                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1"
-                  isAbstract="false"
-                  name="PLCnext C++ App Project Toolchain"
-                  superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.base"
-                  supportsManagedBuild="true">
-               <tool
-                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1.metacodetool"
-                     isAbstract="false"
-                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool">
-               </tool>
-               <tool
-                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1.metadatatool"
-                     isAbstract="false"
-                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool">
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.base">
                </tool>
             </toolChain>
          </configuration>
@@ -227,7 +203,7 @@
       <tool
             command="generate library"
             commandLinePattern="${COMMAND} ${FLAGS}"
-            id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.base"
             isAbstract="false"
             name="PLCnCLI - Library Builder"
             natureFilter="ccnature"
@@ -287,7 +263,7 @@
       <tool
             command="generate code"
             commandLinePattern="${COMMAND} ${FLAGS}"
-            id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.base"
             isAbstract="false"
             isHidden="false"
             name="PLCnCLI - Metacode Generation"
@@ -348,7 +324,7 @@
       <tool
             command="generate config"
             commandLinePattern="${COMMAND} ${FLAGS}"
-            id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.base"
             isAbstract="false"
             isHidden="false"
             name="PLCnCLI - Metadata Generation"
@@ -406,6 +382,36 @@
                valueType="string">
          </option>
       </tool>
+      <projectType
+            buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.appprojectType"
+            isAbstract="false"
+            isTest="false">
+         <configuration
+               buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
+               errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.configuration.release1"
+               languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider;com.phoenixcontact.plcnext.cplusplus.toolchains.languageprovider"
+               name="Release all targets">
+            <toolChain
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1"
+                  isAbstract="false"
+                  name="PLCnext C++ App Project Toolchain"
+                  superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.base"
+                  supportsManagedBuild="true">
+               <tool
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1.metacodetool"
+                     isAbstract="false"
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.base">
+               </tool>
+               <tool
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1.metadatatool"
+                     isAbstract="false"
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.base">
+               </tool>
+            </toolChain>
+         </configuration>
+      </projectType>
    </extension>
    <extension
          point="org.eclipse.cdt.core.LanguageSettingsProvider">

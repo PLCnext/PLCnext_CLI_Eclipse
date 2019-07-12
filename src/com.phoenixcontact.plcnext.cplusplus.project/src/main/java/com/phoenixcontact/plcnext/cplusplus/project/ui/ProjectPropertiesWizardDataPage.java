@@ -54,6 +54,7 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 	private ProjectType projectType;
 
 	/**
+	 * @param projectType 
 	 * @param pageName
 	 * @see org.eclipse.cdt.ui.templateengine.AbstractWizardDataPage#Constructor
 	 */

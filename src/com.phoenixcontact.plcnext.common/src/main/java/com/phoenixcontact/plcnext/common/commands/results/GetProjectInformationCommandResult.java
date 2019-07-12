@@ -16,6 +16,10 @@ import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 
 public class GetProjectInformationCommandResult extends CommandResult
 {
+	public enum PLCnCLIProjectType {
+		project, appproject
+	}
+	
 	public GetProjectInformationCommandResult(JsonObject reply, List<ServerMessageMessage> messages)
 	{
 		super(reply, messages);
@@ -25,7 +29,7 @@ public class GetProjectInformationCommandResult extends CommandResult
 
 	private String namespace;
 
-	private String type;
+	private PLCnCLIProjectType type;
 
 	private ProjectTarget[] targets;
 
@@ -43,6 +47,12 @@ public class GetProjectInformationCommandResult extends CommandResult
 	{
 		return namespace;
 	}
+	
+	public PLCnCLIProjectType getType()
+	{
+		return type;
+	}
+	
 
 	public static class ProjectTarget extends Target
 	{
