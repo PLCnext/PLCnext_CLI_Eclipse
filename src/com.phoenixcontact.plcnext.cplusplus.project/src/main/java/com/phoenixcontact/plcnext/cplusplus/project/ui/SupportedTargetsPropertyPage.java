@@ -6,10 +6,12 @@
 package com.phoenixcontact.plcnext.cplusplus.project.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
@@ -112,8 +114,7 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 	private CachedCliInformation cache;
 	private TableViewer selectedViewer;
 	private TableViewer availableViewer;
-	private List<String> targetsToAdd = new ArrayList<String>();
-	private List<String> targetsToRemove = new ArrayList<String>();
+
 	private IProject project;
 	private boolean updated = false;
 	private boolean filled = false;
@@ -121,33 +122,33 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 	private List<String> initiallyAvailableTargets = new ArrayList<String>();
 	private List<String> initiallySupportedTargets = new ArrayList<String>();
 	private List<String> notAvailableProjectTargets = new ArrayList<String>();
-	
+
 	private ResourceManager resourceManager = null;
 
 	private class ColoredLabelProvider extends ColumnLabelProvider
 	{
-		
+
 		@Override
 		public Color getForeground(Object element)
 		{
-			if(element instanceof String)
+			if (element instanceof String)
 			{
 				String s = (String) element;
-				if(notAvailableProjectTargets.contains(s))
+				if (notAvailableProjectTargets.contains(s))
 				{
 					return resourceManager.createColor(new RGB(255, 0, 0));
 				}
 			}
 			return super.getBackground(element);
 		}
-		
+
 		@Override
 		public String getToolTipText(Object element)
 		{
-			if(element instanceof String)
+			if (element instanceof String)
 			{
 				String s = (String) element;
-				if(notAvailableProjectTargets.contains(s))
+				if (notAvailableProjectTargets.contains(s))
 				{
 					return Messages.SupportedTargetsPropertyPage_TooltipNonexistingTarget;
 				}
@@ -155,7 +156,7 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 			return super.getToolTipText(element);
 		}
 	}
-	
+
 	@Override
 	protected Control createContents(Composite parent)
 	{
@@ -320,7 +321,7 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 				{
 					TableItem tableItem = selectedViewer.getTable().getItem(index);
 					String item = tableItem.getText();
-					if(!notAvailableProjectTargets.contains(item))
+					if (!notAvailableProjectTargets.contains(item))
 						availableViewer.add(item);
 				}
 				selectedViewer.getTable().remove(indices);
@@ -385,22 +386,22 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 
 			try
 			{
-				CommandResult commandResult = commandManager
-						.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), false,
-								null);
+				CommandResult commandResult = commandManager.executeCommand(
+						commandManager.createCommand(options, GetProjectInformationCommand.class), false, null);
 				ProjectTarget[] targets = commandResult.convertToGetProjectInformationCommandResult().getTargets();
 				List<String> results = new ArrayList<String>();
+				notAvailableProjectTargets.clear();
 				for (ProjectTarget target : targets)
+				{
+					String displayName = target.getDisplayName();
+					results.add(displayName);
+					if (!target.isAvailable())
 					{
-						String displayName = target.getDisplayName();
-						results.add(displayName);
-						if(!target.isAvailable())
-						{
-							notAvailableProjectTargets.add(displayName);
-						}
+						notAvailableProjectTargets.add(displayName);
 					}
-					return results;
-				
+				}
+				return results;
+
 			} catch (ProcessExitedWithErrorException e)
 			{
 				Activator.getDefault().logError("Error while trying to execute clif command.", e); //$NON-NLS-1$
@@ -425,18 +426,9 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 	@Override
 	public boolean performOk()
 	{
-		computeTargetsToAddAndRemove();
-		Job job = new SupportedTargetsPerformOKJob(Messages.SupportedTargetsPropertyPage_UpdateTargetJobName + project.getName(), targetsToAdd,
-				targetsToRemove, project, commandManager);
-		job.setRule(MultiRule.combine(ResourcesPlugin.getWorkspace().getRuleFactory().modifyRule(project),
-				new MutexSchedulingRule()));
-		job.schedule();
+		List<String> targetsToAdd = new ArrayList<String>();
+		List<String> targetsToRemove = new ArrayList<String>();
 
-		return super.performOk();
-	}
-
-	private void computeTargetsToAddAndRemove()
-	{
 		for (TableItem tableItem : availableViewer.getTable().getItems())
 		{
 			String item = tableItem.getText();
@@ -449,5 +441,18 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 			if (initiallyAvailableTargets.contains(item))
 				targetsToAdd.add(item);
 		}
+		
+		notAvailableProjectTargets.stream()
+				.filter(s -> Arrays.stream(selectedViewer.getTable().getItems()).allMatch(i -> !i.getText().equals(s)))
+				.forEach(s -> targetsToRemove.add(s));
+
+		Job job = new SupportedTargetsPerformOKJob(
+				Messages.SupportedTargetsPropertyPage_UpdateTargetJobName + project.getName(), targetsToAdd,
+				targetsToRemove, project, commandManager);
+		job.setRule(MultiRule.combine(ResourcesPlugin.getWorkspace().getRuleFactory().modifyRule(project),
+				new MutexSchedulingRule()));
+		job.schedule();
+
+		return super.performOk();
 	}
 }
