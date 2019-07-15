@@ -39,6 +39,7 @@ public class CliSourceDialog extends MessageDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		super.createButtonsForButtonBar(parent);
+		getButton(Download).setVisible(false);
 		getButton(Download).setEnabled(false);
 	}
 	

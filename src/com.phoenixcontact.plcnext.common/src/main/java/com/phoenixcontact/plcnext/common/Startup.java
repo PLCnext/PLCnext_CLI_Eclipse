@@ -24,15 +24,15 @@ public class Startup implements IStartup {
 		
 		Logger.log("-------------------- STARTING NEW SESSION --------------------");
 		
-		Job job = new Job(Messages.Startup_CheckCliJobName) {
-			
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				return new CliAvailabilityChecker().checkAvailability();
-			}
-		};
-		job.setRule(new MutexSchedulingRule());
-		job.schedule();
+//		Job job = new Job(Messages.Startup_CheckCliJobName) {
+//			
+//			@Override
+//			protected IStatus run(IProgressMonitor monitor) {
+//				return new CliAvailabilityChecker().checkAvailability();
+//			}
+//		};
+//		job.setRule(new MutexSchedulingRule());
+//		job.schedule();
 		
 		Job cachingJob = new CliInformationCacher();
 		cachingJob.schedule();
