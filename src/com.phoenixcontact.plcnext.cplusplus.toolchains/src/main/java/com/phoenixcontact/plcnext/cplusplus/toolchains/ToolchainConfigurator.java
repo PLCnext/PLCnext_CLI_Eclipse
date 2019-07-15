@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.phoenixcontact.plcnext.common.CachedCliInformation;
 import com.phoenixcontact.plcnext.common.CliNotExistingException;
@@ -52,10 +53,12 @@ import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.GetCompilerSpecsCommand;
 import com.phoenixcontact.plcnext.common.commands.GetIncludePathsCommand;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
+import com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult.Compiler.Macro;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult.IncludePath;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.ProjectTarget;
+import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 
 /**
  * Class which implements needed configurations for the toolchain
@@ -87,8 +90,7 @@ public class ToolchainConfigurator
 	 * @throws CliNotExistingException
 	 * @throws ProcessExitedWithErrorException
 	 */
-	public void configureProject(String projectName, IProgressMonitor monitor)
-			throws CliNotExistingException, ProcessExitedWithErrorException
+	public void configureProject(String projectName, IProgressMonitor monitor) throws ProcessExitedWithErrorException
 	{
 		IWorkspaceRoot wspRoot = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = wspRoot.getProject(projectName);
@@ -122,7 +124,7 @@ public class ToolchainConfigurator
 	 * @throws ProcessExitedWithErrorException
 	 */
 	public void configureProject(IProject project, List<String> oldIncludePaths, Map<String, String> oldMacros,
-			IProgressMonitor monitor) throws CliNotExistingException, ProcessExitedWithErrorException
+			IProgressMonitor monitor) throws ProcessExitedWithErrorException
 	{
 		ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
 
@@ -163,7 +165,7 @@ public class ToolchainConfigurator
 					LanguageSettingsGenericProvider languageProvider = (LanguageSettingsGenericProvider) plcnextLanguageProvider;
 
 //					LanguageSettingsManager.setStoringEntriesInProjectArea(languageProvider, true);
-					
+
 					languageProvider.setSettingEntries(description, null, "org.eclipse.cdt.core.g++",
 							macrosAndIncludes.getAllEntries());
 					languageSettingsAdded = true;
@@ -241,7 +243,7 @@ public class ToolchainConfigurator
 		{
 			Map<String, String> options = new HashMap<String, String>();
 			options.put(GetIncludePathsCommand.OPTION_PATH, project.getLocation().toOSString());
-			
+
 			IncludePath[] includePaths = null;
 			try
 			{
@@ -252,26 +254,42 @@ public class ToolchainConfigurator
 
 			} catch (ProcessExitedWithErrorException e)
 			{
-				Gson gson = new Gson();
-				try {
-				includePaths = gson.fromJson(e.getReply(), GetIncludePathsCommandResult.class).getIncludePaths();
-				
-				}catch(JsonSyntaxException ex)
+				JsonObject reply = e.getReply();
+				if (reply != null)
 				{
-					Activator.getDefault().logError("Could not determine include paths", e);
-					return;
+					Gson gson = new Gson();
+					try
+					{
+						includePaths = gson.fromJson(reply, GetIncludePathsCommandResult.class).getIncludePaths();
+
+					} catch (JsonSyntaxException ex)
+					{
+						Activator.getDefault().logError("Could not determine include paths", e);
+						return;
+					}
+				} else
+				{
+					List<String> output = e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.information)
+							.map(m -> m.getMessage()).collect(Collectors.toList());
+					if (output != null)
+					{
+						includePaths = GetIncludePathsCommandResult.convertResultToJson(output).getIncludePaths();
+					}
 				}
 			}
 			List<String> newIncludePaths = new ArrayList<String>();
 			List<ICLanguageSettingEntry> includePathEntries = new ArrayList<ICLanguageSettingEntry>();
 
-			for (IncludePath includePath : includePaths)
+			if (includePaths != null)
 			{
-				String path = includePath.getPath();
-				newIncludePaths.add(path);
-				includePathEntries.add(new CIncludePathEntry(path, ICSettingEntry.BUILTIN));
-				if (oldIncludePaths != null && !oldIncludePaths.isEmpty())
-					oldIncludePaths.remove(path);
+				for (IncludePath includePath : includePaths)
+				{
+					String path = includePath.getPath();
+					newIncludePaths.add(path);
+					includePathEntries.add(new CIncludePathEntry(path, ICSettingEntry.BUILTIN));
+					if (oldIncludePaths != null && !oldIncludePaths.isEmpty())
+						oldIncludePaths.remove(path);
+				}
 			}
 
 			includePathEntries.add(new CIncludePathEntry(File.separator + project.getName() + File.separator
@@ -420,18 +438,18 @@ public class ToolchainConfigurator
 	 * @param project
 	 * @param monitor
 	 * @return a wrapper containing the macros and includes
-	 * @throws CliNotExistingException
 	 * @throws ProcessExitedWithErrorException
 	 */
 	public MacrosAndIncludesWrapper findMacrosAndIncludes(IProject project, IProgressMonitor monitor)
-			throws CliNotExistingException, ProcessExitedWithErrorException
+			throws ProcessExitedWithErrorException
 	{
 		List<String> includes = new ArrayList<String>();
 		Map<String, String> macros = new HashMap<String, String>();
 
 		Map<String, String> options = new HashMap<String, String>();
 		options.put(GetCompilerSpecsCommand.OPTION_PATH, project.getLocation().toOSString());
-		com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult.Compiler[] compiler = commandManager
+
+		GetCompilerSpecsCommandResult.Compiler[] compiler = commandManager
 				.executeCommand(commandManager.createCommand(options, GetCompilerSpecsCommand.class), false, monitor)
 				.convertToGetCompilerSpecsCommandResult().getCompiler();
 
@@ -440,7 +458,7 @@ public class ToolchainConfigurator
 
 		Collection<String> macroNames = new ArrayList<String>();
 
-		for (com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult.Compiler result : compiler)
+		for (GetCompilerSpecsCommandResult.Compiler result : compiler)
 		{
 			includes.addAll(Arrays.stream(result.getIncludePaths()).map(p -> p.getPath()).collect(Collectors.toList()));
 

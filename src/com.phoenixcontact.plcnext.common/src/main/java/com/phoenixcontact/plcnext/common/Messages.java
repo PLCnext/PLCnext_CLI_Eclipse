@@ -71,7 +71,6 @@ public class Messages extends NLS {
 	public static String GetProjectInformationCommand_optionsources;
 	public static String GetProjectInformationCommand_optionpath;
 	public static String GetTargetsCommand_optionshort;
-	public static String GetTargetsCommand_outputdescription;
 	public static String GetTargetsCommand_verb;
 	public static String InstallSdkCommand_optiondestination;
 	public static String InstallSdkCommand_optionforce;

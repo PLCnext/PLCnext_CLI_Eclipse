@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="com.phoenixcontact.plcnext.cplusplus" sequenceNumber="13">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="com.phoenixcontact.plcnext.cplusplus" sequenceNumber="13">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="epp.package.cpp" version="4.12.0.20190614-1200"/>
@@ -48,4 +50,5 @@
 			<repository location="http://download.eclipse.org/releases/2019-06"/>
 		</location>
 	</locations>
+	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-9"/>
 </target>

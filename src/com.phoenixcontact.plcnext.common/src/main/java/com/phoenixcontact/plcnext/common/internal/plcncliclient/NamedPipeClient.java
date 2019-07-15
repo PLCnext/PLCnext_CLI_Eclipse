@@ -5,6 +5,8 @@
 
 package com.phoenixcontact.plcnext.common.internal.plcncliclient;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,8 +15,6 @@ import java.io.RandomAccessFile;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -43,7 +43,7 @@ import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.clicheck.CliAvailabilityChecker;
 import com.phoenixcontact.plcnext.common.logging.Logger;
 
-public class NamedPipeClient implements Closeable, Observer
+public class NamedPipeClient implements Closeable, PropertyChangeListener
 {
 	private Process process = null;
 	private ExecutorService pool;
@@ -75,7 +75,7 @@ public class NamedPipeClient implements Closeable, Observer
 	{
 		this.listener = listener;
 		this.cliInformation = plcncliInfo;
-		cliInformation.addObserver(this);
+		cliInformation.addPropertyChangeListener(this);
 		cliLocation = cliInformation.getCliPath();
 		cliName = cliInformation.getCliName();
 		cliChecker = new CliAvailabilityChecker(cliInformation);
@@ -285,7 +285,7 @@ public class NamedPipeClient implements Closeable, Observer
 		if (timer != null)
 			timer.cancel();
 		
-		cliInformation.deleteObserver(this);
+		cliInformation.removePropertyChangeListener(this);
 	}
 
 	public ConcurrentLinkedDeque<NamedPipeMessage> getMessageStack()
@@ -303,16 +303,16 @@ public class NamedPipeClient implements Closeable, Observer
 	{
 		return notRepliedMessages;
 	}
-
-	@Override
-	public void update(Observable o, Object arg)
-	{
-		cliLocation = cliInformation.getCliPath();
-		cliName = cliInformation.getCliName();
-	}
 	
 	public ConcurrentMap<UUID, NamedPipeMessage> getNotConfirmedMessages()
 	{
 		return notConfirmedMessages;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		cliLocation = cliInformation.getCliPath();
+		cliName = cliInformation.getCliName();
 	}
 }

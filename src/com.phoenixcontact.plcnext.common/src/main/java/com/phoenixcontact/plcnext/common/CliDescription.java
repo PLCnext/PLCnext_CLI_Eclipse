@@ -5,8 +5,9 @@
 
 package com.phoenixcontact.plcnext.common;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.util.Observable;
 
 import javax.inject.Singleton;
 
@@ -22,10 +23,12 @@ import com.phoenixcontact.plcnext.common.preferences.PreferenceConstants;
  */
 @Creatable
 @Singleton
-public class CliDescription extends Observable{
+public class CliDescription {
 	
 	private String cliPath;
 	private String cliName;
+	
+	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	
 	/**
 	 * Sets cli path and name according to preferences values, and adds listener to preference changes
@@ -52,9 +55,9 @@ public class CliDescription extends Observable{
 	 * @param cliPath path to the directory, where the cli executable is
 	 */
 	public void setCliPath(String cliPath) {
+		String oldValue = this.cliPath;
 		this.cliPath = cliPath;
-		setChanged();
-		notifyObservers();
+		propertyChangeSupport.firePropertyChange("cliPath", oldValue, cliPath);
 	}
 	
 	/**
@@ -75,9 +78,9 @@ public class CliDescription extends Observable{
 	 * @param name name of the plcncli executable
 	 */
 	public void setCliName(String name) {
+		String oldValue = this.cliName;
 		this.cliName = name;
-		setChanged();
-		notifyObservers();
+		propertyChangeSupport.firePropertyChange("cliName", oldValue, name);
 	}
 	
 	/**
@@ -88,5 +91,15 @@ public class CliDescription extends Observable{
 				|| cliPath == null || cliPath.isEmpty())
 			return false;
 		return new File(cliPath + Path.SEPARATOR + cliName).exists();
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener)
+	{
+		propertyChangeSupport.addPropertyChangeListener(listener);
+	}
+	
+	public void removePropertyChangeListener(PropertyChangeListener listener)
+	{
+		propertyChangeSupport.removePropertyChangeListener(listener);
 	}
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
@@ -22,6 +23,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.MutexSchedulingRule;
@@ -32,6 +34,7 @@ import com.phoenixcontact.plcnext.common.commands.SetTargetCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult.IncludePath;
+import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator.MacrosAndIncludesWrapper;
@@ -108,32 +111,28 @@ public class SupportedTargetsPerformOKJob extends Job
 
 				} catch (ProcessExitedWithErrorException e)
 				{
-					Gson gson = new Gson();
-					try
+					JsonObject reply = e.getReply();
+					if (reply != null)
 					{
-						results = gson.fromJson(e.getReply(), GetIncludePathsCommandResult.class).getIncludePaths();
+						Gson gson = new Gson();
+						try
+						{
+							results = gson.fromJson(reply, GetIncludePathsCommandResult.class).getIncludePaths();
 
-					} catch (JsonSyntaxException ex)
+						} catch (JsonSyntaxException ex)
+						{
+							Activator.getDefault().logError("Could not determine include paths", e);
+						}
+					} else
 					{
-						Activator.getDefault().logError("Could not determine include paths", e);
+						List<String> output = e.getMessages().stream()
+								.filter(m -> m.getMessageType() == MessageType.information).map(m -> m.getMessage())
+								.collect(Collectors.toList());
+						if (output != null)
+						{
+							results = GetIncludePathsCommandResult.convertResultToJson(output).getIncludePaths();
+						}
 					}
-
-//					List<String> output = ((ProcessExitedWithErrorException) e).getMessages().stream()
-//							.filter(m -> m.getMessageType() == MessageType.error).map(m -> m.getMessage())
-//							.collect(Collectors.toList());
-//					if (output != null)
-//					{
-//						int startIndex = output
-//								.indexOf("Project " + project.getName() + " has the following include paths:");
-//						if (startIndex != -1)
-//						{
-//							for (String result : output.subList(startIndex + 1, output.size()))
-//							{
-//								includePaths.add(result.trim());
-//							}
-//						}
-//					}
-
 				}
 
 				if (results != null)

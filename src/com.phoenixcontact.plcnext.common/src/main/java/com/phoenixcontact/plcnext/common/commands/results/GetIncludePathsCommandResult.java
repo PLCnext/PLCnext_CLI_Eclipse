@@ -5,9 +5,10 @@
 
 package com.phoenixcontact.plcnext.common.commands.results;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 
@@ -19,19 +20,13 @@ public class GetIncludePathsCommandResult extends CommandResult
 		super(reply, messages);
 	}
 
-	public GetIncludePathsCommandResult(IncludePath[] includePaths)
-	{
-		super((JsonObject) null, null);
-		this.includePaths = includePaths;
-	}
-
 	private IncludePath[] includePaths;
 
 	public IncludePath[] getIncludePaths()
 	{
 		return includePaths;
 	}
-	
+
 	public static class IncludePath
 	{
 		private String path;
@@ -40,7 +35,7 @@ public class GetIncludePathsCommandResult extends CommandResult
 		{
 			return path;
 		}
-
+		
 		public IncludePath(String path)
 		{
 			this.path = path;
@@ -49,25 +44,10 @@ public class GetIncludePathsCommandResult extends CommandResult
 
 	public static GetIncludePathsCommandResult convertResultToJson(List<String> stdout)
 	{
-		if (stdout != null && stdout.stream()
-				.anyMatch(x -> x.startsWith("Project ") && x.endsWith(" has the following include paths:")))
+		if (stdout != null)
 		{
-			String startElement = stdout.stream()
-					.filter(x -> x.startsWith("Project ") && x.endsWith(" has the following include paths:"))
-					.findFirst().orElse(null);
-			if (startElement != null)
-			{
-				List<IncludePath> includes = new ArrayList<IncludePath>();
-				int startIndex = stdout.indexOf(startElement);
-				for (String result : stdout.subList(startIndex + 1, stdout.size()))
-				{
-					includes.add(new IncludePath(result.trim()));
-				}
-
-				return new GetIncludePathsCommandResult(includes.toArray(new IncludePath[0]));
-
-			}
-
+			return new Gson().fromJson(stdout.stream().collect(Collectors.joining("")),
+					GetIncludePathsCommandResult.class);
 		}
 		return null;
 	}

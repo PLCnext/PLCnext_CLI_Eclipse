@@ -16,10 +16,11 @@ import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 
 public class GetProjectInformationCommandResult extends CommandResult
 {
-	public enum PLCnCLIProjectType {
+	public enum PLCnCLIProjectType
+	{
 		project, appproject
 	}
-	
+
 	public GetProjectInformationCommandResult(JsonObject reply, List<ServerMessageMessage> messages)
 	{
 		super(reply, messages);
@@ -47,20 +48,14 @@ public class GetProjectInformationCommandResult extends CommandResult
 	{
 		return namespace;
 	}
-	
+
 	public PLCnCLIProjectType getType()
 	{
 		return type;
 	}
-	
 
 	public static class ProjectTarget extends Target
 	{
-		public ProjectTarget(String displayname)
-		{
-			super(displayname);
-		}
-
 		private boolean available;
 
 		public boolean isAvailable()
@@ -75,7 +70,7 @@ public class GetProjectInformationCommandResult extends CommandResult
 	{
 		return Arrays.stream(entities).filter(e -> e.getType().contains("component")).collect(Collectors.toList());
 	}
-	
+
 	public List<Entity> getPrograms()
 	{
 		return Arrays.stream(entities).filter(e -> e.getType().equals("program")).collect(Collectors.toList());

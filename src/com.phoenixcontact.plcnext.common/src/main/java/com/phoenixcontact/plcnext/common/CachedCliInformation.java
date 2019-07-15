@@ -7,7 +7,6 @@ package com.phoenixcontact.plcnext.common;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Observable;
 
 import javax.inject.Singleton;
 
@@ -19,10 +18,11 @@ import org.eclipse.e4.core.di.annotations.Creatable;
  */
 @Creatable
 @Singleton
-public class CachedCliInformation extends Observable
+public class CachedCliInformation
 {
 	private List<String> allTargets;
 	private String portCommentPrefix = "#";
+	
 
 	/**
 	 * @return cached list of all targets
@@ -40,7 +40,7 @@ public class CachedCliInformation extends Observable
 	public void setAllTargets(List<String> targets)
 	{
 		allTargets = targets;
-		notifyObservers();
+//		notifyObservers();
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class CachedCliInformation extends Observable
 	public void setPortCommentPrefix(String prefix)
 	{
 		portCommentPrefix = prefix;
-		notifyObservers();
+//		notifyObservers();
 	}
 
 	/**

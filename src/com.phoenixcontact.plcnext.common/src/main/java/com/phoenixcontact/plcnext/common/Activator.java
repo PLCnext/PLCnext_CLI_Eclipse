@@ -51,8 +51,8 @@ public class Activator extends AbstractUIPlugin
 
 		InjectorFactory.getDefault().addBinding(IDIHost.class).implementedBy(DIHost.class);
 		InjectorFactory.getDefault().addBinding(ICommandManager.class).implementedBy(CommandManager.class);
-//		InjectorFactory.getDefault().addBinding(ICommandReceiver.class).implementedBy(Cli.class);
-		InjectorFactory.getDefault().addBinding(ICommandReceiver.class).implementedBy(NamedPipeCommandReceiver.class);
+		InjectorFactory.getDefault().addBinding(ICommandReceiver.class).implementedBy(Cli.class);
+//		InjectorFactory.getDefault().addBinding(ICommandReceiver.class).implementedBy(NamedPipeCommandReceiver.class);
 		InjectorFactory.getDefault().addBinding(CliDescription.class);
 		InjectorFactory.getDefault().addBinding(PlcncliServerConversation.class);
 	}

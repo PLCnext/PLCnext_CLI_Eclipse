@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.activity.InvalidActivityException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -265,12 +264,12 @@ public class PlcncliServerConversation implements PipeErrorListener, UncaughtExc
 	}
 
 	private boolean writeMessage(ClientMessage message, NamedPipeClient expectedClient, boolean listenForReply)
-			throws InvalidActivityException
+			throws ClientWasRestartedException
 	{
 		synchronized (mutex)
 		{
 			if (!client.equals(expectedClient))
-				throw new InvalidActivityException("Client was restarted in the meantime.");
+				throw new ClientWasRestartedException();
 			if (listenForReply)
 				client.getNotRepliedMessages().put(message, this);
 			if (client.writeMessage(message, this))
@@ -350,7 +349,7 @@ public class PlcncliServerConversation implements PipeErrorListener, UncaughtExc
 				handshakeResult = HandshakeResult.Fail;
 				waitForHandshake.notifyAll();
 			}
-		} catch (InvalidActivityException e)
+		} catch (ClientWasRestartedException e)
 		{
 			Logger.log(e.getMessage());
 		}
@@ -409,7 +408,7 @@ public class PlcncliServerConversation implements PipeErrorListener, UncaughtExc
 					return reply;
 				}
 
-			} catch (InvalidActivityException e)
+			} catch (ClientWasRestartedException e)
 			{
 				restarted = true;
 				client = this.client;
@@ -422,7 +421,7 @@ public class PlcncliServerConversation implements PipeErrorListener, UncaughtExc
 
 	private Map.Entry<ServerReplyMessage, List<ServerMessageMessage>> waitForResponse(ClientMessage sentMessage,
 			String command, NamedPipeClient expectedClient, IProgressMonitor monitor, boolean logging)
-			throws InvalidActivityException
+			throws ClientWasRestartedException
 	{
 		SubMonitor subMonitor = SubMonitor.convert(monitor, 1000);
 		List<ServerMessageMessage> messages = new ArrayList<ServerMessageMessage>();
@@ -651,7 +650,7 @@ public class PlcncliServerConversation implements PipeErrorListener, UncaughtExc
 	}
 
 	private void commandCanceledByUser(SubMonitor subMonitor, ClientMessage cancelMessage,
-			NamedPipeClient expectedClient, boolean logging) throws InvalidActivityException
+			NamedPipeClient expectedClient, boolean logging) throws ClientWasRestartedException
 	{
 		// send cancel
 

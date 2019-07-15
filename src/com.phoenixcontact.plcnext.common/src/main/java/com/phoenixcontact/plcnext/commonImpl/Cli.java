@@ -5,13 +5,14 @@
 
 package com.phoenixcontact.plcnext.commonImpl;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -48,7 +49,7 @@ import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
  */
 @Creatable
 @Singleton
-public class Cli implements ICommandReceiver, Observer {
+public class Cli implements ICommandReceiver, PropertyChangeListener {
 
 	private String cliLocation;
 	private String cliName;
@@ -62,7 +63,7 @@ public class Cli implements ICommandReceiver, Observer {
 	@Inject
 	public Cli(CliDescription cliInfo) {
 		this.cliInformation = cliInfo;
-		cliInformation.addObserver(this);
+		cliInformation.addPropertyChangeListener(this);
 		cliLocation = cliInformation.getCliPath();
 		cliName = cliInformation.getCliName();
 		cliChecker = new CliAvailabilityChecker(cliInformation);
@@ -198,6 +199,18 @@ public class Cli implements ICommandReceiver, Observer {
 			}).start();
 			
 			try {
+//				while(!proc.waitFor(100, TimeUnit.MILLISECONDS))
+//				{
+//					if(monitor.isCanceled())
+//					{
+//						proc.descendants().forEach(p -> p.destroy());
+//						proc.destroy();
+//						err.println("canceled command execution");
+//						break;
+//					}
+//				}
+				
+				
 				if (proc.waitFor() != 0) {
 					throw new ProcessExitedWithErrorException(command, outputLines, errorLines);
 				}
@@ -228,7 +241,8 @@ public class Cli implements ICommandReceiver, Observer {
 	}
 
 	@Override
-	public void update(Observable observable, Object arg) {
+	public void propertyChange(PropertyChangeEvent evt)
+	{
 		cliLocation = cliInformation.getCliPath();
 		cliName = cliInformation.getCliName();
 	}
