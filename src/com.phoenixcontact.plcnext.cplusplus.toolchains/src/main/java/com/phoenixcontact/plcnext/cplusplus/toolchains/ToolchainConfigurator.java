@@ -269,8 +269,9 @@ public class ToolchainConfigurator
 					}
 				} else
 				{
-					List<String> output = e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.information)
-							.map(m -> m.getMessage()).collect(Collectors.toList());
+					List<String> output = e.getMessages().stream()
+							.filter(m -> m.getMessageType() == MessageType.information).map(m -> m.getMessage())
+							.collect(Collectors.toList());
 					if (output != null)
 					{
 						includePaths = GetIncludePathsCommandResult.convertResultToJson(output).getIncludePaths();
@@ -449,9 +450,24 @@ public class ToolchainConfigurator
 		Map<String, String> options = new HashMap<String, String>();
 		options.put(GetCompilerSpecsCommand.OPTION_PATH, project.getLocation().toOSString());
 
-		GetCompilerSpecsCommandResult.Compiler[] compiler = commandManager
-				.executeCommand(commandManager.createCommand(options, GetCompilerSpecsCommand.class), false, monitor)
-				.convertToGetCompilerSpecsCommandResult().getCompiler();
+		GetCompilerSpecsCommandResult.Compiler[] compiler = null;
+		try
+		{
+			compiler = commandManager
+					.executeCommand(commandManager.createCommand(options, GetCompilerSpecsCommand.class), false,
+							monitor)
+					.convertToGetCompilerSpecsCommandResult().getCompiler();
+
+		} catch (ProcessExitedWithErrorException e)
+		{
+			try {
+			compiler = GetCompilerSpecsCommandResult.convertResultToJson(
+					e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.information)
+							.map(m -> m.getMessage()).collect(Collectors.toList())).getCompiler();
+			}catch (JsonSyntaxException e1) {
+				throw e;
+			}
+		}
 
 		if (compiler.length == 0)
 			return new MacrosAndIncludesWrapper(includes, macros);
