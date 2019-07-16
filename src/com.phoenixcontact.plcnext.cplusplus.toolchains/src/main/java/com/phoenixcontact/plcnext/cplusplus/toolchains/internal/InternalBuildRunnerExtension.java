@@ -98,7 +98,7 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 		{
 			// ******************* first step a: generate code****************
 			ITool[] tools = configuration
-					.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool");
+					.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.base");
 			if (tools.length > 0)
 			{
 				ITool generateTool = tools[0];
@@ -108,7 +108,7 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 
 			// ******************first step b: generate meta*****************
 			tools = configuration
-					.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool");
+					.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.base");
 			if (tools.length > 0)
 			{
 				ITool generateTool = tools[0];
@@ -128,7 +128,7 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 
 			// ***************third step: librarybuilder***********************
 			tools = configuration
-					.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder");
+					.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.base");
 			if (tools.length > 0)
 			{
 				ITool libraryBuilder = tools[0];
@@ -137,14 +137,11 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 			monitor.worked(100);
 
 			// ****************if process exits normal check for warnings*********
-//			if (output != null && !output.getErrorOutput().isEmpty())
-//			{
-//				parseForErrorsOrWarnings(builder, output.getErrorOutput(), project, configuration, markerGenerator);
-//			}
 			if (output != null && output.getMessages() != null)
 			{
 				parseForErrorsOrWarnings(builder, output.getMessages(), project, configuration, markerGenerator);
 			}
+			
 		} catch (ProcessExitedWithErrorException e)
 		{
 			if (e instanceof ProcessExitedWithErrorException)
@@ -170,10 +167,10 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 		return false;
 	}
 
-	private CommandResult executeToolCommand(ITool tool, boolean logging, boolean clearConsole, IConfiguration config, IProgressMonitor monitor)
-			throws CliNotExistingException, ProcessExitedWithErrorException
+	private CommandResult executeToolCommand(ITool tool, boolean logging, boolean clearConsole, IConfiguration config,
+			IProgressMonitor monitor) throws CliNotExistingException, ProcessExitedWithErrorException
 	{
-		
+
 		String commandline = "";
 		try
 		{
@@ -251,7 +248,7 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 		try
 		{
 			ITool[] tools = configuration
-					.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool");
+					.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.metacodetool.base");
 			if (tools.length > 0)
 			{
 				ITool generateTool = tools[0];
@@ -280,21 +277,20 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 	{
 		if (messages != null)
 		{
-			
-			List<ServerMessageMessage> errorsAndWarnings = 
-					messages.stream().filter(
-							m -> m.getMessageType() == MessageType.error || m.getMessageType() == MessageType.warning).collect(Collectors.toList());
-			
+
+			List<ServerMessageMessage> errorsAndWarnings = messages.stream()
+					.filter(m -> m.getMessageType() == MessageType.error || m.getMessageType() == MessageType.warning)
+					.collect(Collectors.toList());
+
 			String[] errorParsers = builder.getErrorParsers();
 			try
 			{
 				try (ErrorParserManager epm = new ErrorParserManager(project,
 						ManagedBuildManager.getBuildLocationURI(configuration, builder), markerGenerator, errorParsers))
 				{
-					
+
 					for (ServerMessageMessage message : errorsAndWarnings)
 					{
-						//TODO bring error messages and warnings to problems view / check if this works
 						epm.processLine(message.getMessage());
 					}
 				}

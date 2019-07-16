@@ -5,6 +5,7 @@
 
 package com.phoenixcontact.plcnext.common.commands.results;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -12,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.phoenixcontact.plcnext.common.Activator;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
+import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 
 /**
  * Wrapps stdout and error output of a process
@@ -32,6 +34,12 @@ public class CommandResult
 	{
 		this.stdout = stdout;
 		this.error = error;
+		
+		messages = new ArrayList<ServerMessageMessage>();
+		if(stdout != null)
+			stdout.stream().forEach(l -> messages.add(new ServerMessageMessage(l, MessageType.information)));
+		if(error != null)
+			error.stream().forEach(l -> messages.add(new ServerMessageMessage(l, MessageType.error)));
 	}
 	
 	public CommandResult(JsonObject reply, List<ServerMessageMessage> messages) {

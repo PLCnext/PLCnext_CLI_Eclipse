@@ -22,7 +22,7 @@ public class Startup implements IStartup {
 	@Override
 	public void earlyStartup() {
 		
-		Logger.log("-------------------- STARTING NEW SESSION --------------------");
+//		Logger.log("-------------------- STARTING NEW SESSION --------------------");
 		
 //		Job job = new Job(Messages.Startup_CheckCliJobName) {
 //			
