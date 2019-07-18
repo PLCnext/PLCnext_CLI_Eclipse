@@ -8,7 +8,6 @@ package com.phoenixcontact.plcnext.common.internal.plcncliclient;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -31,7 +30,7 @@ import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationC
 import com.phoenixcontact.plcnext.common.commands.results.GetSettingCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetSettingCommandResult.Setting;
 import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult.Target;
+import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.common.logging.Logger;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerUpdateMessage;
 
@@ -66,8 +65,8 @@ public class UpdateMessageConsumer extends Job
 						.executeCommand(commandManager.createCommand(null, GetTargetsCommand.class), monitor);
 				GetTargetsCommandResult commandResult = result.convertToGetTargetsCommandResult();
 				Target[] targets = commandResult.getTargets();
-
-				cache.setAllTargets(Arrays.stream(targets).map(t -> t.getDisplayName()).collect(Collectors.toList()));
+				
+				cache.setAllTargets(Arrays.asList(targets));
 				//TODO test this behavior
 
 			} catch (ProcessExitedWithErrorException e)

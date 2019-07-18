@@ -22,10 +22,9 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -35,6 +34,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.phoenixcontact.plcnext.common.CachedCliInformation;
@@ -44,7 +44,7 @@ import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.GetTargetsCommand;
-import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult.Target;
+import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 
 /**
@@ -62,8 +62,8 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 	 * The targets key
 	 */
 	public static final String KEY_TARGETS = "TARGETS";
-	private ListViewer selectedViewer;
-	private ListViewer availableViewer;
+	private TableViewer selectedViewer;
+	private TableViewer availableViewer;
 	private Text updateText;
 	private boolean updated = false;
 
@@ -135,18 +135,18 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 		selectedLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		selectedLabel.setText("Selected Targets:");
 
+		TargetLabelProvider targetLabelProvider = new TargetLabelProvider();
+		TargetsViewerComparator targetsComparator = new TargetsViewerComparator();
+		
 		// row2+3,column1
-		availableViewer = new ListViewer(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		availableViewer.getList().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
-		availableViewer.setLabelProvider(new LabelProvider());
+		availableViewer = new TableViewer(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		availableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+		availableViewer.setLabelProvider(targetLabelProvider);
 		availableViewer.setContentProvider(ArrayContentProvider.getInstance());
-//		availableViewer.setComparator(new ViewerComparator() {
-//			public int compare(Viewer viewer, Object obj1, Object obj2) {
-//				return ((String) obj1).compareTo((String)obj2);
-//			}
-//		});
-		List<String> availableTargets = getPossibleTargets();
-		availableViewer.add(availableTargets.toArray());
+		availableViewer.setComparator(targetsComparator);
+		
+		List<Target> availableTargets = getPossibleTargets();
+		availableViewer.setInput(availableTargets);
 
 		// row2,column2
 		Button addButton = new Button(container, SWT.PUSH);
@@ -155,10 +155,11 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 		addButton.setEnabled(false);
 
 		// row2+3,column3
-		selectedViewer = new ListViewer(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		selectedViewer.getList().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
-		selectedViewer.setLabelProvider(new LabelProvider());
+		selectedViewer = new TableViewer(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		selectedViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+		selectedViewer.setLabelProvider(targetLabelProvider);
 		selectedViewer.setContentProvider(ArrayContentProvider.getInstance());
+		selectedViewer.setComparator(targetsComparator);
 		checkTargetsSelected();
 
 		// row3,column2
@@ -221,13 +222,15 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				int[] indices = availableViewer.getList().getSelectionIndices();
+				int[] indices = availableViewer.getTable().getSelectionIndices();
 				for (int index : indices)
 				{
-					selectedViewer.add(availableViewer.getList().getItem(index));
+					TableItem tableItem = availableViewer.getTable().getItem(index);
+					Target item = (Target) tableItem.getData();
+					selectedViewer.add(item);
 				}
-				availableViewer.getList().remove(indices);
-				availableViewer.setSelection(new StructuredSelection(availableViewer.getList()));
+				availableViewer.getTable().remove(indices);
+				availableViewer.setSelection(new StructuredSelection(availableViewer.getTable()));
 				updateMBSProperties();
 			}
 
@@ -244,13 +247,15 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				int[] indices = selectedViewer.getList().getSelectionIndices();
+				int[] indices = selectedViewer.getTable().getSelectionIndices();
 				for (int index : indices)
 				{
-					availableViewer.add(selectedViewer.getList().getItem(index));
+					TableItem tableItem = selectedViewer.getTable().getItem(index);
+					Target item = (Target) tableItem.getData();
+					availableViewer.add(item);
 				}
-				selectedViewer.getList().remove(indices);
-				selectedViewer.setSelection(new StructuredSelection(selectedViewer.getList()));
+				selectedViewer.getTable().remove(indices);
+				selectedViewer.setSelection(new StructuredSelection(selectedViewer.getTable()));
 				updateMBSProperties();
 			}
 
@@ -264,7 +269,7 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 
 	private void updateMBSProperties()
 	{
-		String[] targets = selectedViewer.getList().getItems();
+		String[] targets = Arrays.stream(selectedViewer.getTable().getItems()).map(i -> ((Target)i.getData()).getDisplayName()).toArray(String[]::new);
 
 		String targetsString = String.join(";", targets);
 
@@ -275,7 +280,7 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 	private void checkTargetsSelected()
 	{
 		// show warning if no target is selected
-		int selectedTargetsCount = selectedViewer.getList().getItems().length;
+		int selectedTargetsCount = selectedViewer.getTable().getItems().length;
 		if (selectedTargetsCount > 0)
 		{
 			setMessage(null, WARNING);
@@ -285,39 +290,33 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 		}
 	}
 
-	private List<String> getPossibleTargets()
+	private List<Target> getPossibleTargets()
 	{
 
 		IEclipseContext context = EclipseContextHelper.getActiveContext();
 		IDIHost host = ContextInjectionFactory.make(IDIHost.class, context);
 		CachedCliInformation cache = host.getExport(CachedCliInformation.class);
-		List<String> targets = cache.getAllTargets();
+		List<Target> targets = cache.getAllTargets();
 		if (targets == null)
 		{
-			targets = new ArrayList<String>();
 			ICommandManager commandManager = host.getExport(ICommandManager.class);
 			Map<String, String> options = new HashMap<String, String>();
 			options.put(GetTargetsCommand.OPTION_SHORT, null);
 			try
 			{
 				Target[] targetsResult = commandManager
-						.executeCommand(commandManager.createCommand(options, GetTargetsCommand.class), false, null).convertToGetTargetsCommandResult().getTargets();
-				
-					for (Target target : targetsResult)
-					{
-						targets.add(target.getDisplayName());
-					}
-				
+						.executeCommand(commandManager.createCommand(options, GetTargetsCommand.class), false, null)
+						.convertToGetTargetsCommandResult().getTargets();
+				targets = Arrays.asList(targetsResult);
 				cache.setAllTargets(targets);
 			} catch (ProcessExitedWithErrorException e)
 			{
 				Activator.getDefault().logError("Error while trying to execute clif command.", e);
 				getContainer().getShell().close();
 			}
-
 		}
 
-		return new ArrayList<String>(targets);
+		return new ArrayList<Target>(targets);
 	}
 
 	@Override
@@ -338,28 +337,28 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 	{
 		if (availableViewer != null && selectedViewer != null)
 		{
-			List<String> newlyCachedTargets = getPossibleTargets();
+			List<Target> newlyCachedTargets = getPossibleTargets();
 
-			List<String> availableViewerItemsList = Arrays.asList(availableViewer.getList().getItems());
-			List<String> selectedViewerItemsList = Arrays.asList(selectedViewer.getList().getItems());
+			List<Target> availableViewerItemsList = Arrays.stream(availableViewer.getTable().getItems()).map(i -> ((Target)i.getData())).collect(Collectors.toList());
+			List<Target> selectedViewerItemsList = Arrays.stream(selectedViewer.getTable().getItems()).map(i -> ((Target)i.getData())).collect(Collectors.toList());
 
-			List<String> currentlyVisibleTargets = new ArrayList<String>();
+			List<Target> currentlyVisibleTargets = new ArrayList<Target>();
 			currentlyVisibleTargets.addAll(availableViewerItemsList);
 			currentlyVisibleTargets.addAll(selectedViewerItemsList);
 
-			List<String> newTargets = newlyCachedTargets.stream().filter(x -> !currentlyVisibleTargets.contains(x))
+			List<Target> newTargets = newlyCachedTargets.stream().filter(x -> !currentlyVisibleTargets.contains(x))
 					.collect(Collectors.toList());
-			List<String> oldTargets = currentlyVisibleTargets.stream().filter(x -> !newlyCachedTargets.contains(x))
+			List<Target> oldTargets = currentlyVisibleTargets.stream().filter(x -> !newlyCachedTargets.contains(x))
 					.collect(Collectors.toList());
 
-			for (String target : newTargets)
+			for (Target target : newTargets)
 			{
 				if (!currentlyVisibleTargets.contains(target))
 				{
 					availableViewer.add(target);
 				}
 			}
-			for (String target : oldTargets)
+			for (Target target : oldTargets)
 			{
 				if (availableViewerItemsList.contains(target))
 				{

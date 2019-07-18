@@ -12,6 +12,8 @@ import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.phoenixcontact.plcnext.common.commands.results.Target;
+
 /**
  * Observable object which caches information obtained from the cli
  *
@@ -20,14 +22,14 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 @Singleton
 public class CachedCliInformation
 {
-	private List<String> allTargets;
+	private List<Target> allTargets;
 	private String portCommentPrefix = "#";
 	
 
 	/**
 	 * @return cached list of all targets
 	 */
-	public List<String> getAllTargets()
+	public List<Target> getAllTargets()
 	{
 		if (allTargets == null)
 			return null;
@@ -37,7 +39,7 @@ public class CachedCliInformation
 	/**
 	 * @param targets list of all targets to be cached
 	 */
-	public void setAllTargets(List<String> targets)
+	public void setAllTargets(List<Target> targets)
 	{
 		allTargets = targets;
 //		notifyObservers();

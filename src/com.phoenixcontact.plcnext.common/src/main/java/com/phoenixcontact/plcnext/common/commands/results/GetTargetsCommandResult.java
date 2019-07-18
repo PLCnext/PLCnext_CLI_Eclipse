@@ -26,41 +26,6 @@ public class GetTargetsCommandResult extends CommandResult
 		return targets;
 	}
 
-	public static class Target
-	{
-		private String name;
-		private String version;
-		private String longVersion;
-		private String shortVersion;
-
-		public String getName()
-		{
-			return name;
-		}
-
-		public String getVersion()
-		{
-			return version;
-		}
-
-		public String getLongVersion()
-		{
-			return longVersion;
-		}
-
-		public String getShortVersion()
-		{
-			return shortVersion;
-		}
-
-		public String getDisplayName()
-		{
-			if (shortVersion != null)
-				return name + "," + version;
-			return name;
-		}
-	}
-
 	public static GetTargetsCommandResult convertResultToJson(List<String> stdout)
 	{
 		if (stdout != null)

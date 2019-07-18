@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult.Target;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 
 public class GetProjectInformationCommandResult extends CommandResult

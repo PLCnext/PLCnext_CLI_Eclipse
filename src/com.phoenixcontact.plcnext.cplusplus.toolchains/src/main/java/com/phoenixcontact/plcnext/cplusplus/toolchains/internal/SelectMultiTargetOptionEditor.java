@@ -39,7 +39,7 @@ import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.GetTargetsCommand;
-import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult.Target;
+import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.Activator;
 
 /**
@@ -112,60 +112,64 @@ public class SelectMultiTargetOptionEditor extends StringFieldEditor implements 
 			return value;
 		return super.getStringValue();
 	}
-	
 
-	private CheckboxTableViewer getViewer(Composite parent) {
-		if (viewer == null) 
+	private CheckboxTableViewer getViewer(Composite parent)
+	{
+		if (viewer == null)
 		{
 			viewer = CheckboxTableViewer.newCheckList(parent, SWT.PUSH);
 			viewer.setLabelProvider(new LabelProvider());
-			viewer.setContentProvider(new IStructuredContentProvider() {
+			viewer.setContentProvider(new IStructuredContentProvider()
+			{
 				private String[] elements;
+
 				@Override
-				public Object[] getElements(Object inputElement) {
+				public Object[] getElements(Object inputElement)
+				{
 					return elements;
 				}
+
 				@Override
-				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+				public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+				{
 					this.elements = (String[]) newInput;
 				}
 			});
-			
+
 			List<String> elements = new ArrayList<String>();
 			elements.add("Updating targets...");
 			viewer.setInput(elements.toArray(new String[0]));
 			viewer.getTable().setEnabled(false);
-		
-		
-		Job cachingJob = new CliInformationCacher(false);
-		cachingJob.schedule();
-		cachingJob.addJobChangeListener(new JobChangeAdapter()
-		{
-			public void done(IJobChangeEvent event)
+
+			Job cachingJob = new CliInformationCacher(false);
+			cachingJob.schedule();
+			cachingJob.addJobChangeListener(new JobChangeAdapter()
 			{
-				if (event.getResult().isOK())
+				public void done(IJobChangeEvent event)
 				{
-					Display.getDefault().syncExec(new Runnable()
+					if (event.getResult().isOK())
 					{
-						@Override
-						public void run()
+						Display.getDefault().syncExec(new Runnable()
 						{
-							updateViewer();
-						}
-					});
+							@Override
+							public void run()
+							{
+								updateViewer();
+							}
+						});
+					}
 				}
-			}
-		});
+			});
 		}
 		return viewer;
 	}
-	
+
 	private void updateViewer()
 	{
 		CachedCliInformation cache = host.getExport(CachedCliInformation.class);
 		List<String> elements = new ArrayList<String>();
 		elements.add(ALLTARGETS);
-		List<String> targets = cache.getAllTargets();
+		List<Target> targets = cache.getAllTargets();
 		if (targets == null)
 		{
 			try
@@ -174,17 +178,18 @@ public class SelectMultiTargetOptionEditor extends StringFieldEditor implements 
 				Map<String, String> options = new HashMap<String, String>();
 				options.put(GetTargetsCommand.OPTION_SHORT, null);
 
-				Target[] results = commandManager
-						.executeCommand(commandManager.createCommand(options, GetTargetsCommand.class), false, null).convertToGetTargetsCommandResult().getTargets();
-				targets = Arrays.stream(results).map(t -> t.getDisplayName()).collect(Collectors.toList());
+				targets = Arrays.asList(commandManager
+						.executeCommand(commandManager.createCommand(options, GetTargetsCommand.class), false, null)
+						.convertToGetTargetsCommandResult().getTargets());
 				cache.setAllTargets(targets);
 
 			} catch (ProcessExitedWithErrorException e)
 			{
 				Activator.getDefault().logError("Error while trying to execute clif command.", e);
+				targets = new ArrayList<Target>();
 			}
 		}
-		elements.addAll(targets);
+		elements.addAll(targets.stream().map(t -> t.getDisplayName()).collect(Collectors.toList()));
 		viewer.setInput(elements.toArray(new String[0]));
 		viewer.getTable().setEnabled(true);
 		doLoad();

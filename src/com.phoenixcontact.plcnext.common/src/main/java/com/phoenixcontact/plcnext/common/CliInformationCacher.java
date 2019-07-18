@@ -5,9 +5,8 @@
 
 package com.phoenixcontact.plcnext.common;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -22,7 +21,7 @@ import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetSettingCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetSettingCommandResult.Setting;
 import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult.Target;
+import com.phoenixcontact.plcnext.common.commands.results.Target;
 
 /**
  * Gets information from cli and saves it in CachedCliInformation
@@ -72,13 +71,9 @@ public class CliInformationCacher extends Job
 
 			GetTargetsCommandResult targetsResult = result.convertToGetTargetsCommandResult();
 			Target[] targets = targetsResult.getTargets();
-			List<String> results = new ArrayList<String>();
-			for (Target target : targets)
-			{
-				results.add(target.getDisplayName());
-			}
+			
 			cliInformation.clearCache();
-			cliInformation.setAllTargets(results);
+			cliInformation.setAllTargets(Arrays.asList(targets));
 
 			// *******************get prefix***************************
 			if (updatePrefix)
