@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -97,6 +98,7 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 		sdkViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3));
 		
 		sdkViewer.setLabelProvider(new LabelProvider());
+		sdkViewer.setComparator(new ViewerComparator());
 		sdkViewer.setContentProvider(new IStructuredContentProvider()
 		{
 			private String[] elements;
