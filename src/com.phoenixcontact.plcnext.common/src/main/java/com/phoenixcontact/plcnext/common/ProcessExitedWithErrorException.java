@@ -34,8 +34,15 @@ public class ProcessExitedWithErrorException extends Exception
 	 */
 	public ProcessExitedWithErrorException(String command, List<String> outputLines, List<String> errorLines)
 	{
-		this(outputLines, errorLines, errorLines != null ? Messages.ProcessExitedWithErrorExceptionMessage + command + "\n" + errorLines.stream()
-		.filter(w -> w instanceof String).map(w -> (String) w).collect(Collectors.toList()) : Messages.ProcessExitedWithErrorExceptionMessage + command);
+		this(outputLines, errorLines, Messages.ProcessExitedWithErrorExceptionMessage + command +
+				(errorLines != null && errorLines.size() > 0 
+				? "\n" + errorLines.stream().filter(w -> w instanceof String).map(w -> (String) w).collect(Collectors.toList()) 
+				: (outputLines != null && outputLines.size() > 0) 
+					? "\n" + outputLines.stream().filter(w -> w instanceof String).map(w -> (String) w)
+							.collect(Collectors.toList())
+					: ""
+				)
+			);
 	}
 	
 	public ProcessExitedWithErrorException(List<String> outputLines, List<String> errorLines, String message)
