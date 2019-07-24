@@ -5,13 +5,8 @@
 
 package com.phoenixcontact.plcnext.common;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IStartup;
-
-import com.phoenixcontact.plcnext.common.clicheck.CliAvailabilityChecker;
-import com.phoenixcontact.plcnext.common.logging.Logger;
 
 /**
  * This class starts the check-cli-job at eclipse startup

@@ -356,8 +356,8 @@ public class WizardImportPlcProjectPage extends WizardPage
 			ManagedCProjectNature.addManagedNature(project, subMonitor.split(2));
 			if (type == PLCnCLIProjectType.appproject)
 				ManagedCProjectNature.addNature(project, PlcnextAppProjectNature.NATURE_ID, subMonitor.split(2));
-			else
-				ManagedCProjectNature.addNature(project, PlcProjectNature.NATURE_ID, subMonitor.split(2));
+			
+			ManagedCProjectNature.addNature(project, PlcProjectNature.NATURE_ID, subMonitor.split(2));
 			ManagedCProjectNature.addManagedBuilder(project, subMonitor.split(2));
 
 			IProjectType projectType;

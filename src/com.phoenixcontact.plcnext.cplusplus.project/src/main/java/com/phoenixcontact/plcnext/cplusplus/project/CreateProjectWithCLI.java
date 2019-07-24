@@ -152,12 +152,14 @@ public class CreateProjectWithCLI extends ProcessRunner
 			String[] natures = description.getNatureIds();
 			String[] newNatures = new String[natures.length + 1];
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
+			newNatures[natures.length] = PlcProjectNature.NATURE_ID;
+			
 			if (ProjectType.valueOf(projectType) == ProjectType.APP)
 			{
+				natures = newNatures;
+				newNatures = new String[natures.length + 1];
+				System.arraycopy(natures, 0, newNatures, 0, natures.length);
 				newNatures[natures.length] = PlcnextAppProjectNature.NATURE_ID;
-			} else
-			{
-				newNatures[natures.length] = PlcProjectNature.NATURE_ID;
 			}
 			description.setNatureIds(newNatures);
 			project.setDescription(description, null);

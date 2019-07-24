@@ -86,30 +86,40 @@
       </commonFilter>
       <commonWizard
             type="new"
-            wizardId="com.phoenixcontact.plcnext.cplusplus.project.wizard3">
+            wizardId="com.phoenixcontact.plcnext.cplusplus.project.newProjectWizard">
          <enablement>
             </enablement>
       </commonWizard>
       <commonWizard
             type="new"
-            wizardId="com.phoenixcontact.plcnext.cplusplus.project.wizard1">
-         <enablement>
-            <or>
-               <adapt
-                     type="org.eclipse.core.resources.IResource">
-               </adapt>
-            </or></enablement>
-      </commonWizard>
-      <commonWizard
-            type="new"
-            wizardId="com.phoenixcontact.plcnext.cplusplus.project.wizard2">
+            wizardId="com.phoenixcontact.plcnext.cplusplus.project.newComponentWizard">
          <enablement>
             <adapt
-                  type="org.eclipse.core.resources.IProject">
+                  type="org.eclipse.core.resources.IResource">
                <test
                      property="org.eclipse.core.resources.projectNature"
                      value="com.phoenixcontact.plcnext.cplusplus.project.plcprojectnature">
                </test>
+            </adapt></enablement>
+      </commonWizard>
+      <commonWizard
+            type="new"
+            wizardId="com.phoenixcontact.plcnext.cplusplus.project.newProgramWizard">
+         <enablement>
+            <adapt
+                  type="org.eclipse.core.resources.IResource">
+               <and>
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="com.phoenixcontact.plcnext.cplusplus.project.plcprojectnature">
+                  </test>
+                  <not>
+                     <test
+                           property="org.eclipse.core.resources.projectNature"
+                           value="com.phoenixcontact.plcnext.cplusplus.project.plcnextappprojectnature">
+                     </test>
+                  </not>
+               </and>
             </adapt></enablement>
       </commonWizard>
    </extension>
@@ -119,7 +129,7 @@
             category="com.phoenixcontact.plcnext.common.PLCProjectCategory"
             class="com.phoenixcontact.plcnext.cplusplus.project.ui.FilteredCCProject"
             icon="icons/PlcProject-Icon_16.png"
-            id="com.phoenixcontact.plcnext.cplusplus.project.wizard3"
+            id="com.phoenixcontact.plcnext.cplusplus.project.newProjectWizard"
             name="PLCnext C++ Project"
             project="true">
       </wizard>
@@ -127,7 +137,7 @@
             category="com.phoenixcontact.plcnext.common.PLCProjectCategory"
             class="com.phoenixcontact.plcnext.cplusplus.project.ui.NewComponentWizard"
             icon="icons/MetaComponent.16.png"
-            id="com.phoenixcontact.plcnext.cplusplus.project.wizard1"
+            id="com.phoenixcontact.plcnext.cplusplus.project.newComponentWizard"
             name="PLCnext C++ Component"
             project="false">
       </wizard>
@@ -135,7 +145,7 @@
             category="com.phoenixcontact.plcnext.common.PLCProjectCategory"
             class="com.phoenixcontact.plcnext.cplusplus.project.ui.NewProgramWizard"
             icon="icons/Iec.PG.16.png"
-            id="com.phoenixcontact.plcnext.cplusplus.project.wizard2"
+            id="com.phoenixcontact.plcnext.cplusplus.project.newProgramWizard"
             name="PLCnext C++ Program"
             project="false">
       </wizard>
@@ -145,7 +155,7 @@
       <perspectiveExtension
             targetID="org.eclipse.cdt.ui.CPerspective">
          <newWizardShortcut
-               id="com.phoenixcontact.plcnext.cplusplus.project.wizard3">
+               id="com.phoenixcontact.plcnext.cplusplus.project.newProjectWizard">
          </newWizardShortcut>
       </perspectiveExtension>
    </extension>
@@ -159,9 +169,6 @@
             <or>
                <reference
                      definitionId="com.phoenixcontact.plcnext.cplusplus.project.hasNature">
-               </reference>
-               <reference
-                     definitionId="com.phoenixcontact.plcnext.cplusplus.project.hasplcnextappprojectnature">
                </reference>
             </or>
          </enabledWhen>

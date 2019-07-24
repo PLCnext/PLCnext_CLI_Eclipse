@@ -14,8 +14,6 @@ import com.phoenixcontact.plcnext.common.internal.plcncliclient.PlcncliServerCon
 import com.phoenixcontact.plcnext.commonImpl.Cli;
 import com.phoenixcontact.plcnext.commonImpl.CommandManager;
 import com.phoenixcontact.plcnext.commonImpl.DIHost;
-import com.phoenixcontact.plcnext.commonImpl.NamedPipeCommandReceiver;
-
 /**
  * The activator class controls the plug-in life cycle
  */

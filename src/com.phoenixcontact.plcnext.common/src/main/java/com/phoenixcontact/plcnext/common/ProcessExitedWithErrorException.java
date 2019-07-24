@@ -36,10 +36,10 @@ public class ProcessExitedWithErrorException extends Exception
 	{
 		this(outputLines, errorLines, Messages.ProcessExitedWithErrorExceptionMessage + command +
 				(errorLines != null && errorLines.size() > 0 
-				? "\n" + errorLines.stream().filter(w -> w instanceof String).map(w -> (String) w).collect(Collectors.toList()) 
+				? "\n" + errorLines.stream().filter(w -> w instanceof String).map(w -> (String) w).collect(Collectors.joining("\n")) 
 				: (outputLines != null && outputLines.size() > 0) 
 					? "\n" + outputLines.stream().filter(w -> w instanceof String).map(w -> (String) w)
-							.collect(Collectors.toList())
+							.collect(Collectors.joining("\n"))
 					: ""
 				)
 			);
