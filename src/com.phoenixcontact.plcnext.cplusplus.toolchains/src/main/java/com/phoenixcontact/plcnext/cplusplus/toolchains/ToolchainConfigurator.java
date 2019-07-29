@@ -33,6 +33,7 @@ import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IOption;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -126,7 +127,7 @@ public class ToolchainConfigurator
 	public void configureProject(IProject project, List<String> oldIncludePaths, Map<String, String> oldMacros,
 			IProgressMonitor monitor) throws ProcessExitedWithErrorException
 	{
-		ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+		ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
 
 		setIncludes(project, projectDescription, oldIncludePaths, oldMacros, monitor);
 		addConfigurations(project, projectDescription, monitor);
@@ -313,7 +314,9 @@ public class ToolchainConfigurator
 					{
 						for (ICLanguageSettingEntry entry : includeEntries)
 						{
-							if (entry.getValue().equals(includePath) || !entry.isResolved())
+							// if a workspace path was added in the same operation, it is not resolved at this point, 
+							// so don't remove unresolved includes
+							if (entry.getValue().equals(includePath))
 							{
 								entriesToRemove.add(entry);
 							}

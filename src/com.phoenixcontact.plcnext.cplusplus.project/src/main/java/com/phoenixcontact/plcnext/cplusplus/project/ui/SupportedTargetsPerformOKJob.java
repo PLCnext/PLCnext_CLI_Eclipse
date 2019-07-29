@@ -225,11 +225,11 @@ public class SupportedTargetsPerformOKJob extends Job
 
 				if (!targetsToAdd.isEmpty() || !targetsToRemove.isEmpty())
 				{
-					Map<String, String> macros = null;
+					Map<String, String> macros = new HashMap<String, String>();
 					if (entries != null)
 					{
 						includePaths.addAll(entries.getIncludes());
-						macros = entries.getMacros();
+						macros.putAll(entries.getMacros());
 					}
 					configurator.configureProject(project, includePaths, macros, monitor);
 				}
