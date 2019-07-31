@@ -12,12 +12,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Creatable;
@@ -77,6 +79,9 @@ public class Cli implements ICommandReceiver, PropertyChangeListener {
 	}
 
 	public CommandResult executeCommand(String c, boolean logging, boolean clearConsole, IProgressMonitor monitor) throws ProcessExitedWithErrorException {
+		if(monitor == null)
+			monitor = new NullProgressMonitor();
+		
 		if (!cliInformation.cliExists()) {
 
 			IStatus checkerStatus = cliChecker.checkAvailability();
@@ -198,19 +203,19 @@ public class Cli implements ICommandReceiver, PropertyChangeListener {
 			}).start();
 			
 			try {
-//				while(!proc.waitFor(100, TimeUnit.MILLISECONDS))
-//				{
-//					if(monitor.isCanceled())
-//					{
-//						proc.descendants().forEach(p -> p.destroy());
-//						proc.destroy();
-//						err.println("canceled command execution");
-//						break;
-//					}
-//				}
+				while(!proc.waitFor(100, TimeUnit.MILLISECONDS))
+				{
+					if(monitor.isCanceled())
+					{
+						proc.descendants().forEach(p -> p.destroy());
+						proc.destroy();
+						err.println("canceled command execution");
+						break;
+					}
+				}
 				
 				
-				if (proc.waitFor() != 0) {
+				if (proc.exitValue() != 0) {
 					throw new ProcessExitedWithErrorException(command, outputLines, errorLines);
 				}
 			} catch (InterruptedException e) {
