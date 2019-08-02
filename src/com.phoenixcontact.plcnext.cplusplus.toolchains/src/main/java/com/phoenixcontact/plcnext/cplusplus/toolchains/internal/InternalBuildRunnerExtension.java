@@ -213,9 +213,10 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 
 					if (!attributes.isReadOnly())
 					{
-
-						binFolder.delete(IResource.KEEP_HISTORY | IResource.FORCE, null);
-						binFolder.create(true, true, monitor);
+						for(IResource res : binFolder.members())
+						{
+							res.delete(true, monitor);
+						}
 					}
 
 				} catch (CoreException e)
