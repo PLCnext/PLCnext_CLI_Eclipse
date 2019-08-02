@@ -240,8 +240,11 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 				}
 			}
 		};
-
+		
+		clean_generate = true;
+		
 		Display.getDefault().syncExec(op);
+		
 		if (!clean_generate)
 			return false; // no generate if deleting or creating folder threw exception
 
