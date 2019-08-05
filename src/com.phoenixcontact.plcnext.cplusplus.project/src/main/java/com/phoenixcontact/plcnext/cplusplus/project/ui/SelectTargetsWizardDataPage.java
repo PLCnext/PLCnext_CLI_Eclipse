@@ -64,7 +64,7 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 	public static final String KEY_TARGETS = "TARGETS";
 	private TableViewer selectedViewer;
 	private TableViewer availableViewer;
-	private Text updateText;
+	private Label updateText;
 	private boolean updated = false;
 
 	/**
@@ -169,7 +169,7 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 		removeButton.setEnabled(false);
 
 		// ***********row 4**********************
-		updateText = new Text(container, SWT.READ_ONLY);
+		updateText = new Label(container, SWT.READ_ONLY);
 		updateText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		if (!updated)
 		{
