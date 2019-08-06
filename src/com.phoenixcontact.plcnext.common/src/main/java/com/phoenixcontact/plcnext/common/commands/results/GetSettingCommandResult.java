@@ -38,7 +38,7 @@ public class GetSettingCommandResult extends CommandResult
 	{
 		if(stdout != null)
 		{
-			return new GetSettingCommandResult(new Gson().fromJson(stdout.stream().collect(Collectors.joining("")), Setting.class));
+			return new Gson().fromJson(stdout.stream().collect(Collectors.joining("")), GetSettingCommandResult.class);
 		}
 		return null;
 	}
