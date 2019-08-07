@@ -53,6 +53,8 @@ import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.GetTargetsCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.ProjectTarget;
 import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
@@ -295,7 +297,7 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 				CommandResult commandResult = commandManager
 						.executeCommand(commandManager.createCommand(options, GetTargetsCommand.class), false, null);
 
-				Target[] targets = commandResult.convertToGetTargetsCommandResult().getTargets();
+				Target[] targets = commandResult.convertToTypedCommandResult(GetTargetsCommandResult.class).getTargets();
 				
 				return Arrays.asList(targets);
 
@@ -320,7 +322,7 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 			{
 				CommandResult commandResult = commandManager.executeCommand(
 						commandManager.createCommand(options, GetProjectInformationCommand.class), false, null);
-				ProjectTarget[] targets = commandResult.convertToGetProjectInformationCommandResult().getTargets();
+				ProjectTarget[] targets = commandResult.convertToTypedCommandResult(GetProjectInformationCommandResult.class).getTargets();
 				
 				notAvailableProjectTargets.clear();
 				for (ProjectTarget target : targets)

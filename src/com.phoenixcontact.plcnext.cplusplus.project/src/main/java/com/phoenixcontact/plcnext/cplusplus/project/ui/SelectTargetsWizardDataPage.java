@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 
 import com.phoenixcontact.plcnext.common.CachedCliInformation;
 import com.phoenixcontact.plcnext.common.CliInformationCacher;
@@ -44,6 +43,7 @@ import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.GetTargetsCommand;
+import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 
@@ -269,7 +269,8 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 
 	private void updateMBSProperties()
 	{
-		String[] targets = Arrays.stream(selectedViewer.getTable().getItems()).map(i -> ((Target)i.getData()).getDisplayName()).toArray(String[]::new);
+		String[] targets = Arrays.stream(selectedViewer.getTable().getItems())
+				.map(i -> ((Target) i.getData()).getDisplayName()).toArray(String[]::new);
 
 		String targetsString = String.join(";", targets);
 
@@ -306,7 +307,7 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 			{
 				Target[] targetsResult = commandManager
 						.executeCommand(commandManager.createCommand(options, GetTargetsCommand.class), false, null)
-						.convertToGetTargetsCommandResult().getTargets();
+						.convertToTypedCommandResult(GetTargetsCommandResult.class).getTargets();
 				targets = Arrays.asList(targetsResult);
 				cache.setAllTargets(targets);
 			} catch (ProcessExitedWithErrorException e)
@@ -339,8 +340,10 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 		{
 			List<Target> newlyCachedTargets = getPossibleTargets();
 
-			List<Target> availableViewerItemsList = Arrays.stream(availableViewer.getTable().getItems()).map(i -> ((Target)i.getData())).collect(Collectors.toList());
-			List<Target> selectedViewerItemsList = Arrays.stream(selectedViewer.getTable().getItems()).map(i -> ((Target)i.getData())).collect(Collectors.toList());
+			List<Target> availableViewerItemsList = Arrays.stream(availableViewer.getTable().getItems())
+					.map(i -> ((Target) i.getData())).collect(Collectors.toList());
+			List<Target> selectedViewerItemsList = Arrays.stream(selectedViewer.getTable().getItems())
+					.map(i -> ((Target) i.getData())).collect(Collectors.toList());
 
 			List<Target> currentlyVisibleTargets = new ArrayList<Target>();
 			currentlyVisibleTargets.addAll(availableViewerItemsList);

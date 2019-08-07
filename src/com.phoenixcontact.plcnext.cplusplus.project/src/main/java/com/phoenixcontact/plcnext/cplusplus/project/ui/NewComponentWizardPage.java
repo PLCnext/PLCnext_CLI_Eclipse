@@ -263,7 +263,7 @@ public class NewComponentWizardPage extends WizardPage
 
 			CommandResult commandResult = commandManager.executeCommand(command, false, null);
 			GetProjectInformationCommandResult getProjectInformationResult = commandResult
-					.convertToGetProjectInformationCommandResult();
+					.convertToTypedCommandResult(GetProjectInformationCommandResult.class);
 			List<String> results = getProjectInformationResult.getComponents().stream().map(c -> c.getName())
 					.collect(Collectors.toList());
 

@@ -54,10 +54,12 @@ import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.GetCompilerSpecsCommand;
 import com.phoenixcontact.plcnext.common.commands.GetIncludePathsCommand;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
+import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult.Compiler.Macro;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult.IncludePath;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.ProjectTarget;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 
@@ -251,7 +253,7 @@ public class ToolchainConfigurator
 				includePaths = commandManager
 						.executeCommand(commandManager.createCommand(options, GetIncludePathsCommand.class), false,
 								monitor)
-						.convertToGetIncludePathsCommandResult().getIncludePaths();
+						.convertToTypedCommandResult(GetIncludePathsCommandResult.class).getIncludePaths();
 
 			} catch (ProcessExitedWithErrorException e)
 			{
@@ -275,7 +277,7 @@ public class ToolchainConfigurator
 							.collect(Collectors.toList());
 					if (output != null)
 					{
-						includePaths = GetIncludePathsCommandResult.convertResultToJson(output).getIncludePaths();
+						includePaths = CommandResult.convertToTypedCommandResult(GetIncludePathsCommandResult.class, output).getIncludePaths();
 					}
 				}
 			}
@@ -459,12 +461,12 @@ public class ToolchainConfigurator
 			compiler = commandManager
 					.executeCommand(commandManager.createCommand(options, GetCompilerSpecsCommand.class), false,
 							monitor)
-					.convertToGetCompilerSpecsCommandResult().getCompiler();
+					.convertToTypedCommandResult(GetCompilerSpecsCommandResult.class).getCompiler();
 
 		} catch (ProcessExitedWithErrorException e)
 		{
 			try {
-			compiler = GetCompilerSpecsCommandResult.convertResultToJson(
+			compiler = CommandResult.convertToTypedCommandResult(GetCompilerSpecsCommandResult.class,
 					e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.information)
 							.map(m -> m.getMessage()).collect(Collectors.toList())).getCompiler();
 			}catch (JsonSyntaxException e1) {
@@ -540,7 +542,7 @@ public class ToolchainConfigurator
 			ProjectTarget[] projectTargets = commandManager
 					.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), false,
 							monitor)
-					.convertToGetProjectInformationCommandResult().getTargets();
+					.convertToTypedCommandResult(GetProjectInformationCommandResult.class).getTargets();
 
 			for (ProjectTarget target : projectTargets)
 			{

@@ -69,7 +69,7 @@ public class CliInformationCacher extends Job
 			CommandResult result = commandManager
 					.executeCommand(commandManager.createCommand(options, GetTargetsCommand.class), false, monitor);
 
-			GetTargetsCommandResult targetsResult = result.convertToGetTargetsCommandResult();
+			GetTargetsCommandResult targetsResult = result.convertToTypedCommandResult(GetTargetsCommandResult.class);
 			Target[] targets = targetsResult.getTargets();
 			
 			cliInformation.clearCache();
@@ -83,7 +83,7 @@ public class CliInformationCacher extends Job
 
 				CommandResult commandResult = commandManager
 						.executeCommand(commandManager.createCommand(options, GetSettingCommand.class), false, monitor);
-				GetSettingCommandResult settingResult = commandResult.convertToGetSettingCommandResult();
+				GetSettingCommandResult settingResult = commandResult.convertToTypedCommandResult(GetSettingCommandResult.class);
 				Setting setting = settingResult.getSetting();
 				
 				String prefix = setting.getAttributePrefix();

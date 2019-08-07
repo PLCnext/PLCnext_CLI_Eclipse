@@ -107,7 +107,7 @@ public class SupportedTargetsPerformOKJob extends Job
 					CommandResult commandResult = commandManager.executeCommand(
 							commandManager.createCommand(options, GetIncludePathsCommand.class), false, monitor);
 
-					results = commandResult.convertToGetIncludePathsCommandResult().getIncludePaths();
+					results = commandResult.convertToTypedCommandResult(GetIncludePathsCommandResult.class).getIncludePaths();
 
 				} catch (ProcessExitedWithErrorException e)
 				{
@@ -130,7 +130,13 @@ public class SupportedTargetsPerformOKJob extends Job
 								.collect(Collectors.toList());
 						if (output != null)
 						{
-							results = GetIncludePathsCommandResult.convertResultToJson(output).getIncludePaths();
+							try
+							{
+								results = CommandResult.convertToTypedCommandResult(GetIncludePathsCommandResult.class, output).getIncludePaths();
+							} catch (ProcessExitedWithErrorException e1)
+							{
+								Activator.getDefault().logError("Could not determine include paths", e);
+							}
 						}
 					}
 				}

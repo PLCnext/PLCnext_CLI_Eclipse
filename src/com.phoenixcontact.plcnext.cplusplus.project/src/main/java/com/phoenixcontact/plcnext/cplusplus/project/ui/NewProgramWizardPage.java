@@ -278,7 +278,7 @@ public class NewProgramWizardPage extends WizardPage
 		Command command = commandManager.createCommand(options, GetProjectInformationCommand.class);
 		CommandResult commandResult = commandManager.executeCommand(command, false, null);
 		GetProjectInformationCommandResult getProjectInformationResult = commandResult
-				.convertToGetProjectInformationCommandResult();
+				.convertToTypedCommandResult(GetProjectInformationCommandResult.class);
 		List<String> comps = new ArrayList<String>();
 		getProjectInformationResult.getComponents().forEach(c ->
 		{

@@ -39,6 +39,7 @@ import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.GetTargetsCommand;
+import com.phoenixcontact.plcnext.common.commands.results.GetTargetsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.Activator;
 
@@ -180,7 +181,7 @@ public class SelectMultiTargetOptionEditor extends StringFieldEditor implements 
 
 				targets = Arrays.asList(commandManager
 						.executeCommand(commandManager.createCommand(options, GetTargetsCommand.class), false, null)
-						.convertToGetTargetsCommandResult().getTargets());
+						.convertToTypedCommandResult(GetTargetsCommandResult.class).getTargets());
 				cache.setAllTargets(targets);
 
 			} catch (ProcessExitedWithErrorException e)

@@ -63,7 +63,7 @@ public class UpdateMessageConsumer extends Job
 			{
 				CommandResult result = commandManager
 						.executeCommand(commandManager.createCommand(null, GetTargetsCommand.class), monitor);
-				GetTargetsCommandResult commandResult = result.convertToGetTargetsCommandResult();
+				GetTargetsCommandResult commandResult = result.convertToTypedCommandResult(GetTargetsCommandResult.class);
 				Target[] targets = commandResult.getTargets();
 				
 				cache.setAllTargets(Arrays.asList(targets));
@@ -86,7 +86,7 @@ public class UpdateMessageConsumer extends Job
 				options.put(GetProjectInformationCommand.OPTION_PATH, message.getProject());
 				CommandResult result = commandManager
 						.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), monitor);
-				GetProjectInformationCommandResult commandResult = result.convertToGetProjectInformationCommandResult();
+				GetProjectInformationCommandResult commandResult = result.convertToTypedCommandResult(GetProjectInformationCommandResult.class);
 				Target[] targets = commandResult.getTargets();
 				
 				// TODO currently nothing is done with the information, that the project target has changed
@@ -107,7 +107,7 @@ public class UpdateMessageConsumer extends Job
 				CommandResult result = commandManager
 						.executeCommand(commandManager.createCommand(options, GetSettingCommand.class), false, monitor);
 
-				GetSettingCommandResult settingResult = result.convertToGetSettingCommandResult();
+				GetSettingCommandResult settingResult = result.convertToTypedCommandResult(GetSettingCommandResult.class);
 				Setting setting = settingResult.getSetting();
 
 				String prefix = "#";

@@ -7,11 +7,12 @@ package com.phoenixcontact.plcnext.common.commands.results;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.phoenixcontact.plcnext.common.Activator;
+import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 
@@ -25,85 +26,66 @@ public class CommandResult
 	protected List<String> error = null;
 	protected JsonObject reply = null;
 	protected List<ServerMessageMessage> messages = null;
-	
+
 	/**
-	 * @param stdout 
+	 * @param stdout
 	 * @param error
 	 */
 	public CommandResult(List<String> stdout, List<String> error)
 	{
 		this.stdout = stdout;
 		this.error = error;
-		
+
 		messages = new ArrayList<ServerMessageMessage>();
-		if(stdout != null)
+		if (stdout != null)
 			stdout.stream().forEach(l -> messages.add(new ServerMessageMessage(l, MessageType.information)));
-		if(error != null)
+		if (error != null)
 			error.stream().forEach(l -> messages.add(new ServerMessageMessage(l, MessageType.error)));
 	}
-	
-	public CommandResult(JsonObject reply, List<ServerMessageMessage> messages) {
+
+	public CommandResult(JsonObject reply, List<ServerMessageMessage> messages)
+	{
 		this.reply = reply;
 		this.messages = messages;
 	}
-	
+
 	public List<ServerMessageMessage> getMessages()
 	{
 		return messages;
 	}
-	
-	public GetCompilerSpecsCommandResult convertToGetCompilerSpecsCommandResult()
+
+	public static <T extends CommandResult> T convertToTypedCommandResult(Class<T> clazz, List<String> stdout) throws ProcessExitedWithErrorException
 	{
-		if(reply == null && stdout != null)
-			return GetCompilerSpecsCommandResult.convertResultToJson(stdout);
-		return convertTo(GetCompilerSpecsCommandResult.class);
-	}
-	
-	public GetIncludePathsCommandResult convertToGetIncludePathsCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetIncludePathsCommandResult.convertResultToJson(stdout);
-		return convertTo(GetIncludePathsCommandResult.class);
-	}
-	
-	public GetProjectInformationCommandResult convertToGetProjectInformationCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetProjectInformationCommandResult.convertResultToJson(stdout);
-		return convertTo(GetProjectInformationCommandResult.class);
-	}
-	
-	public GetSdksCommandResult convertToGetSdksCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetSdksCommandResult.convertResultToJson(stdout);
-		return convertTo(GetSdksCommandResult.class);
-	}
-	
-	public GetSettingCommandResult convertToGetSettingCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetSettingCommandResult.convertResultToJson(stdout);
-		return convertTo(GetSettingCommandResult.class);
-	}
-	
-	public GetTargetsCommandResult convertToGetTargetsCommandResult()
-	{
-		if(reply == null && stdout != null)
-			return GetTargetsCommandResult.convertResultToJson(stdout);
-		return convertTo(GetTargetsCommandResult.class);
-	}
-	
-	private <T> T convertTo(Class<T> clazz)
-	{
-		Gson gson = new Gson();
-		try 
+		if (stdout != null)
 		{
-			return gson.fromJson(reply, clazz);
-		}catch(JsonSyntaxException e)
+			try
+			{
+				return new Gson().fromJson(stdout.stream().collect(Collectors.joining("")), clazz);
+			} catch (JsonSyntaxException e)
+			{
+				String result = stdout.stream().dropWhile(x -> !x.startsWith("{")).collect(Collectors.joining(""));
+				if (result != null && !result.isBlank())
+					return new Gson().fromJson(result, clazz);
+
+				throw new ProcessExitedWithErrorException(stdout, null, "Could not convert result to json");
+			}
+		}
+		return null;
+	}
+	
+	public <T extends CommandResult> T convertToTypedCommandResult(Class<T> clazz) throws ProcessExitedWithErrorException
+	{
+		if(reply == null)
 		{
-			Activator.getDefault().logError("Conversion to "+clazz.getName()+" failed", e);
-			return null;
+			return CommandResult.convertToTypedCommandResult(clazz, stdout);
+		}
+		
+		try
+		{
+			return new Gson().fromJson(reply, clazz);
+		} catch (JsonSyntaxException e)
+		{
+			throw new ProcessExitedWithErrorException(stdout, null, "Conversion to " + clazz.getName() + " failed");
 		}
 	}
 }

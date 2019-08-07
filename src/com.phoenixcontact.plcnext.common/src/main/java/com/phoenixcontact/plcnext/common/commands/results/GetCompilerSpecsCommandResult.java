@@ -6,9 +6,6 @@
 package com.phoenixcontact.plcnext.common.commands.results;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult.IncludePath;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
@@ -87,15 +84,5 @@ public class GetCompilerSpecsCommandResult extends CommandResult
 				return value;
 			}
 		}
-	}
-
-	public static GetCompilerSpecsCommandResult convertResultToJson(List<String> stdout)
-	{
-		if (stdout != null)
-		{
-			return new Gson().fromJson(stdout.stream().collect(Collectors.joining("")),
-					GetCompilerSpecsCommandResult.class);
-		}
-		return null;
 	}
 }

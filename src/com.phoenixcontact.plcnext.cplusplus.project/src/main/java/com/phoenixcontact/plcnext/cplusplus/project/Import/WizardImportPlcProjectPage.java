@@ -297,7 +297,7 @@ public class WizardImportPlcProjectPage extends WizardPage
 			GetProjectInformationCommandResult projectInfo = commandManager
 					.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), false,
 							monitor)
-					.convertToGetProjectInformationCommandResult();
+					.convertToTypedCommandResult(GetProjectInformationCommandResult.class);
 			name = projectInfo.getName();
 			type = projectInfo.getType();
 		} catch (ProcessExitedWithErrorException e1)

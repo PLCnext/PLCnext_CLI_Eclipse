@@ -221,7 +221,7 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 		{
 			CommandResult commandResult = commandManager
 					.executeCommand(commandManager.createCommand(null, GetSdksCommand.class), false, null);
-			GetSdksCommandResult sdksCommandResult = commandResult.convertToGetSdksCommandResult();
+			GetSdksCommandResult sdksCommandResult = commandResult.convertToTypedCommandResult(GetSdksCommandResult.class);
 
 			Sdk[] sdks = sdksCommandResult.getSdks();
 

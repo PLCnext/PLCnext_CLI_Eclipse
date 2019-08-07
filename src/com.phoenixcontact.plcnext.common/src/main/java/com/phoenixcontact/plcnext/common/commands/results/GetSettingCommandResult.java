@@ -6,9 +6,6 @@
 package com.phoenixcontact.plcnext.common.commands.results;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
@@ -32,15 +29,6 @@ public class GetSettingCommandResult extends CommandResult
 	public Setting getSetting()
 	{
 		return setting;
-	}
-	
-	public static GetSettingCommandResult convertResultToJson(List<String>stdout)
-	{
-		if(stdout != null)
-		{
-			return new Gson().fromJson(stdout.stream().collect(Collectors.joining("")), GetSettingCommandResult.class);
-		}
-		return null;
 	}
 	
 	public class Setting
