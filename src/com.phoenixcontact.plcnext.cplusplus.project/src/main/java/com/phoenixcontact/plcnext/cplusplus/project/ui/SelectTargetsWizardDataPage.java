@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
 import com.phoenixcontact.plcnext.common.CachedCliInformation;
@@ -66,6 +67,8 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 	private TableViewer availableViewer;
 	private Label updateText;
 	private boolean updated = false;
+	private Shell shell = null;
+	private Button defaultButton = null;
 
 	/**
 	 * @param pageName
@@ -118,6 +121,9 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 	@Override
 	public void createControl(Composite parent)
 	{
+		shell = getShell();
+		defaultButton = shell.getDefaultButton();
+		
 		Composite container = new Composite(parent, SWT.NONE);
 		setControl(container);
 
@@ -192,9 +198,16 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 				if (selection.size() > 0)
 				{
 					addButton.setEnabled(true);
+					Button b = shell.getDefaultButton();
+					if(!b.equals(addButton) && !b.equals(removeButton))
+					{
+						defaultButton = b;
+					}
+					shell.setDefaultButton(addButton);
 				} else
 				{
 					addButton.setEnabled(false);
+					shell.setDefaultButton(defaultButton);
 				}
 			}
 		});
@@ -209,9 +222,16 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 				if (selection.size() > 0)
 				{
 					removeButton.setEnabled(true);
+					Button b = shell.getDefaultButton();
+					if(!b.equals(addButton) && !b.equals(removeButton))
+					{
+						defaultButton = b;
+					}
+					shell.setDefaultButton(removeButton);
 				} else
 				{
 					removeButton.setEnabled(false);
+					shell.setDefaultButton(defaultButton);
 				}
 			}
 		});

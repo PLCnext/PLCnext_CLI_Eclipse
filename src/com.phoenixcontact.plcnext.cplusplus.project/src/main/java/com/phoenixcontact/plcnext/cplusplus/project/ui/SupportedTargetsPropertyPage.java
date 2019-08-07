@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
@@ -106,6 +107,8 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 	private CachedCliInformation cache;
 	private TableViewer selectedViewer;
 	private TableViewer availableViewer;
+	private Shell shell = null;
+	private Button defaultButton = null;
 
 	private IProject project;
 	private boolean updated = false;
@@ -121,6 +124,8 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 	protected Control createContents(Composite parent)
 	{
 		noDefaultAndApplyButton();
+		shell = getShell();
+		defaultButton = shell.getDefaultButton();
 
 		IAdaptable element = getElement();
 		if (element instanceof IProject)
@@ -202,9 +207,16 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 						selectedViewer.setSelection(StructuredSelection.EMPTY);
 					}
 					addButton.setEnabled(true);
+					Button b = shell.getDefaultButton();
+					if(!b.equals(addButton) && !b.equals(removeButton))
+					{
+						defaultButton = b;
+					}
+					shell.setDefaultButton(addButton);
 				} else
 				{
 					addButton.setEnabled(false);
+					shell.setDefaultButton(defaultButton);
 				}
 			}
 		});
@@ -223,9 +235,16 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 						availableViewer.setSelection(StructuredSelection.EMPTY);
 					}
 					removeButton.setEnabled(true);
+					Button b = shell.getDefaultButton();
+					if(!b.equals(addButton) && !b.equals(removeButton))
+					{
+						defaultButton = b;
+					}
+					shell.setDefaultButton(removeButton);
 				} else
 				{
 					removeButton.setEnabled(false);
+					shell.setDefaultButton(defaultButton);
 				}
 			}
 		});
