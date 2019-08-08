@@ -34,6 +34,7 @@ import com.phoenixcontact.plcnext.common.commands.SetTargetCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult.IncludePath;
+import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
@@ -45,8 +46,8 @@ import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator.Mac
  */
 public class SupportedTargetsPerformOKJob extends Job
 {
-	private List<String> targetsToAdd;
-	private List<String> targetsToRemove;
+	private List<Target> targetsToAdd;
+	private List<Target> targetsToRemove;
 	private IProject project;
 	private ICommandManager commandManager;
 	private ToolchainConfigurator configurator;
@@ -62,7 +63,7 @@ public class SupportedTargetsPerformOKJob extends Job
 	 * @param commandManager
 	 * @param cache
 	 */
-	public SupportedTargetsPerformOKJob(String name, List<String> targetsToAdd, List<String> targetsToRemove,
+	public SupportedTargetsPerformOKJob(String name, List<Target> targetsToAdd, List<Target> targetsToRemove,
 			IProject project, ICommandManager commandManager)
 	{
 		super(name);
@@ -107,7 +108,8 @@ public class SupportedTargetsPerformOKJob extends Job
 					CommandResult commandResult = commandManager.executeCommand(
 							commandManager.createCommand(options, GetIncludePathsCommand.class), false, monitor);
 
-					results = commandResult.convertToTypedCommandResult(GetIncludePathsCommandResult.class).getIncludePaths();
+					results = commandResult.convertToTypedCommandResult(GetIncludePathsCommandResult.class)
+							.getIncludePaths();
 
 				} catch (ProcessExitedWithErrorException e)
 				{
@@ -132,7 +134,9 @@ public class SupportedTargetsPerformOKJob extends Job
 						{
 							try
 							{
-								results = CommandResult.convertToTypedCommandResult(GetIncludePathsCommandResult.class, output).getIncludePaths();
+								results = CommandResult
+										.convertToTypedCommandResult(GetIncludePathsCommandResult.class, output)
+										.getIncludePaths();
 							} catch (ProcessExitedWithErrorException e1)
 							{
 								Activator.getDefault().logError("Could not determine include paths", e);
@@ -194,39 +198,43 @@ public class SupportedTargetsPerformOKJob extends Job
 
 			try
 			{
-				for (String target : targetsToAdd)
+				for (Target target : targetsToAdd)
 				{
 					options.clear();
 					options.put(SetTargetCommand.OPTION_ADD, null);
 					options.put(SetTargetCommand.OPTION_PATH, project.getLocation().toOSString());
-					String[] name_version = target.split(",");
-					if (name_version.length > 0)
-					{
-						options.put(SetTargetCommand.OPTION_NAME, name_version[0]);
-						if (name_version.length > 1)
-						{
-							options.put(SetTargetCommand.OPTION_VERSION, name_version[1]);
-						}
-						Command setTargetCommand = commandManager.createCommand(options, SetTargetCommand.class);
-						commandManager.executeCommand(setTargetCommand, monitor);
-					}
+
+					options.put(SetTargetCommand.OPTION_NAME, target.getName());
+
+					if (target.getVersion() != null)
+						options.put(SetTargetCommand.OPTION_VERSION, target.getVersion());
+					else if (target.getLongVersion() != null)
+						options.put(SetTargetCommand.OPTION_VERSION, target.getLongVersion());
+					else if (target.getShortVersion() != null)
+						options.put(SetTargetCommand.OPTION_VERSION, target.getShortVersion());
+
+					Command setTargetCommand = commandManager.createCommand(options, SetTargetCommand.class);
+					commandManager.executeCommand(setTargetCommand, monitor);
+
 				}
-				for (String target : targetsToRemove)
+				for (Target target : targetsToRemove)
 				{
 					options.clear();
-					options.put(SetTargetCommand.OPTION_PATH, project.getLocation().toOSString());
 					options.put(SetTargetCommand.OPTION_REMOVE, null);
-					String[] name_version = target.split(",");
-					if (name_version.length > 0)
-					{
-						options.put(SetTargetCommand.OPTION_NAME, name_version[0]);
-						if (name_version.length > 1)
-						{
-							options.put(SetTargetCommand.OPTION_VERSION, name_version[1]);
-						}
-						Command setTargetCommand = commandManager.createCommand(options, SetTargetCommand.class);
-						commandManager.executeCommand(setTargetCommand, monitor);
-					}
+					options.put(SetTargetCommand.OPTION_PATH, project.getLocation().toOSString());
+
+					options.put(SetTargetCommand.OPTION_NAME, target.getName());
+					
+					if (target.getVersion() != null)
+						options.put(SetTargetCommand.OPTION_VERSION, target.getVersion());
+					else if (target.getLongVersion() != null)
+						options.put(SetTargetCommand.OPTION_VERSION, target.getLongVersion());
+					else if (target.getShortVersion() != null)
+						options.put(SetTargetCommand.OPTION_VERSION, target.getShortVersion());
+					
+					Command setTargetCommand = commandManager.createCommand(options, SetTargetCommand.class);
+					commandManager.executeCommand(setTargetCommand, monitor);
+
 				}
 
 				if (!targetsToAdd.isEmpty() || !targetsToRemove.isEmpty())

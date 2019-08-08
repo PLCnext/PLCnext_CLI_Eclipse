@@ -10,8 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
@@ -399,9 +397,7 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 
 		Job job = new SupportedTargetsPerformOKJob(
 				Messages.SupportedTargetsPropertyPage_UpdateTargetJobName + project.getName(),
-				targetsToAdd.stream().map(t -> t.getDisplayName()).collect(Collectors.toList()),
-				targetsToRemove.stream().map(t -> t.getDisplayName()).collect(Collectors.toList()), project,
-				commandManager);
+				targetsToAdd, targetsToRemove, project, commandManager);
 		job.setRule(MultiRule.combine(ResourcesPlugin.getWorkspace().getRuleFactory().modifyRule(project),
 				new MutexSchedulingRule()));
 		job.schedule();

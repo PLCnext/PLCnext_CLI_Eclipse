@@ -26,7 +26,8 @@ public class TargetsViewerComparator extends ViewerComparator
 			int result = t1.getName().compareTo(t2.getName());
 			if(result == EQUAL)
 			{
-				return t1.getVersion().compareTo(t2.getVersion());
+				//different order to get target's version from newest to oldest
+				return t2.getVersion().compareTo(t1.getVersion());
 			}
 			return result;
 		}

@@ -34,8 +34,8 @@ public class Target
 
 	public String getDisplayName()
 	{
-		if (shortVersion != null)
-			return name + "," + version;
+		if (longVersion != null)
+			return name + "," + longVersion;
 		return name;
 	}
 	

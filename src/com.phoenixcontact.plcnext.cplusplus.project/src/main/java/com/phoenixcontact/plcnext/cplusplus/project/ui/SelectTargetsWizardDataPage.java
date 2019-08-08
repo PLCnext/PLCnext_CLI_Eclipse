@@ -289,12 +289,10 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 
 	private void updateMBSProperties()
 	{
-		String[] targets = Arrays.stream(selectedViewer.getTable().getItems())
-				.map(i -> ((Target) i.getData()).getDisplayName()).toArray(String[]::new);
+		Target[] targets = Arrays.stream(selectedViewer.getTable().getItems())
+				.map(i -> ((Target) i.getData())).toArray(Target[]::new);
 
-		String targetsString = String.join(";", targets);
-
-		MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_TARGETS, targetsString);
+		MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_TARGETS, targets);
 		checkTargetsSelected();
 	}
 

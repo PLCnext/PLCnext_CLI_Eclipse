@@ -35,6 +35,7 @@ import com.phoenixcontact.plcnext.common.commands.GenerateCodeCommand;
 import com.phoenixcontact.plcnext.common.commands.NewAppProjectCommand;
 import com.phoenixcontact.plcnext.common.commands.NewProjectCommand;
 import com.phoenixcontact.plcnext.common.commands.SetTargetCommand;
+import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.cplusplus.project.componentproject.PlcnextAppProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.project.ui.ProjectPropertiesWizardDataPage;
 import com.phoenixcontact.plcnext.cplusplus.project.ui.SelectTargetsWizardDataPage;
@@ -153,7 +154,7 @@ public class CreateProjectWithCLI extends ProcessRunner
 			String[] newNatures = new String[natures.length + 1];
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
 			newNatures[natures.length] = PlcProjectNature.NATURE_ID;
-			
+
 			if (ProjectType.valueOf(projectType) == ProjectType.APP)
 			{
 				natures = newNatures;
@@ -190,28 +191,20 @@ public class CreateProjectWithCLI extends ProcessRunner
 
 		Object property = MBSCustomPageManager.getPageProperty(SelectTargetsWizardDataPage.PAGE_ID,
 				SelectTargetsWizardDataPage.KEY_TARGETS);
-		if (property != null)
+		if (property != null && property instanceof Target[])
 		{
-			String value = property.toString();
-			if (!value.isEmpty())
+			Target[] targets = (Target[]) property;
+			for (Target target : targets)
 			{
-
-				String[] targets = value.split(";");
-				for (String target : targets)
-				{
-					String[] name_version = target.split(",");
-					if (name_version.length > 0)
-					{
-						setTargetOptions.put(SetTargetCommand.OPTION_NAME, name_version[0]);
-						if (name_version.length > 1)
-						{
-							setTargetOptions.put(SetTargetCommand.OPTION_VERSION, name_version[1]);
-						}
-						Command setTargetCommand = commandManager.createCommand(setTargetOptions,
-								SetTargetCommand.class);
-						commandManager.executeCommand(setTargetCommand, monitor);
-					}
-				}
+				setTargetOptions.put(SetTargetCommand.OPTION_NAME, target.getName());
+				if (target.getVersion() != null)
+					setTargetOptions.put(SetTargetCommand.OPTION_VERSION, target.getVersion());
+				else if (target.getLongVersion() != null)
+					setTargetOptions.put(SetTargetCommand.OPTION_VERSION, target.getLongVersion());
+				else if (target.getShortVersion() != null)
+					setTargetOptions.put(SetTargetCommand.OPTION_VERSION, target.getShortVersion());
+				Command setTargetCommand = commandManager.createCommand(setTargetOptions, SetTargetCommand.class);
+				commandManager.executeCommand(setTargetCommand, monitor);
 			}
 		}
 	}
