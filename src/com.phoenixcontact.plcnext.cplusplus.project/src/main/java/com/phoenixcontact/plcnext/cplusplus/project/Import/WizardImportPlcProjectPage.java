@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -48,6 +49,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -329,10 +331,13 @@ public class WizardImportPlcProjectPage extends WizardPage
 			return result;
 		}
 
+		String infoMessage = null;
 		if (!copyFiles)
 		{
 			// set project location
 			description.setLocation(projectRootDirectory);
+			infoMessage = "Project files were not copied into workspace. "
+					+ "All changes will be done directly on "+projectRootDirectory;
 		} else
 		{
 			// import files into project
@@ -342,6 +347,7 @@ public class WizardImportPlcProjectPage extends WizardPage
 					FileSystemStructureProvider.INSTANCE.getChildren(importRoot));
 			importop.setCreateContainerStructure(false);
 			importop.run(null);
+			infoMessage = "Copied project files from "+importRoot.getAbsolutePath()+" to "+project.getLocation().toOSString();
 		}
 
 		try
@@ -425,9 +431,25 @@ public class WizardImportPlcProjectPage extends WizardPage
 		{
 			Activator.getDefault().logError("Error while refreshing workspace.", e);
 		}
+		
+		Display.getDefault().asyncExec(new ShowInfoRunnable(infoMessage));
+			
 
 		subMonitor.done();
 		monitor.done();
 		return Status.OK_STATUS;
+	}
+	class ShowInfoRunnable implements Runnable
+	{
+		private String message;
+		public ShowInfoRunnable(String infoMessage)
+		{
+			message = infoMessage;
+		}
+		@Override
+		public void run()
+		{
+			MessageDialog.openInformation(null, "Successfully imported project", message);
+		}
 	}
 }
