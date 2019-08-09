@@ -146,7 +146,9 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 		
 		// row2+3,column1
 		availableViewer = new TableViewer(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		availableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+		GridData layout = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
+		layout.minimumWidth = 220;
+		availableViewer.getTable().setLayoutData(layout);
 		availableViewer.setLabelProvider(targetLabelProvider);
 		availableViewer.setContentProvider(ArrayContentProvider.getInstance());
 		availableViewer.setComparator(targetsComparator);
@@ -162,7 +164,9 @@ public class SelectTargetsWizardDataPage extends AbstractWizardDataPage
 
 		// row2+3,column3
 		selectedViewer = new TableViewer(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		selectedViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+		layout = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
+		layout.minimumWidth = 220;
+		selectedViewer.getTable().setLayoutData(layout);
 		selectedViewer.setLabelProvider(targetLabelProvider);
 		selectedViewer.setContentProvider(ArrayContentProvider.getInstance());
 		selectedViewer.setComparator(targetsComparator);
