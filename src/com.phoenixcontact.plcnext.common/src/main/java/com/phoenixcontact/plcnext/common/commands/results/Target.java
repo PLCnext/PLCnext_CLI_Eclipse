@@ -45,7 +45,12 @@ public class Target
 		if(obj instanceof Target)
 		{
 			Target target = (Target) obj;
-			return target.getName().equals(this.getName()) && target.getLongVersion().equals(this.getLongVersion());
+			String tLongVersion = getLongVersion();
+			String oLongVersion = target.getLongVersion();
+			if(tLongVersion == null && oLongVersion != null
+					|| tLongVersion != null && oLongVersion == null)
+				return false;
+			return target.getName().equals(this.getName()) && ((oLongVersion!= null && tLongVersion != null)?oLongVersion.equals(tLongVersion):true);
 		}
 		return super.equals(obj);
 	}

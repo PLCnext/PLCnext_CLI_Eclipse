@@ -239,7 +239,7 @@ public class SelectMultiTargetOptionEditor extends StringFieldEditor implements 
 				{
 					return "";
 				}
-				result += o + " ";
+				result += "\"" + o + "\"" + " ";
 			}
 		}
 		return result;
@@ -250,15 +250,39 @@ public class SelectMultiTargetOptionEditor extends StringFieldEditor implements 
 
 		List<String> result = new ArrayList<String>();
 
-		if (value == null || value.isEmpty())
+		if (value == null || value.isBlank())
 		{
 			return new String[] { ALLTARGETS };
 		} else
 		{
-			String[] parts = value.split(" ");
+			String[] parts = value.split("\"");
+
+			// these lines are needed to transform 19.0 project configurations (short target
+			// form) to new project configurations
+			if (!value.contains("\""))
+			{
+				parts = value.split(" ");
+				List<String> items = Arrays.stream(viewer.getTable().getItems()).map(x -> ((String) x.getData()))
+						.collect(Collectors.toList());
+
+				 return Arrays.stream(parts).map(s ->
+				{
+					String[] moreParts = s.split(",");
+					if (moreParts.length == 2)
+					{
+						return items.stream().filter(x -> x.contains(moreParts[0]) && x.contains(moreParts[1])).findAny()
+								.orElse(null);
+					}
+					return null;
+				}).filter(x -> x != null).toArray(String[]::new);
+			}
+
 			for (String part : parts)
 			{
-				result.add(part);
+				if (!part.isBlank())
+				{
+					result.add(part);
+				}
 			}
 			return result.toArray(new String[0]);
 		}

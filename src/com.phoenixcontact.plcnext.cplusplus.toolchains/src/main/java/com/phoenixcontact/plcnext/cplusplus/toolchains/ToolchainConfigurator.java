@@ -575,7 +575,7 @@ public class ToolchainConfigurator
 								"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optiontarget");
 						if (optionTarget != null)
 						{
-							ManagedBuildManager.setOption(config, tools[0], optionTarget, targetName);
+							ManagedBuildManager.setOption(config, tools[0], optionTarget, "\"" + targetName + "\"");
 						}
 					}
 					// set options for generate library command
@@ -587,7 +587,7 @@ public class ToolchainConfigurator
 								"com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optiontarget");
 						if (optionTarget != null)
 						{
-							ManagedBuildManager.setOption(config, tools[0], optionTarget, targetName);
+							ManagedBuildManager.setOption(config, tools[0], optionTarget, "\"" + targetName + "\"");
 						}
 					}
 				}
@@ -618,7 +618,7 @@ public class ToolchainConfigurator
 								"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optiontarget");
 						if (optionTarget != null)
 						{
-							ManagedBuildManager.setOption(config, tools[0], optionTarget, targetName);
+							ManagedBuildManager.setOption(config, tools[0], optionTarget, "\"" + targetName + "\"");
 						}
 					}
 					// set options for generate library command
@@ -630,7 +630,7 @@ public class ToolchainConfigurator
 								"com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optiontarget");
 						if (optionTarget != null)
 						{
-							ManagedBuildManager.setOption(config, tools[0], optionTarget, targetName);
+							ManagedBuildManager.setOption(config, tools[0], optionTarget, "\"" + targetName + "\"");
 						}
 					}
 				}
