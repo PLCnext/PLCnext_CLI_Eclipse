@@ -99,6 +99,7 @@
     <module>../com.phoenixcontact.plcnext.cplusplus.feature</module>
     <module>../com.phoenixcontact.plcnext.updatesite</module>
     <module>../com.phoenixcontact.plcnext.branding</module>
+    <module>../com.phoenixcontact.plcnext.environment</module>
   </modules>
 
 </project>

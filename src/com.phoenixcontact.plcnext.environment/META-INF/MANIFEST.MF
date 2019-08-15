@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PLCnext Plugin Environment Checker
+Bundle-SymbolicName: com.phoenixcontact.plcnext.environment;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.phoenixcontact.plcnext.environment.Activator
+Bundle-Vendor: PHOENIX CONTACT GmbH & Co. KG
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: com.phoenixcontact.plcnext.environment
+Bundle-ActivationPolicy: lazy

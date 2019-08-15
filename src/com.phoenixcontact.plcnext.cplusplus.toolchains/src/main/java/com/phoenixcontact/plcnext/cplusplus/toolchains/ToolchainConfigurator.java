@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsGenericProvider;
-import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
+//import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.IMacroEntry;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
