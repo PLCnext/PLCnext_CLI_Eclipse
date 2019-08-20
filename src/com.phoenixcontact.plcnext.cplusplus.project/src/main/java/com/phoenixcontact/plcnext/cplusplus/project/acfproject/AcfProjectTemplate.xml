@@ -12,7 +12,7 @@
 -->
 <template type="ProjTempl" version="1.0"
 	supplier="Phoenix Contact Software GmbH" revision="1.0"
-	id="ComponentProjectTemplate" label="PLCnext C++ Project for Component App" description="This will create a PLCnext C++ project for component apps"
+	id="AcfProjectTemplate" label="PLCnext C++ Acf Project" description="This will create a PLCnext C++ Acf Project"
 	help="help.html">
 	
 	<process type="org.eclipse.cdt.core.CreateSourceFolder">
@@ -42,7 +42,7 @@
 	<process 
 	type="com.phoenixcontact.plcnext.cplusplus.project.CLIFExecuteNewProject">
 		<simple name="projectName" value="$(projectName)"/>
-		<simple name="projectType" value="APP"/>
+		<simple name="projectType" value="ACF"/>
 	</process> 
 	
 </template>

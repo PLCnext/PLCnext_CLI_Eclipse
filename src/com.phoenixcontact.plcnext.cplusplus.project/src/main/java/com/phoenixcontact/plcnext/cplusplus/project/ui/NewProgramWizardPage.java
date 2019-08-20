@@ -45,7 +45,7 @@ import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationC
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.project.PlcProjectNature;
-import com.phoenixcontact.plcnext.cplusplus.project.componentproject.PlcnextAppProjectNature;
+import com.phoenixcontact.plcnext.cplusplus.project.acfproject.PlcnextAcfProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.FindSourcesUtil;
 
 /**
@@ -142,7 +142,7 @@ public class NewProgramWizardPage extends WizardPage
 		{
 			try
 			{
-				return p != null && p.isOpen() && p.hasNature(PlcProjectNature.NATURE_ID) && !p.hasNature(PlcnextAppProjectNature.NATURE_ID);
+				return p != null && p.isOpen() && p.hasNature(PlcProjectNature.NATURE_ID) && !p.hasNature(PlcnextAcfProjectNature.NATURE_ID);
 			} catch (CoreException e2)
 			{
 				return false;

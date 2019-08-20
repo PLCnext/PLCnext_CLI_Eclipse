@@ -31,11 +31,11 @@ import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GenerateCodeCommand;
-import com.phoenixcontact.plcnext.common.commands.NewAppComponentCommand;
+import com.phoenixcontact.plcnext.common.commands.NewAcfComponentCommand;
 import com.phoenixcontact.plcnext.common.commands.NewComponentCommand;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
-import com.phoenixcontact.plcnext.cplusplus.project.componentproject.PlcnextAppProjectNature;
+import com.phoenixcontact.plcnext.cplusplus.project.acfproject.PlcnextAcfProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.FindSourcesUtil;
 
 /**
@@ -75,9 +75,9 @@ public class NewComponentWizard extends Wizard implements INewWizard
 				Command command;
 				try
 				{
-					if(project.hasNature(PlcnextAppProjectNature.NATURE_ID))
+					if(project.hasNature(PlcnextAcfProjectNature.NATURE_ID))
 					{
-						command = commandManager.createCommand(options, NewAppComponentCommand.class);
+						command = commandManager.createCommand(options, NewAcfComponentCommand.class);
 					}
 					else
 					{

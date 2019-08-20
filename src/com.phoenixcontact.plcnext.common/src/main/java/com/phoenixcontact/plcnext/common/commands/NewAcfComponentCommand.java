@@ -13,32 +13,32 @@ import com.phoenixcontact.plcnext.common.Messages;
  * The command line tool command for creating new components
  *
  */
-public class NewAppComponentCommand extends Command {
+public class NewAcfComponentCommand extends Command {
 
-	private static final String NEW_APPCOMPONENT_VERB = Messages.NewAppComponentCommand_verb;
+	private static final String NEW_ACFCOMPONENT_VERB = Messages.NewAcfComponentCommand_verb;
 	
 	/**
 	 * @param options
 	 * @see com.phoenixcontact.plcnext.common.commands.Command#Constructor
 	 */
-	public NewAppComponentCommand(Map<String, String> options) {
-		super(options, NEW_APPCOMPONENT_VERB);
+	public NewAcfComponentCommand(Map<String, String> options) {
+		super(options, NEW_ACFCOMPONENT_VERB);
 	}
 	
 	/**
 	 * option path
 	 */
-	public final static String OPTION_PATH = Messages.NewAppComponentCommand_optionpath;
+	public final static String OPTION_PATH = Messages.NewAcfComponentCommand_optionpath;
 	
 	/**
 	 * option name
 	 */
-	public final static String OPTION_NAME = Messages.NewAppComponentCommand_optionname;
+	public final static String OPTION_NAME = Messages.NewAcfComponentCommand_optionname;
 	
 	/**
 	 * option namespace
 	 */
-	public final static String OPTION_NAMESPACE = Messages.NewAppComponentCommand_optionnamespace;
+	public final static String OPTION_NAMESPACE = Messages.NewAcfComponentCommand_optionnamespace;
 	
 	@Override
 	protected String[] formatOption(String key, String value) {

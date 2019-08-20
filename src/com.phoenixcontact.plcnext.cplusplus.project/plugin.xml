@@ -25,10 +25,10 @@
          </toolChain>
       </template>
       <template
-            id="com.phoenixcontact.plcnext.cplusplus.project.apptemplate"
+            id="com.phoenixcontact.plcnext.cplusplus.project.acftemplate"
             isCategory="false"
-            location="src/main/java/com/phoenixcontact/plcnext/cplusplus/project/componentproject/ComponentProjectTemplate.xml"
-            pagesAfterTemplateSelectionProvider="com.phoenixcontact.plcnext.cplusplus.project.ui.AppProjectPagesAfterTemplateSelectionProvider"
+            location="src/main/java/com/phoenixcontact/plcnext/cplusplus/project/acfproject/AcfProjectTemplate.xml"
+            pagesAfterTemplateSelectionProvider="com.phoenixcontact.plcnext.cplusplus.project.ui.AcfProjectPagesAfterTemplateSelectionProvider"
             projectType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue">
          <toolChain
                id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1">
@@ -116,7 +116,7 @@
                   <not>
                      <test
                            property="org.eclipse.core.resources.projectNature"
-                           value="com.phoenixcontact.plcnext.cplusplus.project.plcnextappprojectnature">
+                           value="com.phoenixcontact.plcnext.cplusplus.project.plcnextacfprojectnature">
                      </test>
                   </not>
                </and>
@@ -185,12 +185,12 @@
       </runtime>
    </extension>
    <extension
-         id="com.phoenixcontact.plcnext.cplusplus.project.plcnextappprojectnature"
-         name="PLCnext App Project Nature"
+         id="com.phoenixcontact.plcnext.cplusplus.project.plcnextacfprojectnature"
+         name="PLCnext Acf Project Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="com.phoenixcontact.plcnext.cplusplus.project.componentproject.PlcnextAppProjectNature">
+               class="com.phoenixcontact.plcnext.cplusplus.project.acfproject.PlcnextAcfProjectNature">
          </run>
       </runtime>
    </extension>
@@ -207,12 +207,12 @@
          </adapt>
       </definition>
       <definition
-            id="com.phoenixcontact.plcnext.cplusplus.project.hasplcnextappprojectnature">
+            id="com.phoenixcontact.plcnext.cplusplus.project.hasplcnextacfprojectnature">
          <adapt
                type="org.eclipse.core.resources.IProject">
             <test
                   property="org.eclipse.core.resources.projectNature"
-                  value="com.phoenixcontact.plcnext.cplusplus.project.plcnextappprojectnature">
+                  value="com.phoenixcontact.plcnext.cplusplus.project.plcnextacfprojectnature">
             </test>
          </adapt>
       </definition>

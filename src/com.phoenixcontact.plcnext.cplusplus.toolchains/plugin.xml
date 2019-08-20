@@ -384,7 +384,7 @@
       </tool>
       <projectType
             buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
-            id="com.phoenixcontact.plcnext.cplusplus.toolchains.appprojectType"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.acfprojectType"
             isAbstract="false"
             isTest="false">
          <configuration
@@ -396,7 +396,7 @@
             <toolChain
                   id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1"
                   isAbstract="false"
-                  name="PLCnext C++ App Project Toolchain"
+                  name="PLCnext C++ Acf Project Toolchain"
                   superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.base"
                   supportsManagedBuild="true">
                <tool

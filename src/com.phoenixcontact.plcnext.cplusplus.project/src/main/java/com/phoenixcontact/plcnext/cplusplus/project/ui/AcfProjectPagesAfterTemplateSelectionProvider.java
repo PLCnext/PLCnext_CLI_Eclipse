@@ -13,7 +13,7 @@ import org.eclipse.ui.IWorkbenchWizard;
 
 import com.phoenixcontact.plcnext.cplusplus.project.ProjectType;
 
-public class AppProjectPagesAfterTemplateSelectionProvider implements IPagesAfterTemplateSelectionProvider {
+public class AcfProjectPagesAfterTemplateSelectionProvider implements IPagesAfterTemplateSelectionProvider {
 
 	IWizardDataPage[] pages;
 	
@@ -21,7 +21,7 @@ public class AppProjectPagesAfterTemplateSelectionProvider implements IPagesAfte
 	public IWizardDataPage[] createAdditionalPages(IWorkbenchWizard wizard, IWorkbench workbench,
 			IStructuredSelection selection) {
 		pages = new IWizardDataPage[2];
-		pages[0] = new ProjectPropertiesWizardDataPage(ProjectType.APP);
+		pages[0] = new ProjectPropertiesWizardDataPage(ProjectType.ACF);
 		pages[1] = new SelectTargetsWizardDataPage("Select Targets");
 		return pages;
 	}

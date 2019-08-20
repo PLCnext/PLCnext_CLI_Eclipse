@@ -32,11 +32,11 @@ import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GenerateCodeCommand;
-import com.phoenixcontact.plcnext.common.commands.NewAppProjectCommand;
+import com.phoenixcontact.plcnext.common.commands.NewAcfProjectCommand;
 import com.phoenixcontact.plcnext.common.commands.NewProjectCommand;
 import com.phoenixcontact.plcnext.common.commands.SetTargetCommand;
 import com.phoenixcontact.plcnext.common.commands.results.Target;
-import com.phoenixcontact.plcnext.cplusplus.project.componentproject.PlcnextAppProjectNature;
+import com.phoenixcontact.plcnext.cplusplus.project.acfproject.PlcnextAcfProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.project.ui.ProjectPropertiesWizardDataPage;
 import com.phoenixcontact.plcnext.cplusplus.project.ui.SelectTargetsWizardDataPage;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
@@ -100,7 +100,7 @@ public class CreateProjectWithCLI extends ProcessRunner
 			command = commandManager.createCommand(options, NewProjectCommand.class);
 		} else
 		{
-			command = commandManager.createCommand(options, NewAppProjectCommand.class);
+			command = commandManager.createCommand(options, NewAcfProjectCommand.class);
 		}
 
 		try
@@ -155,12 +155,12 @@ public class CreateProjectWithCLI extends ProcessRunner
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
 			newNatures[natures.length] = PlcProjectNature.NATURE_ID;
 
-			if (ProjectType.valueOf(projectType) == ProjectType.APP)
+			if (ProjectType.valueOf(projectType) == ProjectType.ACF)
 			{
 				natures = newNatures;
 				newNatures = new String[natures.length + 1];
 				System.arraycopy(natures, 0, newNatures, 0, natures.length);
-				newNatures[natures.length] = PlcnextAppProjectNature.NATURE_ID;
+				newNatures[natures.length] = PlcnextAcfProjectNature.NATURE_ID;
 			}
 			description.setNatureIds(newNatures);
 			project.setDescription(description, null);

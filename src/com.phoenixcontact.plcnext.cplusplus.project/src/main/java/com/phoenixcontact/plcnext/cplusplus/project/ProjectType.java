@@ -7,5 +7,5 @@ package com.phoenixcontact.plcnext.cplusplus.project;
 
 public enum ProjectType
 {
-	STANDARD, APP
+	STANDARD, ACF
 }

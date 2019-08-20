@@ -10,44 +10,44 @@ import java.util.Map;
 import com.phoenixcontact.plcnext.common.Messages;
 
 /**
- * The command line tool command for creation of a new app project
+ * The command line tool command for creation of a new acf project
  *
  */
-public class NewAppProjectCommand extends Command
+public class NewAcfProjectCommand extends Command
 {
 
 	/**
 		 * @param options 
 		 * @see com.phoenixcontact.plcnext.common.commands.Command#Constructor
 		 */
-		public NewAppProjectCommand(Map<String, String> options) {
-			super(options, NEW_APPPROJECT);
+		public NewAcfProjectCommand(Map<String, String> options) {
+			super(options, NEW_ACFPROJECT);
 		}
 
 	/**
 	 * new project verb
 	 */
-	public final static String NEW_APPPROJECT = Messages.NewAppProjectCommand_verb;
+	public final static String NEW_ACFPROJECT = Messages.NewAcfProjectCommand_verb;
 	/**
 	 * option project name flag
 	 */
-	public final static String OPTION_NAME = Messages.NewAppProjectCommand_optionname;
+	public final static String OPTION_NAME = Messages.NewAcfProjectCommand_optionname;
 	/**
 	 * option output directory flag
 	 */
-	public final static String OPTION_OUTPUT = Messages.NewAppProjectCommand_optionoutput;
+	public final static String OPTION_OUTPUT = Messages.NewAcfProjectCommand_optionoutput;
 	/**
 	 * option force flag
 	 */
-	public final static String OPTION_FORCE = Messages.NewAppProjectCommand_optionforce;
+	public final static String OPTION_FORCE = Messages.NewAcfProjectCommand_optionforce;
 	/**
 	 * option component name flag
 	 */
-	public final static String OPTION_CNAME = Messages.NewAppProjectCommand_optioncname;
+	public final static String OPTION_CNAME = Messages.NewAcfProjectCommand_optioncname;
 	/**
 	 * option namespace flag
 	 */
-	public final static String OPTION_NAMESPACE = Messages.NewAppProjectCommand_optionnamespace;
+	public final static String OPTION_NAMESPACE = Messages.NewAcfProjectCommand_optionnamespace;
 
 	@Override
 	protected String[] formatOption(String key, String value)

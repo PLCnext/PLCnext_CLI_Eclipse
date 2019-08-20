@@ -29,7 +29,7 @@ public class FilteredCDTMainWizardPage extends CDTMainWizardPage {
 	@Override
 	public List<EntryDescriptor> filterItems(List<EntryDescriptor> items) {
 		EntryDescriptor axc = null;
-		EntryDescriptor componentProjectTemplate = null;
+		EntryDescriptor acfProjectTemplate = null;
 		EntryDescriptor categoryDescriptor = null;
 		for(EntryDescriptor item : items) {
 			if(item.getId().equals("AXC2152Proj")) {
@@ -38,11 +38,11 @@ public class FilteredCDTMainWizardPage extends CDTMainWizardPage {
 			if(item.getId().equals("com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue")) {
 				categoryDescriptor = item;
 			}
-			if(item.getId().equals("ComponentProjectTemplate")) {
-				componentProjectTemplate = item;
+			if(item.getId().equals("AcfProjectTemplate")) {
+				acfProjectTemplate = item;
 			}
 		}
-		if(axc != null || componentProjectTemplate != null)
+		if(axc != null || acfProjectTemplate != null)
 		{
 			items.clear();
 			items.add(categoryDescriptor);
@@ -50,9 +50,9 @@ public class FilteredCDTMainWizardPage extends CDTMainWizardPage {
 			{
 				items.add(axc);
 			}
-			if(componentProjectTemplate != null)
+			if(acfProjectTemplate != null)
 			{
-				items.add(componentProjectTemplate);
+				items.add(acfProjectTemplate);
 			}
 		}
 		return items;
