@@ -201,7 +201,7 @@
             osList="all">
       </targetPlatform>
       <tool
-            command="generate library"
+            command="deploy"
             commandLinePattern="${COMMAND} ${FLAGS}"
             id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.base"
             isAbstract="false"
