@@ -205,7 +205,7 @@
             commandLinePattern="${COMMAND} ${FLAGS}"
             id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.base"
             isAbstract="false"
-            name="PLCnCLI - Library Builder"
+            name="PLCnCLI - Deploy"
             natureFilter="ccnature"
             supportsManagedBuild="true">
          <inputType
@@ -408,6 +408,11 @@
                      id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1.metadatatool"
                      isAbstract="false"
                      superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.base">
+               </tool>
+               <tool
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1.librarybuilder"
+                     isAbstract="false"
+                     superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder.base">
                </tool>
             </toolChain>
          </configuration>
