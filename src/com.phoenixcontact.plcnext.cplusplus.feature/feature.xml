@@ -7,8 +7,7 @@
       plugin="com.phoenixcontact.plcnext.branding">
 
    <description>
-      PLCnext Technology feature for generating PLCnext Engineer Libraries with
-the plcncli.
+      PLCnext Technology feature for generating PLCnext Engineer Libraries or creating Acfprojects with the plcncli.
    </description>
 
    <copyright>
