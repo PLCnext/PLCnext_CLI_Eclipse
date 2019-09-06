@@ -502,6 +502,12 @@
          </pattern>
       </errorparser>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.Startup">
+      </startup>
+   </extension>
   <!--<extension
          point="org.eclipse.cdt.managedbuilder.core.buildProperties">
       <propertyType

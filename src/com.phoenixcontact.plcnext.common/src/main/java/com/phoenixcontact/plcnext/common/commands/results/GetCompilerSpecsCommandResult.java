@@ -7,7 +7,7 @@ package com.phoenixcontact.plcnext.common.commands.results;
 
 import java.util.List;
 import com.google.gson.JsonObject;
-import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult.IncludePath;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.IncludePath;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 
 public class GetCompilerSpecsCommandResult extends CommandResult

@@ -64,9 +64,7 @@ public class Messages extends NLS {
 	public static String GenerateCodeCommand_optionpath;
 	public static String GenerateCodeCommand_optionsources;
 	public static String GenerateCodeCommand_verb;
-	public static String GetIncludePathsCommand_optionpath;
-	public static String GetIncludePathsCommand_erroroutputdescription;
-	public static String GetIncludePathsCommand_verb;
+	public static String GetProjectInformationCommand_optionnoincludedetection;
 	public static String GetProjectInformationCommand_verb;
 	public static String GetProjectInformationCommand_optionsources;
 	public static String GetProjectInformationCommand_optionpath;

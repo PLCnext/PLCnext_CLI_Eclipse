@@ -87,7 +87,7 @@ public class UpdateMessageConsumer extends Job
 				CommandResult result = commandManager
 						.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), monitor);
 				GetProjectInformationCommandResult commandResult = result.convertToTypedCommandResult(GetProjectInformationCommandResult.class);
-				Target[] targets = commandResult.getTargets();
+				/*Target[] targets = */commandResult.getTargets();
 				
 				// TODO currently nothing is done with the information, that the project target has changed
 

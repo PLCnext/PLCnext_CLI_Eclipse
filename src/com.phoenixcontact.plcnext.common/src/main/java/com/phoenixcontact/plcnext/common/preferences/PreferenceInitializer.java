@@ -38,6 +38,10 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
 	 * The default name of the command line tool on linux
 	 */
 	public static final String P_CLI_NAME_DEFAULT_LINUX = Messages.PreferenceInitializer_cliFilenameLinux;
+	
+	public static final String P_CLI_UPDATE_INCLUDES_DEFAULT = "true";
+	
+	public static final String P_CLI_OPEN_INCLUDE_UPDATE_DIALOG_DEFAULT = "true";
 
 	@Override
 	public void initializeDefaultPreferences()
@@ -51,5 +55,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
 		{
 			node.put(PreferenceConstants.P_CLI_NAME, P_CLI_NAME_DEFAULT_WIN);
 		}
+		node.put(PreferenceConstants.P_CLI_UPDATE_INCLUDES, P_CLI_UPDATE_INCLUDES_DEFAULT);
+		node.put(PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, P_CLI_OPEN_INCLUDE_UPDATE_DIALOG_DEFAULT);
 	}
 }

@@ -4,21 +4,7 @@
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="epp.package.cpp" version="4.12.0.20190614-1200"/>
-			<unit id="org.eclipse.cdt.arduino.feature.group" version="9.8.0.201905061608"/>
-			<unit id="org.eclipse.cdt.autotools.feature.group" version="9.8.0.201906071757"/>
-			<unit id="org.eclipse.cdt.build.crossgcc.feature.group" version="9.8.0.201903011325"/>
-			<unit id="org.eclipse.cdt.cmake.feature.group" version="9.8.0.201905311644"/>
-			<unit id="org.eclipse.cdt.debug.gdbjtag.feature.group" version="9.8.0.201903011325"/>
-			<unit id="org.eclipse.cdt.debug.standalone.feature.group" version="9.8.0.201906071757"/>
-			<unit id="org.eclipse.cdt.debug.ui.memory.feature.group" version="9.8.0.201903011325"/>
-			<unit id="org.eclipse.cdt.docker.launcher.feature.group" version="9.8.0.201905230051"/>
-			<unit id="org.eclipse.cdt.launch.remote.feature.group" version="9.8.0.201903011325"/>
-			<unit id="org.eclipse.cdt.launch.serial.feature.feature.group" version="9.8.0.201905311644"/>
-			<unit id="org.eclipse.cdt.meson.feature.group" version="9.8.0.201906071757"/>
 			<unit id="org.eclipse.cdt.mylyn.feature.group" version="5.20.0.v20180905-0014"/>
-			<unit id="org.eclipse.cdt.qt.feature.group" version="9.8.0.201906061740"/>
-			<unit id="org.eclipse.cdt.sdk.feature.group" version="9.8.0.201906071757"/>
-			<unit id="org.eclipse.cdt.testsrunner.feature.feature.group" version="9.8.0.201903011325"/>
 			<unit id="org.eclipse.egit.feature.group" version="5.4.0.201906121030-r"/>
 			<unit id="org.eclipse.egit.source.feature.group" version="5.4.0.201906121030-r"/>
 			<unit id="org.eclipse.epp.mpc.feature.group" version="1.7.7.v20190521-1752"/>
@@ -48,6 +34,23 @@
 			<unit id="org.eclipse.tracecompass.lttng2.kernel.feature.group" version="5.0.0.201906111727"/>
 			<unit id="org.eclipse.tracecompass.lttng2.ust.feature.group" version="5.0.0.201906111727"/>
 			<repository location="http://download.eclipse.org/releases/2019-06"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="http://download.eclipse.org/tools/cdt/releases/9.8"/>
+			<unit id="org.eclipse.cdt.arduino.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.autotools.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.build.crossgcc.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.cmake.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.debug.gdbjtag.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.debug.standalone.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.debug.ui.memory.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.docker.launcher.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.launch.remote.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.launch.serial.feature.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.meson.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.qt.feature.group" version="9.8.1.201906192008"/>
+			<unit id="org.eclipse.cdt.sdk.feature.group" version="9.8.1.201907021957"/>
+			<unit id="org.eclipse.cdt.testsrunner.feature.feature.group" version="9.8.1.201906192008"/>
 		</location>
 	</locations>
 	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-9"/>

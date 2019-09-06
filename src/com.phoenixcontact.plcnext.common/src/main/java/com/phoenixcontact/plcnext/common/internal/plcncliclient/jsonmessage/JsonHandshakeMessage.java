@@ -8,24 +8,24 @@ package com.phoenixcontact.plcnext.common.internal.plcncliclient.jsonmessage;
 
 public class JsonHandshakeMessage extends JsonMessage
 {
-	private ProtocolVersion protocolVersion;
+//	private ProtocolVersion protocolVersion;
 	
 	public JsonHandshakeMessage(int major, int minor)
 	{
 		super(MessageType.handshake);
-		this.protocolVersion = new ProtocolVersion(major, minor);
+//		this.protocolVersion = new ProtocolVersion(major, minor);
 	}
 	
-	class ProtocolVersion
-	{
-		private int major;
-		private int minor;
-		
-		public ProtocolVersion(int major, int minor)
-		{
-			this.major = major;
-			this.minor = minor;
-		}
-	}
+//	class ProtocolVersion
+//	{
+//		private int major;
+//		private int minor;
+//		
+//		public ProtocolVersion(int major, int minor)
+//		{
+//			this.major = major;
+//			this.minor = minor;
+//		}
+//	}
 
 }

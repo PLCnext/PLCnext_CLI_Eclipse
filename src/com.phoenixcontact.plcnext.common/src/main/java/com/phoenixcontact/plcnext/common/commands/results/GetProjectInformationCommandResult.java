@@ -30,7 +30,7 @@ public class GetProjectInformationCommandResult extends CommandResult
 
 	private PLCnCLIProjectType type;
 
-	private ProjectTarget[] targets;
+	private ProjectTarget[] targets; 
 
 	public ProjectTarget[] getTargets()
 	{
@@ -104,6 +104,28 @@ public class GetProjectInformationCommandResult extends CommandResult
 		public Entity(String name)
 		{
 			this.name = name;
+		}
+	}
+	
+	private IncludePath[] includePaths;
+
+	public IncludePath[] getIncludePaths()
+	{
+		return includePaths;
+	}
+
+	public static class IncludePath
+	{
+		private String path;
+
+		public String getPath()
+		{
+			return path;
+		}
+		
+		public IncludePath(String path)
+		{
+			this.path = path;
 		}
 	}
 }

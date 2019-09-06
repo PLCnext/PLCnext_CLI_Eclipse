@@ -30,6 +30,10 @@ public class GetProjectInformationCommand extends Command
 	 */
 	public final static String OPTION_PATH = Messages.GetProjectInformationCommand_optionpath;
 	
+	/**
+	 * option no include path detection
+	 */
+	public final static String OPTION_NO_INCLUDE_DETECTION = Messages.GetProjectInformationCommand_optionnoincludedetection;
 	
 	/**
 	 * @param options the options to add to the command

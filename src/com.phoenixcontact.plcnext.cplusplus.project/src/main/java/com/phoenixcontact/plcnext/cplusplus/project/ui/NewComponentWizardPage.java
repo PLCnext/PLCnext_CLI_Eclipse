@@ -252,6 +252,7 @@ public class NewComponentWizardPage extends WizardPage
 		{
 			Map<String, String> options = new HashMap<String, String>();
 			options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
+			options.put(GetProjectInformationCommand.OPTION_NO_INCLUDE_DETECTION, null);
 			List<String> sourceEntries = FindSourcesUtil.findSourceEntries(project);
 			if (sourceEntries != null)
 			{

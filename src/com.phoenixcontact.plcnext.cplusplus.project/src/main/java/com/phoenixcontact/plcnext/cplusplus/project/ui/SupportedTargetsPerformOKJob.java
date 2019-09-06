@@ -29,11 +29,11 @@ import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.MutexSchedulingRule;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
-import com.phoenixcontact.plcnext.common.commands.GetIncludePathsCommand;
+import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.SetTargetCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetIncludePathsCommandResult.IncludePath;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.IncludePath;
 import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
@@ -99,16 +99,16 @@ public class SupportedTargetsPerformOKJob extends Job
 
 				// get include paths for project before executing set target (needed to find out
 				// which includes should be deleted)
-				options.put(GetIncludePathsCommand.OPTION_PATH, project.getLocation().toOSString());
+				options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
 
 				IncludePath[] results = null;
 
 				try
 				{
 					CommandResult commandResult = commandManager.executeCommand(
-							commandManager.createCommand(options, GetIncludePathsCommand.class), false, monitor);
+							commandManager.createCommand(options, GetProjectInformationCommand.class), false, monitor);
 
-					results = commandResult.convertToTypedCommandResult(GetIncludePathsCommandResult.class)
+					results = commandResult.convertToTypedCommandResult(GetProjectInformationCommandResult.class)
 							.getIncludePaths();
 
 				} catch (ProcessExitedWithErrorException e)
@@ -119,7 +119,7 @@ public class SupportedTargetsPerformOKJob extends Job
 						Gson gson = new Gson();
 						try
 						{
-							results = gson.fromJson(reply, GetIncludePathsCommandResult.class).getIncludePaths();
+							results = gson.fromJson(reply, GetProjectInformationCommandResult.class).getIncludePaths();
 
 						} catch (JsonSyntaxException ex)
 						{
@@ -135,7 +135,7 @@ public class SupportedTargetsPerformOKJob extends Job
 							try
 							{
 								results = CommandResult
-										.convertToTypedCommandResult(GetIncludePathsCommandResult.class, output)
+										.convertToTypedCommandResult(GetProjectInformationCommandResult.class, output)
 										.getIncludePaths();
 							} catch (ProcessExitedWithErrorException e1)
 							{

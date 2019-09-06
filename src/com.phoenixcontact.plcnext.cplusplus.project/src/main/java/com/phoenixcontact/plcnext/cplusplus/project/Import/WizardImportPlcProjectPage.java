@@ -291,6 +291,7 @@ public class WizardImportPlcProjectPage extends WizardPage
 
 		Map<String, String> options = new HashMap<>();
 		options.put(GetProjectInformationCommand.OPTION_PATH, projectFileLocation);
+		options.put(GetProjectInformationCommand.OPTION_NO_INCLUDE_DETECTION, null);
 
 		String name;
 		PLCnCLIProjectType type = PLCnCLIProjectType.project;

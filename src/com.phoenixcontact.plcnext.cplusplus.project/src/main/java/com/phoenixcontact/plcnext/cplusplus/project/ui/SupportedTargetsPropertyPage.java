@@ -337,6 +337,7 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 			Map<String, String> options = new HashMap<String, String>();
 
 			options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
+			options.put(GetProjectInformationCommand.OPTION_NO_INCLUDE_DETECTION, null);
 
 			try
 			{

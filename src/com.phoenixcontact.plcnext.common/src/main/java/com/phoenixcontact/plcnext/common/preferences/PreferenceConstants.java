@@ -20,4 +20,8 @@ public class PreferenceConstants {
 	 */
 	public static final String P_CLI_NAME = "CLI_NAME"; //$NON-NLS-1$
 	
+	public static final String P_CLI_UPDATE_INCLUDES = "CLI_UPDATE_INCLUDES"; //$NON-NLS-1$
+	
+	public static final String P_CLI_OPEN_INCLUDE_UPDATE_DIALOG = "P_CLI_OPEN_INCLUDE_UPDATE_DIALOG"; //$NON-NLS-1$
+	
 }
