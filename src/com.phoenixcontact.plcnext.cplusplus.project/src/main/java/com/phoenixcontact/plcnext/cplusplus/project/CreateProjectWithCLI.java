@@ -118,7 +118,7 @@ public class CreateProjectWithCLI extends ProcessRunner
 
 			addTargets(projectPath, commandManager, monitor);
 
-			new ToolchainConfigurator().configureProject(projectName, monitor);
+			new ToolchainConfigurator().configureProject(projectName, monitor, true);
 
 		} catch (ProcessExitedWithErrorException e)
 		{

@@ -91,6 +91,21 @@ public class ToolchainConfigurator
 	 */
 	public void configureProject(String projectName, IProgressMonitor monitor) throws ProcessExitedWithErrorException
 	{
+		configureProject(projectName, monitor, false);
+	}
+
+	/**
+	 * This method is called at project creation.
+	 * 
+	 * @param projectName
+	 * @param monitor
+	 * @param noincludepathdetection
+	 * @throws CliNotExistingException
+	 * @throws ProcessExitedWithErrorException
+	 */
+	public void configureProject(String projectName, IProgressMonitor monitor, boolean noincludepathdetection)
+			throws ProcessExitedWithErrorException
+	{
 		projectInformation = null;
 		IWorkspaceRoot wspRoot = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = wspRoot.getProject(projectName);
@@ -100,7 +115,7 @@ public class ToolchainConfigurator
 
 		ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
 
-		setIncludes(project, projectDescription, null, null, monitor);
+		setIncludes(project, projectDescription, null, null, monitor, noincludepathdetection);
 		setErrorParsers(projectDescription);
 		addConfigurations(project, projectDescription, monitor);
 
@@ -130,7 +145,7 @@ public class ToolchainConfigurator
 		projectInformation = null;
 		ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
 
-		setIncludes(project, projectDescription, oldIncludePaths, oldMacros, monitor);
+		setIncludes(project, projectDescription, oldIncludePaths, oldMacros, monitor, false);
 		addConfigurations(project, projectDescription, monitor);
 
 		try
@@ -142,14 +157,14 @@ public class ToolchainConfigurator
 		}
 		projectInformation = null;
 	}
-	
-	public void updateIncludesOfExistingProject(IProject project, List<String> oldIncludePaths, Map<String, String> oldMacros,
-			IProgressMonitor monitor) throws ProcessExitedWithErrorException
+
+	public void updateIncludesOfExistingProject(IProject project, List<String> oldIncludePaths,
+			Map<String, String> oldMacros, IProgressMonitor monitor) throws ProcessExitedWithErrorException
 	{
 		projectInformation = null;
 		ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
 
-		setIncludes(project, projectDescription, oldIncludePaths, oldMacros, monitor);
+		setIncludes(project, projectDescription, oldIncludePaths, oldMacros, monitor, false);
 
 		try
 		{
@@ -162,11 +177,11 @@ public class ToolchainConfigurator
 	}
 
 	private void setIncludes(IProject project, ICProjectDescription projectDescription, List<String> oldIncludePaths,
-			Map<String, String> oldMacros, IProgressMonitor monitor)
+			Map<String, String> oldMacros, IProgressMonitor monitor, boolean noIncludePathDetection)
 			throws ProcessExitedWithErrorException
 	{
 
-		MacrosAndIncludesWrapper macrosAndIncludes = findMacrosAndIncludes(project, monitor);
+		MacrosAndIncludesWrapper macrosAndIncludes = findMacrosAndIncludes(project, monitor, noIncludePathDetection);
 		boolean languageSettingsAdded = false;
 
 		List<ICLanguageSetting> languageSettings = new ArrayList<ICLanguageSetting>();
@@ -288,7 +303,8 @@ public class ToolchainConfigurator
 					{
 						for (ICLanguageSettingEntry entry : includeEntries)
 						{
-							// if a workspace path was added in the same operation, it is not resolved at this point, 
+							// if a workspace path was added in the same operation, it is not resolved at
+							// this point,
 							// so don't remove unresolved includes
 							if (entry.getValue().equals(includePath))
 							{
@@ -315,7 +331,6 @@ public class ToolchainConfigurator
 					}
 					macroEntries.removeAll(entriesToRemove);
 				}
-
 
 				// fallback implementation if description is not
 				// ILanguageSettingsProvidersKeeper
@@ -413,6 +428,23 @@ public class ToolchainConfigurator
 	public MacrosAndIncludesWrapper findMacrosAndIncludes(IProject project, IProgressMonitor monitor)
 			throws ProcessExitedWithErrorException
 	{
+		return findMacrosAndIncludes(project, monitor, false);
+	}
+
+	/**
+	 * uses plcncli to get compiler specs and extracts all include paths and macros
+	 * if same macro is defined multiple times, the first occurence wins and all
+	 * others will be ignored
+	 * 
+	 * @param project
+	 * @param monitor
+	 * @param noIncludePathDetection 
+	 * @return a wrapper containing the macros and includes
+	 * @throws ProcessExitedWithErrorException
+	 */
+	public MacrosAndIncludesWrapper findMacrosAndIncludes(IProject project, IProgressMonitor monitor,
+			boolean noIncludePathDetection) throws ProcessExitedWithErrorException
+	{
 		List<String> includes = new ArrayList<String>();
 		Map<String, String> macros = new HashMap<String, String>();
 
@@ -429,11 +461,14 @@ public class ToolchainConfigurator
 
 		} catch (ProcessExitedWithErrorException e)
 		{
-			try {
-			compiler = CommandResult.convertToTypedCommandResult(GetCompilerSpecsCommandResult.class,
-					e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.information)
-							.map(m -> m.getMessage()).collect(Collectors.toList())).getCompiler();
-			}catch (JsonSyntaxException e1) {
+			try
+			{
+				compiler = CommandResult.convertToTypedCommandResult(GetCompilerSpecsCommandResult.class,
+						e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.information)
+								.map(m -> m.getMessage()).collect(Collectors.toList()))
+						.getCompiler();
+			} catch (JsonSyntaxException e1)
+			{
 				throw e;
 			}
 		}
@@ -445,7 +480,7 @@ public class ToolchainConfigurator
 
 		for (GetCompilerSpecsCommandResult.Compiler result : compiler)
 		{
-			
+
 			List<Macro> macroSubResults = Arrays.asList(result.getMacros());
 
 			for (Macro macro : macroSubResults)
@@ -463,9 +498,11 @@ public class ToolchainConfigurator
 				}
 			}
 		}
-		
+
 		options.clear();
 		options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
+		if(noIncludePathDetection)
+			options.put(GetProjectInformationCommand.OPTION_NO_INCLUDE_DETECTION, null);
 
 		IncludePath[] includePaths = null;
 		try
@@ -498,12 +535,15 @@ public class ToolchainConfigurator
 						.collect(Collectors.toList());
 				if (output != null)
 				{
-					includePaths = CommandResult.convertToTypedCommandResult(GetProjectInformationCommandResult.class, output).getIncludePaths();
+					includePaths = CommandResult
+							.convertToTypedCommandResult(GetProjectInformationCommandResult.class, output)
+							.getIncludePaths();
 				}
 			}
 		}
 
-		return new MacrosAndIncludesWrapper(Arrays.stream(includePaths).map(p -> p.getPath()).collect(Collectors.toList()), macros);
+		return new MacrosAndIncludesWrapper(
+				Arrays.stream(includePaths).map(p -> p.getPath()).collect(Collectors.toList()), macros);
 
 	}
 
@@ -541,10 +581,10 @@ public class ToolchainConfigurator
 			Map<String, String> options = new HashMap<String, String>();
 			options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
 
-			if(projectInformation == null)
+			if (projectInformation == null)
 				projectInformation = commandManager
-						.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class), false,
-								monitor)
+						.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class),
+								false, monitor)
 						.convertToTypedCommandResult(GetProjectInformationCommandResult.class);
 			ProjectTarget[] projectTargets = projectInformation.getTargets();
 
