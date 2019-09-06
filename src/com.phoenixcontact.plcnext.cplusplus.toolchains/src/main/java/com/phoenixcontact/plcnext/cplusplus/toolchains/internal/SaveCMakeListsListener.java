@@ -5,21 +5,30 @@
 
 package com.phoenixcontact.plcnext.cplusplus.toolchains.internal;
 
+import java.util.stream.Collectors;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IExecutionListener;
 import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
+
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
+import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.common.preferences.PreferenceConstants;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.Activator;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
@@ -49,20 +58,36 @@ public class SaveCMakeListsListener implements IExecutionListener
 	@Override
 	public void postExecuteSuccess(String commandId, Object returnValue)
 	{
-
 		if (project != null && wrapper != null)
-
 		{
-			try
+			new Job("Update includes for project " + project.getName())
 			{
-				configurator.updateIncludesOfExistingProject(project, wrapper.getIncludes(), wrapper.getMacros(), null);
-			} catch (ProcessExitedWithErrorException e)
-			{
-				Activator.getDefault().logError("project configuration error", e);
-			}
 
-			project = null;
-			wrapper = null;
+				@Override
+				protected IStatus run(IProgressMonitor monitor)
+				{
+					try
+					{
+						configurator.updateIncludesOfExistingProject(project, wrapper.getIncludes(),
+								wrapper.getMacros(), null);
+
+						project = null;
+						wrapper = null;
+						return Status.OK_STATUS;
+					} catch (ProcessExitedWithErrorException e)
+					{
+						Activator.getDefault().logError("project configuration error", e);
+
+						project = null;
+						wrapper = null;
+						return new Status(Status.ERROR, Activator.PLUGIN_ID,
+								"Error while trying to execute plcncli command\n"
+										+ e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error)
+												.map(m -> m.getMessage()).collect(Collectors.joining("\n")),
+								e);
+					}
+				}
+			}.schedule();
 		}
 	}
 
@@ -79,12 +104,13 @@ public class SaveCMakeListsListener implements IExecutionListener
 			UpdateIncludesDialog dialog = new UpdateIncludesDialog(null);
 			int result = dialog.open();
 			update_includes = result == Window.OK;
-			
-			IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID);
-			
+
+			IEclipsePreferences prefs = InstanceScope.INSTANCE
+					.getNode(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID);
+
 			prefs.put(PreferenceConstants.P_CLI_UPDATE_INCLUDES, String.valueOf(update_includes));
-			
-			if(dialog.getButtonSelection())
+
+			if (dialog.getButtonSelection())
 			{
 				prefs.put(PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, "false");
 			}
@@ -106,21 +132,28 @@ public class SaveCMakeListsListener implements IExecutionListener
 						if (resource != null)
 						{
 							project = resource.getProject();
-							try
-							{
-								if (configurator == null)
-									configurator = new ToolchainConfigurator();
 
-								wrapper = configurator.findMacrosAndIncludes(project, null);
-							} catch (ProcessExitedWithErrorException e)
+							if (configurator == null)
+								configurator = new ToolchainConfigurator();
+							BusyIndicator.showWhile(null, new Runnable()
 							{
-								Activator.getDefault().logError("Fetching project configuration failed", e);
-							}
+								@Override
+								public void run()
+								{
+									try
+									{
+										wrapper = configurator.findMacrosAndIncludes(project, null);
+									} catch (ProcessExitedWithErrorException e)
+									{
+										Activator.getDefault().logError("Fetching project configuration failed", e);
+									}
+
+								}
+							});
 						}
 					}
 				}
 			}
 		}
 	}
-
 }
