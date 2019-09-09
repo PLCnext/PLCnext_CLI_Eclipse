@@ -94,40 +94,43 @@ public class SaveCMakeListsListener implements IExecutionListener
 	@Override
 	public void preExecute(String commandId, ExecutionEvent event)
 	{
-		IPreferencesService preferencesService = Platform.getPreferencesService();
-		boolean showDialog = preferencesService.getBoolean(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID,
-				PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, true, null);
-		boolean update_includes = preferencesService.getBoolean(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID,
-				PreferenceConstants.P_CLI_UPDATE_INCLUDES, true, null);
-		if (showDialog)
+		IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
+		if (activeEditor != null)
 		{
-			UpdateIncludesDialog dialog = new UpdateIncludesDialog(null);
-			int result = dialog.open();
-			update_includes = result == Window.OK;
 
-			IEclipsePreferences prefs = InstanceScope.INSTANCE
-					.getNode(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID);
-
-			prefs.put(PreferenceConstants.P_CLI_UPDATE_INCLUDES, String.valueOf(update_includes));
-
-			if (dialog.getButtonSelection())
+			IEditorInput editorInput = activeEditor.getEditorInput();
+			if (editorInput != null)
 			{
-				prefs.put(PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, "false");
-			}
-		}
-
-		if (update_includes)
-		{
-			IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
-			if (activeEditor != null)
-			{
-
-				IEditorInput editorInput = activeEditor.getEditorInput();
-				if (editorInput != null)
+				String inputName = editorInput.getName();
+				if (inputName != null && inputName.equals(fileName))
 				{
-					String inputName = editorInput.getName();
-					if (inputName != null && inputName.equals(fileName))
+					IPreferencesService preferencesService = Platform.getPreferencesService();
+					boolean showDialog = preferencesService.getBoolean(
+							com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID,
+							PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, true, null);
+					boolean update_includes = preferencesService.getBoolean(
+							com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID,
+							PreferenceConstants.P_CLI_UPDATE_INCLUDES, true, null);
+					if (showDialog)
 					{
+						UpdateIncludesDialog dialog = new UpdateIncludesDialog(null);
+						int result = dialog.open();
+						update_includes = result == Window.OK;
+
+						IEclipsePreferences prefs = InstanceScope.INSTANCE
+								.getNode(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID);
+
+						prefs.put(PreferenceConstants.P_CLI_UPDATE_INCLUDES, String.valueOf(update_includes));
+
+						if (dialog.getButtonSelection())
+						{
+							prefs.put(PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, "false");
+						}
+					}
+
+					if (update_includes)
+					{
+
 						IResource resource = editorInput.getAdapter(IResource.class);
 						if (resource != null)
 						{
