@@ -349,6 +349,23 @@ public class WizardImportPlcProjectPage extends WizardPage
 			importop.setCreateContainerStructure(false);
 			importop.run(null);
 			infoMessage = "Copied project files from "+importRoot.getAbsolutePath()+" to "+project.getLocation().toOSString();
+			
+			// clean copied project -> if cmake cache exists, it is invalid now for copied project
+			try
+			{
+				// *********************delete intermediate folder*********************
+				IFolder intermediateFolder = project.getFolder("intermediate"); //$NON-NLS-1$
+				intermediateFolder.delete(true, null);
+
+				// *********************delete bin folder*****************************
+				IFolder binFolder = project.getFolder("bin"); //$NON-NLS-1$
+				binFolder.delete(true, null);
+				binFolder.create(false, false, subMonitor.split(1));
+
+			} catch (CoreException e)
+			{
+				Activator.getDefault().logError("Error while trying to clean project during import.", e);
+			}
 		}
 
 		try
