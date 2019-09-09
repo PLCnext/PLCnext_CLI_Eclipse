@@ -29,7 +29,8 @@ public class EnvironmentChecker implements IStartup
 					{
 						ErrorDialog.openError(null, "Java version not supported",
 								"The currently installed version of the PLCnext Technology feature requires java version 9 or higher.\n"
-										+ "Please make sure eclipse is started at least with java version 9 otherwise the feature will not work as expected.",
+										+ "Please make sure eclipse is started at least with java version 9 otherwise the feature will not work as expected.\n"
+										+ "Java versions can be found here: https://jdk.java.net/archive/",
 								new Status(Status.ERROR, Activator.PLUGIN_ID,
 										"Used java version: " + version + "\nRequired java version: 9 or higher"));
 					}
