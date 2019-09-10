@@ -211,7 +211,7 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 					IFolder binFolder = project.getFolder("bin"); //$NON-NLS-1$
 					ResourceAttributes attributes = binFolder.getResourceAttributes();
 
-					if (!attributes.isReadOnly())
+					if (attributes != null && !attributes.isReadOnly())
 					{
 						for(IResource res : binFolder.members())
 						{

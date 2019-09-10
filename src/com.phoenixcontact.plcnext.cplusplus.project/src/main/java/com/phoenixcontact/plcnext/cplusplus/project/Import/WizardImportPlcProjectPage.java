@@ -417,10 +417,7 @@ public class WizardImportPlcProjectPage extends WizardPage
 			ManagedBuildManager.getBuildInfo(project).setValid(true);
 			subMonitor.worked(1);
 
-			new ToolchainConfigurator().configureProject(name, monitor);
-			subMonitor.worked(3);
-
-		} catch (BuildException | ProcessExitedWithErrorException e)
+		} catch (BuildException e)
 		{
 			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Problem occured while importing PLCnCLI project", e);
 		} catch (CoreException e)
@@ -434,6 +431,10 @@ public class WizardImportPlcProjectPage extends WizardPage
 		try
 		{
 			commandManager.executeCommand(generateCommand, false, monitor);
+			
+			new ToolchainConfigurator().configureProject(name, monitor);
+			subMonitor.worked(3);
+			
 		} catch (ProcessExitedWithErrorException e)
 		{
 			return new Status(IStatus.WARNING, Activator.PLUGIN_ID,
