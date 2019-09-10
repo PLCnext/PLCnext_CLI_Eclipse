@@ -468,7 +468,7 @@ public class WizardImportPlcProjectPage extends WizardPage
 		@Override
 		public void run()
 		{
-			MessageDialog.openInformation(null, "Successfully imported project", message);
+			MessageDialog.openInformation(null, "Successfully imported project", message + "\n\n Please mark source folders other than 'src' manually as source folder.");
 		}
 	}
 }
