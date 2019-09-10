@@ -337,8 +337,8 @@ public class WizardImportPlcProjectPage extends WizardPage
 		{
 			// set project location
 			description.setLocation(projectRootDirectory);
-			infoMessage = "Project files were not copied into workspace. "
-					+ "All changes will be done directly on "+projectRootDirectory;
+			infoMessage = "Project files were not copied into workspace. " + "All changes will be done directly on "
+					+ projectRootDirectory;
 		} else
 		{
 			// import files into project
@@ -348,9 +348,11 @@ public class WizardImportPlcProjectPage extends WizardPage
 					FileSystemStructureProvider.INSTANCE.getChildren(importRoot));
 			importop.setCreateContainerStructure(false);
 			importop.run(null);
-			infoMessage = "Copied project files from "+importRoot.getAbsolutePath()+" to "+project.getLocation().toOSString();
-			
-			// clean copied project -> if cmake cache exists, it is invalid now for copied project
+			infoMessage = "Copied project files from " + importRoot.getAbsolutePath() + " to "
+					+ project.getLocation().toOSString();
+
+			// clean copied project -> if cmake cache exists, it is invalid now for copied
+			// project
 			try
 			{
 				// *********************delete intermediate folder*********************
@@ -360,7 +362,6 @@ public class WizardImportPlcProjectPage extends WizardPage
 				// *********************delete bin folder*****************************
 				IFolder binFolder = project.getFolder("bin"); //$NON-NLS-1$
 				binFolder.delete(true, null);
-				binFolder.create(false, false, subMonitor.split(1));
 
 			} catch (CoreException e)
 			{
@@ -394,6 +395,13 @@ public class WizardImportPlcProjectPage extends WizardPage
 
 			IManagedProject managedProject = ManagedBuildManager.createManagedProject(project, projectType);
 			subMonitor.worked(1);
+
+			//create bin folder if it does not exist
+			IFolder binFolder = project.getFolder("bin"); //$NON-NLS-1$
+			if(!binFolder.exists())
+			{
+				binFolder.create(false, false, subMonitor.split(1));
+			}
 
 			// copy configurations and mark src as source folder
 			IFolder srcFolder = project.getFolder("src");
@@ -468,7 +476,8 @@ public class WizardImportPlcProjectPage extends WizardPage
 		@Override
 		public void run()
 		{
-			MessageDialog.openInformation(null, "Successfully imported project", message + "\n\n Please mark source folders other than 'src' manually as source folder.");
+			MessageDialog.openInformation(null, "Successfully imported project",
+					message + "\n\n Please mark source folders other than 'src' manually as source folder.");
 		}
 	}
 }
