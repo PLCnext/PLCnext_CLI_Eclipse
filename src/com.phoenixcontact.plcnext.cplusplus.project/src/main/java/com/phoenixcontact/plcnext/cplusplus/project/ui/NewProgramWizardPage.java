@@ -240,7 +240,7 @@ public class NewProgramWizardPage extends WizardPage
 		} catch (CliNotExistingException e1)
 		{
 			Activator.getDefault().logError("Error while trying to execute clif command.", e1);
-			MessageDialog.openError(getShell(), "Could not create new component wizard",
+			MessageDialog.openError(getShell(), "Could not create new program wizard",
 					"The wizard could not be created. See log for more details.");
 			getContainer().getShell().close();
 		} catch (ProcessExitedWithErrorException e1)
@@ -250,7 +250,7 @@ public class NewProgramWizardPage extends WizardPage
 							+ e1.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error)
 									.map(m -> m.getMessage()).collect(Collectors.joining("\n")),
 							e1);
-			MessageDialog.openError(getShell(), "Could not create new component wizard",
+			MessageDialog.openError(getShell(), "Could not create new program wizard",
 					"The wizard could not be created. See log for more details.");
 			getContainer().getShell().close();
 		}

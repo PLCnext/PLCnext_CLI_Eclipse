@@ -15,9 +15,10 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -121,10 +122,14 @@ public class NewProgramWizard extends Wizard implements INewWizard
 						page.setExistsError();
 					}
 
-					Activator.getDefault().logError("Error while trying to execute clif command:\n"
-							+ e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error).map(m -> m.getMessage()).collect(Collectors.joining("\n")), e);
-					MessageDialog.openError(getShell(), "Could not create new program",
-							"The program could not be created.");
+					String errormessage = e.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error)
+							.map(m -> m.getMessage()).collect(Collectors.joining("\n"));
+		
+					Activator.getDefault().logError("Error while trying to execute clif command:\n" + errormessage, e);
+							
+					ErrorDialog.openError(getShell(), "Could not create new program", "The program could not be created.", 
+								new Status(Status.ERROR, Activator.PLUGIN_ID, errormessage));
+					
 				}
 
 				// refreshWorkspace
