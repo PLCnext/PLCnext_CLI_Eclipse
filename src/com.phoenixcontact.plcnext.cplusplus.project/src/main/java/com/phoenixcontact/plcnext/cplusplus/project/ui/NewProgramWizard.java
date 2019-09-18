@@ -127,7 +127,7 @@ public class NewProgramWizard extends Wizard implements INewWizard
 		
 					Activator.getDefault().logError("Error while trying to execute clif command:\n" + errormessage, e);
 							
-					ErrorDialog.openError(getShell(), "Could not create new program", "The program could not be created.", 
+					ErrorDialog.openError(getShell(), "Could not create new program", "The program could not be created.",
 								new Status(Status.ERROR, Activator.PLUGIN_ID, errormessage));
 					
 				}

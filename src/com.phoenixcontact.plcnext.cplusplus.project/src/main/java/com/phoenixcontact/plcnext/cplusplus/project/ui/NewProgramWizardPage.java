@@ -142,7 +142,8 @@ public class NewProgramWizardPage extends WizardPage
 		{
 			try
 			{
-				return p != null && p.isOpen() && p.hasNature(PlcProjectNature.NATURE_ID) && !p.hasNature(PlcnextAcfProjectNature.NATURE_ID);
+				return p != null && p.isOpen() && p.hasNature(PlcProjectNature.NATURE_ID)
+						&& !p.hasNature(PlcnextAcfProjectNature.NATURE_ID);
 			} catch (CoreException e2)
 			{
 				return false;
@@ -335,25 +336,31 @@ public class NewProgramWizardPage extends WizardPage
 			setExistsError();
 		} else
 		{
-			Pattern pattern = Pattern.compile("^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
-			if (pattern.matcher(text).matches())
+			if (!text.isBlank() && text.trim().length() > 1 && text.trim().length() <= 128)
 			{
-				Pattern namespacePattern = Pattern
-						.compile("^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[a-zA-Z](?!.*__)[a-zA-Z0-9_]*$");
-				Matcher namespaceMatch = namespacePattern.matcher(namespaceText.getText());
-				if (namespaceMatch.matches() || namespaceText.getText().isEmpty())
+				Pattern pattern = Pattern.compile("^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
+				if (pattern.matcher(text).matches())
 				{
-					setErrorMessage(null);
-					setComplete();
-					return;
+					Pattern namespacePattern = Pattern
+							.compile("^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[a-zA-Z](?!.*__)[a-zA-Z0-9_]*$");
+					Matcher namespaceMatch = namespacePattern.matcher(namespaceText.getText());
+					if (namespaceMatch.matches() || namespaceText.getText().isEmpty())
+					{
+						setErrorMessage(null);
+						setComplete();
+						return;
+					} else
+					{
+						setErrorMessage(
+								"Program namespace does not match pattern ^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[a-zA-Z](?!.*__)[a-zA-Z0-9_]*$");
+					}
 				} else
 				{
-					setErrorMessage(
-							"Component namespace does not match pattern ^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[a-zA-Z](?!.*__)[a-zA-Z0-9_]*$");
+					setErrorMessage("Program name does not match pattern ^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
 				}
 			} else
 			{
-				setErrorMessage("Program name does not match pattern ^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
+				setErrorMessage("Program name must have a length between 2 and 128 characters.");
 			}
 			setPageComplete(false);
 		}
