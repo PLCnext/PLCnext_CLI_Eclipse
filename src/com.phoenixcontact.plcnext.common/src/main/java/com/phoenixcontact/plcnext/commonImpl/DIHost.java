@@ -34,7 +34,6 @@ public class DIHost implements IDIHost
 	 * @param commandManager
 	 * @param cliInformation
 	 * @param cachedInformation
-	 * @param projectConfigurator
 	 */
 	@Inject
 	public DIHost(ICommandManager commandManager, CliDescription cliInformation, CachedCliInformation cachedInformation)
