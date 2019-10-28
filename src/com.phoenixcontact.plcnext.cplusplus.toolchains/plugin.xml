@@ -450,7 +450,7 @@
          name="PLCnext Error Parser Extension"
          point="org.eclipse.cdt.core.ErrorParser">
       <errorparser
-            class="org.eclipse.cdt.core.errorparsers.RegexErrorParser"
+            class="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.PLCnCLIErrorParser"
             id="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextErrorParser"
             name="PLCnext Error Parser">
             <pattern
@@ -459,44 +459,9 @@
                file-expr=""
                line-expr=""
                regex=".*make.*\[.*\] Error [-]{0,1}\d*.*"
-               severity="Warning"
+               severity="Error"
                variable-expr=""/>
-         <pattern description-expr="" eat-processed-line="true" file-expr="" line-expr="" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? .*\(Each undeclared identifier is reported only once.*" severity="Ignore"/>
-         <pattern description-expr="" eat-processed-line="true" file-expr="" line-expr="" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? .*for each function it appears in.\).*" severity="Ignore"/>
-         <pattern description-expr="" eat-processed-line="true" file-expr="" line-expr="" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? .*this will be reported only once per input file.*" severity="Ignore"/>
-         <pattern
-               description-expr="PLCnCLI Build Error: $4"
-               eat-processed-line="true"
-               file-expr="$1"
-               line-expr="$2"
-               regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? [Ee]rror: ([`&apos;&quot;](.*)[&apos;&quot;] undeclared .*)"
-               severity="Error"
-               variable-expr="$5"/>
-         <pattern
-               description-expr="PLCnCLI Build Error: $4"
-               eat-processed-line="true"
-               file-expr="$1"
-               line-expr="$2"
-               regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? [Ee]rror: (conflicting types for .*[`&apos;&quot;](.*)[&apos;&quot;].*)"
-               severity="Error"
-               variable-expr="$5"/>
-         <pattern description-expr="PLCnCLI Build Error: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? (parse error before.*[`&apos;&quot;](.*)[&apos;&quot;].*)" severity="Error" variable-expr="$5"/>
-         <pattern description-expr="PLCnCLI Build Warning: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? [Ww]arning: ([`&apos;&quot;](.*)[&apos;&quot;] defined but not used.*)" severity="Warning" variable-expr="$5"/>
-         <pattern description-expr="PLCnCLI Build Warning: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? [Ww]arning: (conflicting types for .*[`&apos;&quot;](.*)[&apos;&quot;].*)" severity="Warning" variable-expr="$5"/>
-         <pattern description-expr="PLCnCLI Build Warning: $5" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? ([Ww]arning:)?\s*(the use of [`&apos;&quot;](.*)[&apos;&quot;] is dangerous, better use [`&apos;&quot;](.*)[&apos;&quot;].*)" severity="Warning" variable-expr="$6"/>
-         <pattern description-expr="PLCnCLI Build Info: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)?\s*(.*((instantiated)|(required)) from .*)" severity="Info"/>
-         <pattern
-               description-expr="PLCnCLI Build Error: $7"
-               eat-processed-line="true"
-               file-expr="$1"
-               line-expr="$2"
-               regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)?\s*(([Ee]rror)|(ERROR)): (.*)"
-               severity="Error"
-               variable-expr="$3"/>
-         <pattern description-expr="PLCnCLI Build Warning: $7" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)?\s*(([Ww]arning)|(WARNING)): (.*)" severity="Warning"/>
-         <pattern description-expr="PLCnCLI Build Info: $9" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)?\s*(([Nn]ote)|(NOTE)|([Ii]nfo)|(INFO)): (.*)" severity="Info"/>
-         <pattern description-expr="PLCnCLI Build Error: $4" eat-processed-line="true" file-expr="$1" line-expr="$2" regex="\[cmake\]:\s*(.*?):(\d+):(\d+:)? (.*)" severity="Error"/>
-         <pattern
+         	<pattern
                description-expr="PLCnCLI Code Error: $5"
                eat-processed-line="true"
                file-expr="$1"
