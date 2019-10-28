@@ -25,6 +25,9 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchCommandConstants;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
@@ -94,67 +97,97 @@ public class SaveCMakeListsListener implements IExecutionListener
 	@Override
 	public void preExecute(String commandId, ExecutionEvent event)
 	{
-		IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
-		if (activeEditor != null)
+		String editorName = "";
+		IEditorInput editorInput = null;
+		if (commandId.equals(IWorkbenchCommandConstants.FILE_SAVE_ALL))
+		{
+			IWorkbenchWindow workbenchWindow = HandlerUtil.getActiveWorkbenchWindow(event);
+			if (workbenchWindow != null)
+			{
+				IWorkbenchPage[] workbenchPages = workbenchWindow.getPages();
+				if (workbenchPages != null)
+				{
+					pagesloop:
+					for (IWorkbenchPage workbenchPage : workbenchPages)
+					{
+						IEditorPart[] dirtyEditors = workbenchPage.getDirtyEditors();
+						for (IEditorPart editor : dirtyEditors)
+						{
+							editorInput = editor.getEditorInput();
+							if(editorInput != null && editorInput.getName().equals(fileName))
+							{
+								editorName = editorInput.getName();
+								break pagesloop;
+							}
+						}
+					}
+				}
+			}
+		} else if (commandId.equals(IWorkbenchCommandConstants.FILE_SAVE))
 		{
 
-			IEditorInput editorInput = activeEditor.getEditorInput();
-			if (editorInput != null)
+			IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
+			if (activeEditor != null)
 			{
-				String inputName = editorInput.getName();
-				if (inputName != null && inputName.equals(fileName))
+				editorInput = activeEditor.getEditorInput();
+				if (editorInput != null)
 				{
-					IPreferencesService preferencesService = Platform.getPreferencesService();
-					boolean showDialog = preferencesService.getBoolean(
-							com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID,
-							PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, true, null);
-					boolean update_includes = preferencesService.getBoolean(
-							com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID,
-							PreferenceConstants.P_CLI_UPDATE_INCLUDES, true, null);
-					if (showDialog)
+					editorName = editorInput.getName();
+				}
+			}
+		}
+
+		if (editorName != null && editorName.equals(fileName))
+		{
+			IPreferencesService preferencesService = Platform.getPreferencesService();
+			boolean showDialog = preferencesService.getBoolean(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID,
+					PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, true, null);
+			boolean update_includes = preferencesService.getBoolean(
+					com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID, PreferenceConstants.P_CLI_UPDATE_INCLUDES,
+					true, null);
+			if (showDialog)
+			{
+				UpdateIncludesDialog dialog = new UpdateIncludesDialog(null);
+				int result = dialog.open();
+				update_includes = result == Window.OK;
+
+				IEclipsePreferences prefs = InstanceScope.INSTANCE
+						.getNode(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID);
+
+				prefs.put(PreferenceConstants.P_CLI_UPDATE_INCLUDES, String.valueOf(update_includes));
+
+				if (dialog.getButtonSelection())
+				{
+					prefs.put(PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, "false");
+				}
+			}
+
+			if (update_includes)
+			{
+
+				IResource resource = editorInput.getAdapter(IResource.class);
+				if (resource != null)
+				{
+					project = resource.getProject();
+
+					if (configurator == null)
+						configurator = new ToolchainConfigurator();
+					BusyIndicator.showWhile(null, new Runnable()
 					{
-						UpdateIncludesDialog dialog = new UpdateIncludesDialog(null);
-						int result = dialog.open();
-						update_includes = result == Window.OK;
-
-						IEclipsePreferences prefs = InstanceScope.INSTANCE
-								.getNode(com.phoenixcontact.plcnext.common.Activator.PLUGIN_ID);
-
-						prefs.put(PreferenceConstants.P_CLI_UPDATE_INCLUDES, String.valueOf(update_includes));
-
-						if (dialog.getButtonSelection())
+						@Override
+						public void run()
 						{
-							prefs.put(PreferenceConstants.P_CLI_OPEN_INCLUDE_UPDATE_DIALOG, "false");
-						}
-					}
-
-					if (update_includes)
-					{
-
-						IResource resource = editorInput.getAdapter(IResource.class);
-						if (resource != null)
-						{
-							project = resource.getProject();
-
-							if (configurator == null)
-								configurator = new ToolchainConfigurator();
-							BusyIndicator.showWhile(null, new Runnable()
+							try
 							{
-								@Override
-								public void run()
-								{
-									try
-									{
-										wrapper = configurator.findMacrosAndIncludes(project, null);
-									} catch (ProcessExitedWithErrorException e)
-									{
-										Activator.getDefault().logError("Fetching project configuration failed", e);
-									}
+								wrapper = configurator.findMacrosAndIncludes(project, null);
+							} catch (ProcessExitedWithErrorException e)
+							{
+								Activator.getDefault().logError("Fetching project configuration failed", e);
+							}
 
-								}
-							});
 						}
-					}
+					});
+
 				}
 			}
 		}

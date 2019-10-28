@@ -18,9 +18,14 @@ public class Startup implements IStartup
 	public void earlyStartup()
 	{
 		ICommandService service = PlatformUI.getWorkbench().getService(ICommandService.class);
+		
+		SaveCMakeListsListener saveListener = new SaveCMakeListsListener();
+		
 		Command command = service.getCommand(IWorkbenchCommandConstants.FILE_SAVE);
-		command.addExecutionListener(new SaveCMakeListsListener());
-
+		command.addExecutionListener(saveListener);
+		
+		Command saveAllCommand = service.getCommand(IWorkbenchCommandConstants.FILE_SAVE_ALL);
+		saveAllCommand.addExecutionListener(saveListener);
 	}
 
 }
