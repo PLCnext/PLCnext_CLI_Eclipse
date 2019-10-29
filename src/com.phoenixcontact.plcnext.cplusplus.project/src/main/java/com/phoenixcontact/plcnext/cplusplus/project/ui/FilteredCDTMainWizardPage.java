@@ -67,12 +67,12 @@ public class FilteredCDTMainWizardPage extends CDTMainWizardPage {
 //			return false;
 //		}
 		
-		Pattern pattern = Pattern.compile("^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[A-Z](?!.*__)[a-zA-Z0-9_]*$");
+		Pattern pattern = Pattern.compile("^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
 		Matcher match = pattern.matcher(projectName);
 		if(match.matches())
 			return super.validatePage();
 		
-		setErrorMessage("Project name does not match pattern ^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[A-Z](?!.*__)[a-zA-Z0-9_]*$");
+		setErrorMessage("Project name does not match pattern ^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
 		return false;
 	}
 }

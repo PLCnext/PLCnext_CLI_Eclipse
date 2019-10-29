@@ -112,7 +112,7 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 		}
 		// **** project namespace ****
 		Label namespaceLabel = new Label(container, SWT.NONE);
-		namespaceLabel.setText("Name&space:");
+		namespaceLabel.setText("Project name&space:");
 
 		projectNamespace = new Text(container, SWT.BORDER);
 		projectNamespace.setLayoutData(new GridData(SWT.FILL, SWT.DEFAULT, true, false));
@@ -122,13 +122,6 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 		if (previousPage instanceof FilteredCDTMainWizardPage)
 		{
 			projectName = ((FilteredCDTMainWizardPage) previousPage).getProjectName();
-
-			// **** filter out namespaces ****
-			int index = projectName.lastIndexOf('.') + 1;
-			if (index > 0 && projectName.length() > index)
-			{
-				projectName = projectName.substring(index);
-			}
 		}
 
 		componentText.setText(projectName + "Component");
