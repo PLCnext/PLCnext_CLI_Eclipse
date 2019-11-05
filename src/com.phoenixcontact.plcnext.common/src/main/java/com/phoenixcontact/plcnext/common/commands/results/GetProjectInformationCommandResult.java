@@ -117,15 +117,23 @@ public class GetProjectInformationCommandResult extends CommandResult
 	public static class IncludePath
 	{
 		private String path;
+		
+		private boolean exists;
 
 		public String getPath()
 		{
 			return path;
 		}
 		
-		public IncludePath(String path)
+		public boolean exists()
+		{
+			return exists;
+		}
+		
+		public IncludePath(String path, boolean exists)
 		{
 			this.path = path;
+			this.exists = exists;
 		}
 	}
 }
