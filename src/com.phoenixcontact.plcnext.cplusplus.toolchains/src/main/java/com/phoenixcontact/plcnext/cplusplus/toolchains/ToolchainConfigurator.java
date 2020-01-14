@@ -69,6 +69,9 @@ public class ToolchainConfigurator
 	private final String plcNextErrorParserId = com.phoenixcontact.plcnext.cplusplus.toolchains.Activator.PLUGIN_ID
 			+ ".plcnextErrorParser";
 	private GetProjectInformationCommandResult projectInformation = null;
+	
+	private final String DeployToolID = "com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder";
+	private final String BuildToolID = "com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool";
 
 	/**
 	 * @param commandManager
@@ -563,11 +566,22 @@ public class ToolchainConfigurator
 						projectDescription.getConfigurationByName("Release all targets"));
 				IConfiguration config = ManagedBuildManager.getConfigurationForDescription(configDescription);
 				ITool[] tools = config.getToolChain()
-						.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool");
+						.getToolsBySuperClassId(BuildToolID);
 				if (tools.length == 1)
 				{
 					IOption optionBuildType = tools[0].getOptionBySuperClassId(
 							"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionbuildtype");
+					if (optionBuildType != null)
+					{
+						ManagedBuildManager.setOption(config, tools[0], optionBuildType, "Debug");
+					}
+				}
+				tools = config.getToolChain()
+						.getToolsBySuperClassId(DeployToolID);
+				if (tools.length == 1)
+				{
+					IOption optionBuildType = tools[0].getOptionBySuperClassId(
+							"com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionbuildtype");
 					if (optionBuildType != null)
 					{
 						ManagedBuildManager.setOption(config, tools[0], optionBuildType, "Debug");
@@ -605,7 +619,7 @@ public class ToolchainConfigurator
 					IConfiguration config = ManagedBuildManager.getConfigurationForDescription(configDescription);
 
 					ITool[] tools = config.getToolChain()
-							.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool");
+							.getToolsBySuperClassId(BuildToolID);
 					if (tools.length == 1)
 					{
 						IOption optionBuildType = tools[0].getOptionBySuperClassId(
@@ -624,7 +638,7 @@ public class ToolchainConfigurator
 					}
 					// set options for generate library command
 					tools = config.getToolChain()
-							.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder");
+							.getToolsBySuperClassId(DeployToolID);
 					if (tools.length == 1)
 					{
 						IOption optionTarget = tools[0].getOptionBySuperClassId(
@@ -632,6 +646,13 @@ public class ToolchainConfigurator
 						if (optionTarget != null)
 						{
 							ManagedBuildManager.setOption(config, tools[0], optionTarget, "\"" + targetName + "\"");
+						}
+						
+						IOption optionBuildType = tools[0].getOptionBySuperClassId(
+								"com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionbuildtype");
+						if (optionBuildType != null)
+						{
+							ManagedBuildManager.setOption(config, tools[0], optionBuildType, "Release");
 						}
 					}
 				}
@@ -648,7 +669,7 @@ public class ToolchainConfigurator
 
 					// set options for build command
 					ITool[] tools = config.getToolChain()
-							.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool");
+							.getToolsBySuperClassId(BuildToolID);
 					if (tools.length == 1)
 					{
 						IOption optionBuildType = tools[0].getOptionBySuperClassId(
@@ -667,7 +688,7 @@ public class ToolchainConfigurator
 					}
 					// set options for generate library command
 					tools = config.getToolChain()
-							.getToolsBySuperClassId("com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder");
+							.getToolsBySuperClassId(DeployToolID);
 					if (tools.length == 1)
 					{
 						IOption optionTarget = tools[0].getOptionBySuperClassId(
@@ -676,6 +697,14 @@ public class ToolchainConfigurator
 						{
 							ManagedBuildManager.setOption(config, tools[0], optionTarget, "\"" + targetName + "\"");
 						}
+						
+						IOption optionBuildType = tools[0].getOptionBySuperClassId(
+								"com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionbuildtype");
+						if (optionBuildType != null)
+						{
+							ManagedBuildManager.setOption(config, tools[0], optionBuildType, "Debug");
+						}
+						
 					}
 				}
 

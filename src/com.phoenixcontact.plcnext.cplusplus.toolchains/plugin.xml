@@ -233,6 +233,28 @@
                name="Library Build Settings">
          </optionCategory>
          <option
+                  category="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optioncategory"
+                  command="-b "
+                  defaultValue="Release"
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionbuildtype"
+                  isAbstract="false"
+                  name="BuildType"
+                  resourceFilter="all"
+                  tip="Release or Debug"
+                  valueType="enumerated">
+               <enumeratedOptionValue
+                     command="-b Release"
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionbuildtype.release"
+                     isDefault="true"
+                     name="Release">
+               </enumeratedOptionValue>
+               <enumeratedOptionValue
+                     command="-b Debug"
+                     id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionbuildtype.debug"
+                     name="Debug">
+               </enumeratedOptionValue>
+         </option>
+         <option
                category="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optioncategory"
                command="-t"
                fieldEditor="com.phoenixcontact.plcnext.cplusplus.toolchains.selectmultitargetoptioneditor"
