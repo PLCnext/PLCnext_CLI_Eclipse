@@ -36,6 +36,11 @@ public class GetSettingCommand extends Command {
 	public final static String OPTION_AttributePrefix = Messages.GetSettingCommand_optionAttributePrefix;
 	
 	/**
+	 * option all
+	 */
+	public final static String OPTION_all = Messages.GetSettingCommand_optionAll;
+	
+	/**
 	 * @param options the options to add to the command
 	 * @see com.phoenixcontact.plcnext.common.commands.Command#Constructor
 	 */

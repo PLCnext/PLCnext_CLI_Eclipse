@@ -48,12 +48,11 @@ import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
-import com.phoenixcontact.plcnext.common.commands.GetSdksCommand;
+import com.phoenixcontact.plcnext.common.commands.GetSettingCommand;
 import com.phoenixcontact.plcnext.common.commands.InstallSdkCommand;
 import com.phoenixcontact.plcnext.common.commands.SetSettingCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetSdksCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetSdksCommandResult.Sdk;
+import com.phoenixcontact.plcnext.common.commands.results.GetSettingCommandResult;
 import com.phoenixcontact.plcnext.common.preferences.InstallSdkDialog.InstallSdkDialogResult;
 import com.phoenixcontact.plcnext.common.preferences.SdkPreferenceDataModel.InstallSdk;
 
@@ -219,15 +218,17 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 	{
 		try
 		{
+			Map<String, String> options = new HashMap<String, String>();
+			options.put(GetSettingCommand.OPTION_all, null);
 			CommandResult commandResult = commandManager
-					.executeCommand(commandManager.createCommand(null, GetSdksCommand.class), false, null);
-			GetSdksCommandResult sdksCommandResult = commandResult.convertToTypedCommandResult(GetSdksCommandResult.class);
+					.executeCommand(commandManager.createCommand(options, GetSettingCommand.class), false, null);
+			GetSettingCommandResult sdksCommandResult = commandResult.convertToTypedCommandResult(GetSettingCommandResult.class);
 
-			Sdk[] sdks = sdksCommandResult.getSdks();
+			String[] sdks = sdksCommandResult.getSetting().getSdkPaths();
 
-			for (Sdk sdk : sdks)
+			for (String sdk : sdks)
 			{
-				sdkViewer.add(sdk.getPath());
+				sdkViewer.add(sdk);
 			}
 		} catch (ProcessExitedWithErrorException e)
 		{

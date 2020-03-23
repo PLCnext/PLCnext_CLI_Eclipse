@@ -41,11 +41,11 @@ public class Messages extends NLS {
 	public static String DownloadSuggestionWizardPage_websiteLabel;
 	public static String GetCompilerSpecsCommand_verb;
 	public static String GetCompilerSpecsCommand_optionpath;
-	public static String GetSdksCommand_verb;
 	public static String GetSettingCommand_verb;
 	public static String GetSettingCommand_optionCliRepositorySignatureFileName;
 	public static String GetSettingCommand_optionCliRepositoryFileName;
 	public static String GetSettingCommand_optionAttributePrefix;
+	public static String GetSettingCommand_optionAll;
 	public static String PLCnextPreferencePage_description;
 	public static String PLUGIN_ID;
 	public static String PreferenceInitializer_cliFilenameLinux;
