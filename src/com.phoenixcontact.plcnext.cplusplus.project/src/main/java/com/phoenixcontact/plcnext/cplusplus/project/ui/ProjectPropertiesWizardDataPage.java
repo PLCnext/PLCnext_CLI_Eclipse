@@ -96,12 +96,15 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 		container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		setControl(container);
 
-		Label componentLabel = new Label(container, SWT.NONE);
-		componentLabel.setText("&Component name:");
+		if(projectType != ProjectType.CONSUMABLELIBRARY) 
+		{
+			Label componentLabel = new Label(container, SWT.NONE);
+			componentLabel.setText("&Component name:");
 
-		componentText = new Text(container, SWT.BORDER);
-		componentText.setLayoutData(new GridData(SWT.FILL, SWT.DEFAULT, true, false));
-
+			componentText = new Text(container, SWT.BORDER);
+			componentText.setLayoutData(new GridData(SWT.FILL, SWT.DEFAULT, true, false));
+		}
+		
 		if (projectType == ProjectType.STANDARD)
 		{
 			Label programLabel = new Label(container, SWT.NONE);
@@ -124,15 +127,21 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 			projectName = ((FilteredCDTMainWizardPage) previousPage).getProjectName();
 		}
 
-		componentText.setText(projectName + "Component");
-		if (projectType == ProjectType.STANDARD)
+		if(componentText != null)
+		{
+			componentText.setText(projectName + "Component");
+		}
+		if (programText != null)
 		{
 			programText.setText(projectName + "Program");
 		}
 		projectNamespace.setText(projectName);
 
-		MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_COMPONENTNAME, componentText.getText());
-		if (projectType == ProjectType.STANDARD)
+		if(componentText != null)
+		{
+			MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_COMPONENTNAME, componentText.getText());
+		}
+		if (programText != null)
 		{
 			MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_PROGRAMNAME, programText.getText());
 		}
@@ -140,34 +149,37 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 
 		validatePage();
 
-		componentText.addModifyListener(new ModifyListener()
+		if(componentText != null)
 		{
-
-			@Override
-			public void modifyText(ModifyEvent e)
+			componentText.addModifyListener(new ModifyListener()
 			{
-				if (validatePage())
+
+				@Override
+				public void modifyText(ModifyEvent e)
 				{
-					MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_COMPONENTNAME, componentText.getText());
+					if (validatePage())
+					{
+						MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_COMPONENTNAME, componentText.getText());
+					}
+					;
 				}
-				;
-			}
-		});
+			});
+		}
 
-		if (projectType == ProjectType.STANDARD)
+		if (programText != null)
 		{
-		programText.addModifyListener(new ModifyListener()
-		{
-
-			@Override
-			public void modifyText(ModifyEvent e)
+			programText.addModifyListener(new ModifyListener()
 			{
-				if (validatePage())
+
+				@Override
+				public void modifyText(ModifyEvent e)
 				{
-					MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_PROGRAMNAME, programText.getText());
+					if (validatePage())
+					{
+						MBSCustomPageManager.addPageProperty(PAGE_ID, KEY_PROGRAMNAME, programText.getText());
+					}
 				}
-			}
-		});
+			});
 		}
 
 		projectNamespace.addListener(SWT.Modify, event ->
@@ -184,16 +196,20 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 	{
 		// **** check component name ****
 		Pattern pattern = Pattern.compile("^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
-		Matcher match = pattern.matcher(componentText.getText());
+		Matcher match = null;
+		if(componentText != null)
+		{
+			match = pattern.matcher(componentText.getText());
+		}
 		String errorMessage = null;
-		if (match.matches())
+		if (match == null || match.matches())
 		{
 			// **** check program name ****
-			if (projectType == ProjectType.STANDARD)
+			if (programText != null)
 			{
 				match = pattern.matcher(programText.getText());
 			}
-			if (match.matches())
+			if (match == null || match.matches())
 			{
 				// **** check project namespace ****
 				Pattern namespacePattern = Pattern

@@ -18,6 +18,7 @@ import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
@@ -43,6 +44,8 @@ import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
+import com.phoenixcontact.plcnext.cplusplus.project.PlcProjectNature;
+import com.phoenixcontact.plcnext.cplusplus.project.consumablelibrary.PlcnextConsumableLibraryNature;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.FindSourcesUtil;
 
 /**
@@ -112,16 +115,58 @@ public class NewComponentWizardPage extends WizardPage
 				projectLabel.setText("Project:");
 
 				projectCombo = new Combo(container, SWT.PUSH);
+				if(!initializeProjectCombo())
+					return;
+				
+				// ************Listeners*****************
+				nameText.addListener(SWT.Modify, event -> checkName());
 
-				// ******initializeProjectCombo********
+				namespaceText.addListener(SWT.Modify, event -> namespaceModified());
+
+				try
+				{
+					setComponentsAndPrograms();
+				} catch (CliNotExistingException e1)
+				{
+					Activator.getDefault().logError("Error while trying to execute clif command.", e1);
+					MessageDialog.openError(getShell(), "Could not create new component wizard",
+							"The wizard could not be created. See log for more details.");
+					getContainer().getShell().close();
+				} catch (ProcessExitedWithErrorException e1)
+				{
+					Activator.getDefault()
+							.logError("Error while trying to execute clif command.\n"
+									+ e1.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error)
+											.map(m -> m.getMessage()).collect(Collectors.joining("\n")),
+									e1);
+					MessageDialog.openError(getShell(), "Could not create new component wizard",
+							"The wizard could not be created. See log for more details.");
+					getContainer().getShell().close();
+				}
+
+			}
+
+			private boolean initializeProjectCombo() 
+			{
 				projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 				// remove closed projects from list
-				projects = Arrays.stream(projects).filter(p -> p != null && p.isOpen()).toArray(IProject[]::new);
+				projects = Arrays.stream(projects).filter(p ->
+				{
+					try
+					{
+						return p != null && p.isOpen() && p.hasNature(PlcProjectNature.NATURE_ID)
+								&& !p.hasNature(PlcnextConsumableLibraryNature.NATURE_ID);
+					} catch (CoreException e2)
+					{
+						return false;
+					}
+				}
+				).toArray(IProject[]::new);
 
 				if (projects.length < 1)
 				{
-					setErrorMessage("No open projects found in the workspace.");
-					return;
+					setErrorMessage("No open projects for which a component can be added found in the workspace.");
+					return false;
 				}
 
 				// find project belonging to selected element
@@ -151,6 +196,7 @@ public class NewComponentWizardPage extends WizardPage
 						selectionIndex = i;
 					}
 				}
+				
 				projectCombo.setItems(projectNames);
 				projectCombo.select(selectionIndex);
 
@@ -193,32 +239,8 @@ public class NewComponentWizardPage extends WizardPage
 						});
 					}
 				});
-
-				nameText.addListener(SWT.Modify, event -> checkName());
-
-				namespaceText.addListener(SWT.Modify, event -> namespaceModified());
-
-				try
-				{
-					setComponentsAndPrograms();
-				} catch (CliNotExistingException e1)
-				{
-					Activator.getDefault().logError("Error while trying to execute clif command.", e1);
-					MessageDialog.openError(getShell(), "Could not create new component wizard",
-							"The wizard could not be created. See log for more details.");
-					getContainer().getShell().close();
-				} catch (ProcessExitedWithErrorException e1)
-				{
-					Activator.getDefault()
-							.logError("Error while trying to execute clif command.\n"
-									+ e1.getMessages().stream().filter(m -> m.getMessageType() == MessageType.error)
-											.map(m -> m.getMessage()).collect(Collectors.joining("\n")),
-									e1);
-					MessageDialog.openError(getShell(), "Could not create new component wizard",
-							"The wizard could not be created. See log for more details.");
-					getContainer().getShell().close();
-				}
-
+				return true;
+				
 			}
 		});
 

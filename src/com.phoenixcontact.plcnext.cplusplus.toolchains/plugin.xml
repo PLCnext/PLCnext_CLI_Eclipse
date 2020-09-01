@@ -439,6 +439,26 @@
             </toolChain>
          </configuration>
       </projectType>
+      <projectType
+            buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
+            id="com.phoenixcontact.plcnext.cplusplus.toolchains.consumablelibprojectType"
+            isAbstract="false"
+            isTest="false">
+            <configuration
+               buildArtefactType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue"
+               errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.configuration.release2"
+               languageSettingsProviders="org.eclipse.cdt.ui.UserLanguageSettingsProvider;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider;com.phoenixcontact.plcnext.cplusplus.toolchains.languageprovider"
+               name="Release all targets">
+            <toolChain
+                  id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release2"
+                  isAbstract="false"
+                  name="PLCnext C++ Consumable Library Toolchain"
+                  superClass="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.base"
+                  supportsManagedBuild="true">
+            </toolChain>
+         </configuration>
+      </projectType>
    </extension>
    <extension
          point="org.eclipse.cdt.core.LanguageSettingsProvider">

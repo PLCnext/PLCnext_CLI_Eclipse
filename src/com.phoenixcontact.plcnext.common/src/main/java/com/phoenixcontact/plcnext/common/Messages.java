@@ -99,6 +99,7 @@ public class Messages extends NLS {
 	public static String NewComponentCommand_optionnamespace;
 	public static String NewComponentCommand_optionpath;
 	public static String NewComponentCommand_verb;
+	public static String NewConsumableLibraryCommand_verb;
 	public static String NewProgramCommand_optioncomponent;
 	public static String NewProgramCommand_optionname;
 	public static String NewProgramCommand_optionnamespace;

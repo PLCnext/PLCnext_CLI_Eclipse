@@ -34,6 +34,16 @@
                id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release1">
          </toolChain>
       </template>
+      <template
+            id="com.phoenixcontact.plcnext.cplusplus.project.consumablelibtemplate"
+            isCategory="false"
+            location="src/main/java/com/phoenixcontact/plcnext/cplusplus/project/consumablelibrary/ConsumableLibraryTemplate.xml"
+            pagesAfterTemplateSelectionProvider="com.phoenixcontact.plcnext.cplusplus.project.ui.ConsumableLibraryPagesAfterTemplateSelectionProvider"
+            projectType="com.phoenixcontact.plcnext.cplusplus.toolchains.plcnextPropertyValue">
+         <toolChain
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.toolchain.release2">
+         </toolChain>
+      </template>
    </extension>
    <extension
          point="org.eclipse.cdt.core.templateProcessTypes">
@@ -96,10 +106,18 @@
          <enablement>
             <adapt
                   type="org.eclipse.core.resources.IResource">
-               <test
-                     property="org.eclipse.core.resources.projectNature"
-                     value="com.phoenixcontact.plcnext.cplusplus.project.plcprojectnature">
-               </test>
+               <and>
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="com.phoenixcontact.plcnext.cplusplus.project.plcprojectnature">
+                  </test>
+                  <not>
+                     <test
+                           property="org.eclipse.core.resources.projectNature"
+                           value="com.phoenixcontact.plcnext.cplusplus.project.plcnextconsumablelibrarynature">
+                     </test>
+                  </not>
+               </and>
             </adapt></enablement>
       </commonWizard>
       <commonWizard
@@ -117,6 +135,12 @@
                      <test
                            property="org.eclipse.core.resources.projectNature"
                            value="com.phoenixcontact.plcnext.cplusplus.project.plcnextacfprojectnature">
+                     </test>
+                  </not>
+                  <not>
+                     <test
+                           property="org.eclipse.core.resources.projectNature"
+                           value="com.phoenixcontact.plcnext.cplusplus.project.plcnextconsumablelibrarynature">
                      </test>
                   </not>
                </and>
@@ -191,6 +215,16 @@
       <runtime>
          <run
                class="com.phoenixcontact.plcnext.cplusplus.project.acfproject.PlcnextAcfProjectNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         id="com.phoenixcontact.plcnext.cplusplus.project.plcnextconsumablelibrarynature"
+         name="PLCnext Consumable Library Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.phoenixcontact.plcnext.cplusplus.project.consumablelibrary.PlcnextConsumableLibraryNature">
          </run>
       </runtime>
    </extension>

@@ -16,7 +16,7 @@ public class GetProjectInformationCommandResult extends CommandResult
 {
 	public enum PLCnCLIProjectType
 	{
-		project, acfproject
+		project, acfproject, consumablelibrary
 	}
 
 	public GetProjectInformationCommandResult(JsonObject reply, List<ServerMessageMessage> messages)

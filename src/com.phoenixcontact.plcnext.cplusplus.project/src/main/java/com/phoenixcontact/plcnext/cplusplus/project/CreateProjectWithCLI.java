@@ -33,10 +33,12 @@ import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GenerateCodeCommand;
 import com.phoenixcontact.plcnext.common.commands.NewAcfProjectCommand;
+import com.phoenixcontact.plcnext.common.commands.NewConsumableLibraryCommand;
 import com.phoenixcontact.plcnext.common.commands.NewProjectCommand;
 import com.phoenixcontact.plcnext.common.commands.SetTargetCommand;
 import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.cplusplus.project.acfproject.PlcnextAcfProjectNature;
+import com.phoenixcontact.plcnext.cplusplus.project.consumablelibrary.PlcnextConsumableLibraryNature;
 import com.phoenixcontact.plcnext.cplusplus.project.ui.ProjectPropertiesWizardDataPage;
 import com.phoenixcontact.plcnext.cplusplus.project.ui.SelectTargetsWizardDataPage;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
@@ -98,9 +100,14 @@ public class CreateProjectWithCLI extends ProcessRunner
 		if (ProjectType.valueOf(projectType) == ProjectType.STANDARD)
 		{
 			command = commandManager.createCommand(options, NewProjectCommand.class);
-		} else
+		} 
+		else if(ProjectType.valueOf(projectType) == ProjectType.ACF)
 		{
 			command = commandManager.createCommand(options, NewAcfProjectCommand.class);
+		}
+		else
+		{
+			command = commandManager.createCommand(options, NewConsumableLibraryCommand.class);
 		}
 
 		try
@@ -109,11 +116,14 @@ public class CreateProjectWithCLI extends ProcessRunner
 
 			String projectPath = options.get(NewProjectCommand.OPTION_OUTPUT);
 
-			Map<String, String> generateOptions = new HashMap<>();
-			generateOptions.put(GenerateCodeCommand.OPTION_PATH, projectPath);
-			Command generateCommand = commandManager.createCommand(generateOptions, GenerateCodeCommand.class);
-			commandManager.executeCommand(generateCommand, false, monitor);
-
+			//no generate for consumable library
+			if(ProjectType.valueOf(projectType) != ProjectType.CONSUMABLELIBRARY)
+			{
+				Map<String, String> generateOptions = new HashMap<>();
+				generateOptions.put(GenerateCodeCommand.OPTION_PATH, projectPath);
+				Command generateCommand = commandManager.createCommand(generateOptions, GenerateCodeCommand.class);
+				commandManager.executeCommand(generateCommand, false, monitor);
+			}
 			setProjectNature(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName), projectType);
 
 			addTargets(projectPath, commandManager, monitor);
@@ -161,6 +171,13 @@ public class CreateProjectWithCLI extends ProcessRunner
 				newNatures = new String[natures.length + 1];
 				System.arraycopy(natures, 0, newNatures, 0, natures.length);
 				newNatures[natures.length] = PlcnextAcfProjectNature.NATURE_ID;
+			}
+			else if(ProjectType.valueOf(projectType) == ProjectType.CONSUMABLELIBRARY)
+			{
+				natures = newNatures;
+				newNatures = new String[natures.length + 1];
+				System.arraycopy(natures, 0, newNatures, 0, natures.length);
+				newNatures[natures.length] = PlcnextConsumableLibraryNature.NATURE_ID;
 			}
 			description.setNatureIds(newNatures);
 			project.setDescription(description, null);

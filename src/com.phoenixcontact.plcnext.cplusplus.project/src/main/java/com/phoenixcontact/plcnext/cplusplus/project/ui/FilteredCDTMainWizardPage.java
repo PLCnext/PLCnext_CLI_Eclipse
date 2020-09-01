@@ -31,6 +31,7 @@ public class FilteredCDTMainWizardPage extends CDTMainWizardPage {
 		EntryDescriptor axc = null;
 		EntryDescriptor acfProjectTemplate = null;
 		EntryDescriptor categoryDescriptor = null;
+		EntryDescriptor consumableLibraryTemplate = null;
 		for(EntryDescriptor item : items) {
 			if(item.getId().equals("AXC2152Proj")) {
 				axc = item;
@@ -41,8 +42,11 @@ public class FilteredCDTMainWizardPage extends CDTMainWizardPage {
 			if(item.getId().equals("AcfProjectTemplate")) {
 				acfProjectTemplate = item;
 			}
+			if(item.getId().equals("ConsumableLibraryTemplate")) {
+				consumableLibraryTemplate = item;
+			}
 		}
-		if(axc != null || acfProjectTemplate != null)
+		if(axc != null || acfProjectTemplate != null || consumableLibraryTemplate != null)
 		{
 			items.clear();
 			items.add(categoryDescriptor);
@@ -53,6 +57,10 @@ public class FilteredCDTMainWizardPage extends CDTMainWizardPage {
 			if(acfProjectTemplate != null)
 			{
 				items.add(acfProjectTemplate);
+			}
+			if(consumableLibraryTemplate != null)
+			{
+				items.add(consumableLibraryTemplate);
 			}
 		}
 		return items;

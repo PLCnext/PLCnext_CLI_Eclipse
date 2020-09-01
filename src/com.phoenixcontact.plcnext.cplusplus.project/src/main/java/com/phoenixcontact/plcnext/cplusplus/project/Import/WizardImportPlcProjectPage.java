@@ -71,6 +71,7 @@ import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationC
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.project.PlcProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.project.acfproject.PlcnextAcfProjectNature;
+import com.phoenixcontact.plcnext.cplusplus.project.consumablelibrary.PlcnextConsumableLibraryNature;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
 
 /**
@@ -381,6 +382,8 @@ public class WizardImportPlcProjectPage extends WizardPage
 			ManagedCProjectNature.addManagedNature(project, subMonitor.split(2));
 			if (type == PLCnCLIProjectType.acfproject)
 				ManagedCProjectNature.addNature(project, PlcnextAcfProjectNature.NATURE_ID, subMonitor.split(2));
+			if(type == PLCnCLIProjectType.consumablelibrary)
+				ManagedCProjectNature.addNature(project, PlcnextConsumableLibraryNature.NATURE_ID, subMonitor.split(2));
 			
 			ManagedCProjectNature.addNature(project, PlcProjectNature.NATURE_ID, subMonitor.split(2));
 			ManagedCProjectNature.addManagedBuilder(project, subMonitor.split(2));
@@ -389,6 +392,9 @@ public class WizardImportPlcProjectPage extends WizardPage
 			if (type == PLCnCLIProjectType.acfproject)
 				projectType = ManagedBuildManager
 						.getProjectType("com.phoenixcontact.plcnext.cplusplus.toolchains.acfprojectType");
+			else if (type == PLCnCLIProjectType.consumablelibrary)
+				projectType = ManagedBuildManager
+				.getProjectType("com.phoenixcontact.plcnext.cplusplus.toolchains.consumablelibprojectType");
 			else
 				projectType = ManagedBuildManager
 						.getProjectType("com.phoenixcontact.plcnext.cplusplus.toolchains.projectType");
