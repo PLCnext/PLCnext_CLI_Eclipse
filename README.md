@@ -1,6 +1,6 @@
 # Welcome to the PLCnCLI eclipse plugin repository
 
-This repository is part of the PLCnext Toolchain and provides an Eclipse IDE plugin for programming for PLCnext Technology in high level language. The PLCnext CLI provides the entire toolchain for programming on the PLCnext Technology platform. The main repository for the CLI can be found [here](???).
+This repository is part of the PLCnext Toolchain and provides an Eclipse IDE plugin for programming for PLCnext Technology in high level language. The PLCnext CLI provides the entire toolchain for programming on the PLCnext Technology platform. The main repository for the CLI can be found [here](https://github.com/PLCnext/PLCnext_CLI).
 
 ## Installation & First Steps
 
