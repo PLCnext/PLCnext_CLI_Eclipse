@@ -386,6 +386,16 @@
                valueType="boolean">
          </option>
          <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optioncategory"
+               commandFalse="--no-datatypes-worksheet"
+               defaultValue="true"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optiondatatypeworksheet"
+               isAbstract="false"
+               name="Generate IEC datatypes worksheet"
+               resourceFilter="project"
+               valueType="boolean">
+         </option>
+         <option
                command="-s"
                id="com.phoenixcontact.plcnext.cplusplus.toolchains.metadatatool.optionsources"
                isAbstract="false"
