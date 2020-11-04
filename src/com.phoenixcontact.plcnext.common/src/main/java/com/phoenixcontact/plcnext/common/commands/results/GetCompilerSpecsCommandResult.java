@@ -38,6 +38,8 @@ public class GetCompilerSpecsCommandResult extends CommandResult
 		private IncludePath[] includePaths;
 
 		private Macro[] compilerMacros;
+		
+		private Target[] targets;
 
 		public String getCompilerPath()
 		{
@@ -67,6 +69,11 @@ public class GetCompilerSpecsCommandResult extends CommandResult
 		public Macro[] getMacros()
 		{
 			return compilerMacros;
+		}
+		
+		public Target[] getTargets()
+		{
+			return targets;
 		}
 
 		public static class Macro

@@ -52,10 +52,10 @@ import com.phoenixcontact.plcnext.common.commands.GetCompilerSpecsCommand;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult;
-import com.phoenixcontact.plcnext.common.commands.results.GetCompilerSpecsCommandResult.Compiler.Macro;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.IncludePath;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.ProjectTarget;
+import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 
 /**
@@ -481,26 +481,25 @@ public class ToolchainConfigurator
 
 		Collection<String> macroNames = new ArrayList<String>();
 
-		for (GetCompilerSpecsCommandResult.Compiler result : compiler)
+		Target minMacroTarget = Arrays.stream(compiler).map(c -> c.getTargets()).flatMap(t -> Arrays.stream(t)).min(new TargetComparator()).orElse(null);
+		GetCompilerSpecsCommandResult.Compiler minTargetCompiler = Arrays.stream(compiler)
+				.filter(c -> Arrays.stream(c.getTargets()).anyMatch(t -> t.equals(minMacroTarget)))
+				.findAny().get();
+		
+		Arrays.stream(minTargetCompiler.getMacros()).forEach(macro -> 
 		{
-
-			List<Macro> macroSubResults = Arrays.asList(result.getMacros());
-
-			for (Macro macro : macroSubResults)
+			String name = macro.getName();
+			String value = "";
+			if (macro.getValue() != null)
 			{
-				String name = macro.getName();
-				String value = "";
-				if (macro.getValue() != null)
-				{
-					value = macro.getValue();
-				}
-				if (!macroNames.contains(name))
-				{
-					macroNames.add(name);
-					macros.put(name, value);
-				}
+				value = macro.getValue();
 			}
-		}
+			if (!macroNames.contains(name))
+			{
+				macroNames.add(name);
+				macros.put(name, value);
+			}
+		});		
 
 		options.clear();
 		options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
@@ -525,7 +524,6 @@ public class ToolchainConfigurator
 				try
 				{
 					includePaths = gson.fromJson(reply, GetProjectInformationCommandResult.class).getIncludePaths();
-
 				} catch (JsonSyntaxException ex)
 				{
 					Activator.getDefault().logError("Could not determine include paths", e);
@@ -533,9 +531,11 @@ public class ToolchainConfigurator
 				}
 			} else
 			{
-				List<String> output = e.getMessages().stream()
-						.filter(m -> m.getMessageType() == MessageType.information).map(m -> m.getMessage())
-						.collect(Collectors.toList());
+				List<String> output = e.getMessages()
+									   .stream()
+									   .filter(m -> m.getMessageType() == MessageType.information)
+									   .map(m -> m.getMessage())
+									   .collect(Collectors.toList());
 				if (output != null)
 				{
 					includePaths = CommandResult
@@ -544,10 +544,19 @@ public class ToolchainConfigurator
 				}
 			}
 		}
-
+		
+		ProjectTarget minTarget = Arrays.stream(projectInformation.getTargets()).min(new TargetComparator()).orElse(null);
+		
+		List<String> filteredIncludes = Arrays.stream(includePaths)
+											  .filter(p ->p.getTargets() == null ||
+														  p.getTargets().length == 0 ||
+														  Arrays.stream(p.getTargets())
+														  		.anyMatch(t -> t.equals(minTarget)))
+											  .map(p -> p.getPath())
+											  .collect(Collectors.toList());
+		
 		return new MacrosAndIncludesWrapper(
-				Arrays.stream(includePaths).map(p -> p.getPath()).collect(Collectors.toList()), macros);
-
+				filteredIncludes, macros);
 	}
 
 	private void addConfigurations(IProject project, ICProjectDescription projectDescription, IProgressMonitor monitor)

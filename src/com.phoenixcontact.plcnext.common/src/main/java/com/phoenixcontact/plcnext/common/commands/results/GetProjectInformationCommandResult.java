@@ -119,6 +119,8 @@ public class GetProjectInformationCommandResult extends CommandResult
 		private String path;
 		
 		private boolean exists;
+		
+		private Target[] targets;
 
 		public String getPath()
 		{
@@ -130,10 +132,16 @@ public class GetProjectInformationCommandResult extends CommandResult
 			return exists;
 		}
 		
-		public IncludePath(String path, boolean exists)
+		public Target[] getTargets()
+		{
+			return targets;
+		}
+		
+		public IncludePath(String path, boolean exists, Target[] targets)
 		{
 			this.path = path;
 			this.exists = exists;
+			this.targets = targets;
 		}
 	}
 }
