@@ -545,7 +545,7 @@ public class ToolchainConfigurator
 			}
 		}
 		
-		ProjectTarget minTarget = Arrays.stream(projectInformation.getTargets()).min(new TargetComparator()).orElse(null);
+		ProjectTarget minTarget = Arrays.stream(projectInformation.getTargets()).filter(t -> t.isAvailable()).min(new TargetComparator()).orElse(null);
 		
 		List<String> filteredIncludes = Arrays.stream(includePaths)
 											  .filter(p ->p.getTargets() == null ||
