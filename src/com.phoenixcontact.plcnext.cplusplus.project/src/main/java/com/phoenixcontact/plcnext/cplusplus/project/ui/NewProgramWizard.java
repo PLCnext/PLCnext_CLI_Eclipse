@@ -52,7 +52,7 @@ public class NewProgramWizard extends Wizard implements INewWizard
 	{
 		this.selection = selection;
 
-		setWindowTitle("PLCnext C++ Component");
+		setWindowTitle("PLCnext C++ Program");
 
 		// get commandManager to create and execute commands
 		IEclipseContext context = EclipseContextHelper.getActiveContext();
