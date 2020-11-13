@@ -249,7 +249,7 @@ public class SupportedTargetsPerformOKJob extends Job
 				}
 			} catch (ProcessExitedWithErrorException e)
 			{
-				Activator.getDefault().logError("Error while trying to set target for project.", e);
+				return new Status(Status.ERROR, Activator.PLUGIN_ID, "Error while trying to set target for project.", e);
 			}
 		}
 		return Status.OK_STATUS;

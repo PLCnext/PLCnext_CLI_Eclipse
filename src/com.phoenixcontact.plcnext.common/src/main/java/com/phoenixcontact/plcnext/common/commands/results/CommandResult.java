@@ -64,9 +64,16 @@ public class CommandResult
 			} catch (JsonSyntaxException e)
 			{
 				String result = stdout.stream().dropWhile(x -> !x.startsWith("{")).collect(Collectors.joining(""));
-				if (result != null && !result.isBlank())
-					return new Gson().fromJson(result, clazz);
-
+				if (result != null && !result.isBlank()) 
+				{
+					try 
+					{
+						return new Gson().fromJson(result, clazz);
+					}catch(JsonSyntaxException e1)
+					{
+						throw new ProcessExitedWithErrorException(stdout, null, "Could not convert result to json");
+					}
+				}
 				throw new ProcessExitedWithErrorException(stdout, null, "Could not convert result to json");
 			}
 		}

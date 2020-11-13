@@ -39,6 +39,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -481,7 +484,19 @@ public class ToolchainConfigurator
 
 		Collection<String> macroNames = new ArrayList<String>();
 
-		Target minMacroTarget = Arrays.stream(compiler).map(c -> c.getTargets()).flatMap(t -> Arrays.stream(t)).min(new TargetComparator()).orElse(null);
+		Target minMacroTarget = Arrays.stream(compiler).map(c -> c.getTargets()).filter(x -> x != null).flatMap(t -> Arrays.stream(t)).min(new TargetComparator()).orElse(null);
+		if(minMacroTarget == null)
+		{
+			Activator.getDefault().logError("Could not determine min target from compiler specification.", null);
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					// starting message dialog on ui thread
+					MessageDialog.openError(null, "Problem encountered",
+							"Includes and Macros could not be set for project because an error occured. No target was found for the provided compiler.");
+				}
+			});
+			return new MacrosAndIncludesWrapper(includes, macros);
+		}
 		GetCompilerSpecsCommandResult.Compiler minTargetCompiler = Arrays.stream(compiler)
 				.filter(c -> Arrays.stream(c.getTargets()).anyMatch(t -> t.equals(minMacroTarget)))
 				.findAny().get();

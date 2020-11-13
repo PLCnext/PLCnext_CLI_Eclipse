@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.phoenixcontact.plcnext.common.commands.results.ErrorResult;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
 
@@ -78,5 +80,22 @@ public class ProcessExitedWithErrorException extends Exception
 	public JsonObject getReply()
 	{
 		return reply;
+	}
+	
+	@Override
+	public String getMessage() 
+	{
+		try 
+		{
+			return new Gson().fromJson(messages.stream()
+											   .map(m -> m.getMessage())
+											   .dropWhile(x -> !x.startsWith("{"))
+											   .collect(Collectors.joining("")),
+									   ErrorResult.class).getError();
+		}
+		catch(Exception e) 
+		{
+			return super.getMessage();
+		}
 	}
 }

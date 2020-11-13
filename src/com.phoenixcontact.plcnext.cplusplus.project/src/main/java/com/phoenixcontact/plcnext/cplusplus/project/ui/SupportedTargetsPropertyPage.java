@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -357,6 +358,13 @@ public class SupportedTargetsPropertyPage extends PropertyPage implements IWorkb
 
 			} catch (ProcessExitedWithErrorException e)
 			{
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						// starting message dialog on ui thread
+						MessageDialog.openError(null, "Problem encountered",
+								"Dialog might show incorrect data because of the following error:\n"+e.getMessage());
+					}
+				});
 				Activator.getDefault().logError("Error while trying to execute clif command.", e); //$NON-NLS-1$
 			}
 		}
