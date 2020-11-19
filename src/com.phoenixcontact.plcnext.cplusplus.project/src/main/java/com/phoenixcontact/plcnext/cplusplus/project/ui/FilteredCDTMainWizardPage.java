@@ -70,16 +70,21 @@ public class FilteredCDTMainWizardPage extends CDTMainWizardPage {
 	protected boolean validatePage() {
 		String projectName = getProjectName();
 		
-//		if(projectName.length() > 0 && Character.isLowerCase(projectName.charAt(0))) {
-//			setErrorMessage("Project name cannot start with lowercase character.");
-//			return false;
-//		}
-		
 		Pattern pattern = Pattern.compile("^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
 		Matcher match = pattern.matcher(projectName);
 		if(match.matches())
 			return super.validatePage();
 		
+		if(projectName.length() == 0) {
+			setErrorMessage("Project name cannot be empty.");
+			return false;
+		}
+		
+		if(Character.isLowerCase(projectName.charAt(0))) {
+			setErrorMessage("Project name cannot start with lowercase character.");
+			return false;
+		}
+				
 		setErrorMessage("Project name does not match pattern ^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
 		return false;
 	}
