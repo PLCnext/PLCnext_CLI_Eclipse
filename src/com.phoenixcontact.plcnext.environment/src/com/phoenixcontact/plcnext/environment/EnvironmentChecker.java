@@ -5,39 +5,45 @@
 
 package com.phoenixcontact.plcnext.environment;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IStartup;
 
-public class EnvironmentChecker implements IStartup
-{
+public class EnvironmentChecker implements IStartup {
 
 	@Override
-	public void earlyStartup()
+	public void earlyStartup() 
 	{
-		try
+		try 
 		{
 			final String version = System.getProperty("java.version");
-			if (version != null && version.startsWith("1."))
+			Pattern pattern = Pattern.compile("^(?<MajorVersion>\\d+).*");
+			Matcher match = pattern.matcher(version);
+			match.matches();
+			int majorVersion = Integer.parseInt(match.group("MajorVersion"));
+			if (majorVersion < 11) 
 			{
-				Display.getDefault().syncExec(new Runnable()
+				Display.getDefault().syncExec(new Runnable() 
 				{
 
 					@Override
-					public void run()
+					public void run() 
 					{
 						ErrorDialog.openError(null, "Java version not supported",
-								"The currently installed version of the PLCnext Technology feature requires java version 9 or higher.\n"
-										+ "Please make sure eclipse is started at least with java version 9 otherwise the feature will not work as expected.\n"
+								"The currently installed version of the PLCnext Technology feature requires java version 11 or higher.\n"
+										+ "Please make sure eclipse is started at least with java version 11 otherwise the feature will not work as expected.\n"
 										+ "Java versions can be found here: https://jdk.java.net/archive/",
 								new Status(Status.ERROR, Activator.PLUGIN_ID,
-										"Used java version: " + version + "\nRequired java version: 9 or higher"));
+										"Used java version: " + version + "\nRequired java version: 11 or higher"));
 					}
 				});
 			}
-		} catch (SecurityException e)
-		{
+
+		} catch (Exception e) {
 			Activator.getDefault().logError("Exception while trying to get java.version property", e);
 		}
 	}
