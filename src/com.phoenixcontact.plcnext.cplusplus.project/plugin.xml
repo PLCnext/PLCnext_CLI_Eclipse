@@ -298,4 +298,12 @@
             name="PLCnext Technology">
       </category>
    </extension>
+   <extension
+         point="org.eclipse.cdt.ui.cPropertyTab">
+      <tab
+            class="com.phoenixcontact.plcnext.cplusplus.project.ui.CMakeFlagsPropertyTab"
+            name="PLCnext CMake Flags"
+            parent="org.eclipse.cdt.managedbuilder.ui.properties.Page_BuildSettings">
+      </tab>
+   </extension>
 </plugin>
