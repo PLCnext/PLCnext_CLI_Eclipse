@@ -117,6 +117,13 @@ public class CMakeFlagsPropertyTab extends AbstractCPropertyTab {
 				Activator.getDefault().logError("Error while trying to write "+cmakeFlagsFileName, e);
 			}
 		}
+		else 
+		{
+			if(cmakeFlagsFile.exists())
+			{
+				cmakeFlagsFile.delete();
+			}
+		}
 	}
 	
 	private void setExampleIfEmpty() 
