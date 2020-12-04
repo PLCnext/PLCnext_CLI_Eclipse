@@ -404,7 +404,7 @@ public class WizardImportPlcProjectPage extends WizardPage
 
 			//create bin folder if it does not exist
 			IFolder binFolder = project.getFolder("bin"); //$NON-NLS-1$
-			if(!binFolder.exists())
+			if(!new File(binFolder.getLocationURI()).exists() && ! binFolder.exists())
 			{
 				binFolder.create(false, false, subMonitor.split(1));
 			}
