@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.StatusDialog;
+import org.eclipse.jface.util.Util;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -159,7 +160,7 @@ public class InstallSdkDialog extends StatusDialog
 				return;
 			}
 			
-			updateStatus(Status.OK_STATUS);
+			updateStatus(new Status(Status.OK, Activator.PLUGIN_ID, Util.ZERO_LENGTH_STRING));
 		}
 	}
 	
