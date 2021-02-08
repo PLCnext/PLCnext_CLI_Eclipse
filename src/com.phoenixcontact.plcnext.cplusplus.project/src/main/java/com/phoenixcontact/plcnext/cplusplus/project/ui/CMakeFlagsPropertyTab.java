@@ -132,8 +132,8 @@ public class CMakeFlagsPropertyTab extends AbstractCPropertyTab {
 		{
 			text.setForeground(grey);
 			text.setText("Example:\r\n"
-					+ "-G %22Unix Makefiles%22\r\n"
-					+ "-DCMAKE_MAKE_PROGRAM=%22mymakepath%22");
+					+ "-G \"Unix Makefiles\"\r\n"
+					+ "-DCMAKE_MAKE_PROGRAM=\"mymakepath\"");
 			exampleIsShown = true;
 		}
 	}
