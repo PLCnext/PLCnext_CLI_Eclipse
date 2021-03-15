@@ -46,6 +46,10 @@ public class SetSettingCommand extends Command
 	protected String[] formatOption(String key, String value) {
 		
 		if(key.equals(OPTION_SdkPaths)) {
+			if(value.endsWith("\\") && !value.endsWith("\\\\"))
+			{
+				value = value + "\\";
+			}
 			value = "\""+value+"\""; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return super.formatOption(key, value);
