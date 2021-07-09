@@ -275,6 +275,26 @@
          </option>
          <option
                category="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optioncategory"
+               command="--libraryversion "
+               commandGenerator="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.OptionWithValueCommandGenerator"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionlibraryversion"
+               isAbstract="false"
+               name="Library Version"
+               resourceFilter="project"
+               valueType="string">
+         </option>
+         <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optioncategory"
+               command="--librarydescription "
+               commandGenerator="com.phoenixcontact.plcnext.cplusplus.toolchains.internal.OptionWithValueCommandGenerator"
+               id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionlibrarydescription"
+               isAbstract="false"
+               name="Library Description"
+               resourceFilter="project"
+               valueType="string">
+         </option>
+         <option
+               category="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optioncategory"
                id="com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuildtool.optionother"
                isAbstract="false"
                name="Additional options"
