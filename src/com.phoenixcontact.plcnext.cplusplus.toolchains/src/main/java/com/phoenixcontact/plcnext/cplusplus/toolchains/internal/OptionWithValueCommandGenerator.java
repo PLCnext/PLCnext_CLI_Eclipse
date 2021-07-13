@@ -29,11 +29,7 @@ public class OptionWithValueCommandGenerator implements IOptionCommandGenerator 
 		
 		try {
 			String value = option.getStringValue();
-			if(value != null && !value.isBlank())
-			{
-				return option.getCommand()+" \""+value+"\"";
-			}
-			return null;
+			return option.getCommand()+" \""+(value!= null? value : "")+"\"";
 		} catch (BuildException e) {
 			Activator.getDefault().logError("Could not set build property: "+option.getName(), e);
 			return null;
