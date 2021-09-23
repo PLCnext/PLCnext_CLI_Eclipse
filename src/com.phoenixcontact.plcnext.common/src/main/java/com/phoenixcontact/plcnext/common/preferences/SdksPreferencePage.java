@@ -5,10 +5,13 @@
 
 package com.phoenixcontact.plcnext.common.preferences;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.CoreException;
@@ -23,23 +26,27 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import com.phoenixcontact.plcnext.common.Activator;
@@ -48,11 +55,15 @@ import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
+import com.phoenixcontact.plcnext.common.commands.GetSdksCommand;
 import com.phoenixcontact.plcnext.common.commands.GetSettingCommand;
 import com.phoenixcontact.plcnext.common.commands.InstallSdkCommand;
 import com.phoenixcontact.plcnext.common.commands.SetSettingCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetSdksCommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.GetSdksCommandResult.SdkPath;
 import com.phoenixcontact.plcnext.common.commands.results.GetSettingCommandResult;
+import com.phoenixcontact.plcnext.common.commands.results.Target;
 import com.phoenixcontact.plcnext.common.preferences.InstallSdkDialog.InstallSdkDialogResult;
 import com.phoenixcontact.plcnext.common.preferences.SdkPreferenceDataModel.InstallSdk;
 
@@ -62,7 +73,7 @@ import com.phoenixcontact.plcnext.common.preferences.SdkPreferenceDataModel.Inst
 public class SdksPreferencePage extends PreferencePage implements IWorkbenchPreferencePage
 {
 	private SdkPreferenceDataModel model = new SdkPreferenceDataModel();
-	private ListViewer sdkViewer;
+	private TreeViewer sdkViewer;
 	private ICommandManager commandManager;
 
 	/**
@@ -80,6 +91,105 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 	public void init(IWorkbench workbench)
 	{
 	}
+	
+	private class SdksContentProvider implements ITreeContentProvider
+	{
+
+		@Override
+		public Object[] getElements(Object inputElement) {
+			return elements.toArray();
+		}
+
+		@Override
+		public Object[] getChildren(Object parentElement) {
+			if(parentElement instanceof SdkPath)
+			{
+				SdkPath sdkPath = (SdkPath) parentElement;
+				return sdkPath.getTargets();
+			}
+			return null;
+		}
+
+		@Override
+		public Object getParent(Object element) {
+			return null;
+		}
+
+		@Override
+		public boolean hasChildren(Object element) {
+			if(element instanceof SdkPath)
+			{
+				SdkPath sdkPath = (SdkPath) element;
+				Target[] targets = sdkPath.getTargets();
+				return targets != null && targets.length > 0;
+			}
+			return false;
+		}
+		
+		private List<SdkPath> elements = new ArrayList<SdkPath>();
+
+		@Override
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+		{
+			if (newInput instanceof SdkPath)
+			{
+				this.elements.add((SdkPath) newInput);
+			}
+			if (newInput instanceof SdkPath[])
+			{
+				this.elements.addAll(Arrays.asList((SdkPath[]) newInput));
+			}
+			if (newInput instanceof String)
+			{
+				this.elements.add(new SdkPath((String)newInput, null));
+			}
+			if (newInput instanceof String[])
+			{
+				this.elements.addAll(Arrays.stream((String[])newInput).map(x -> new SdkPath(x, null)).collect(Collectors.toList()));
+			}
+			if (oldInput != null)
+			{
+				this.elements.removeIf(x -> x.getPath().equals(oldInput));
+			}
+			if (viewer instanceof TreeViewer)
+			{
+				((TreeViewer) viewer).refresh();
+			}
+		}
+	}
+	
+	private class SdkLabelProvider extends LabelProvider implements IColorProvider
+	{
+		private Color grey = new Color(Display.getCurrent(), 100, 100, 100);
+		
+		@Override
+		public String getText(Object element) {
+			if(element instanceof SdkPath)
+			{
+				return ((SdkPath)element).getPath();
+			}
+			if(element instanceof Target)
+			{
+				return ((Target)element).getDisplayName();
+			}
+			return null;
+		}
+
+		@Override
+		public Color getForeground(Object element) {
+			if(element instanceof Target)
+			{
+				return grey;
+			}
+			return null;
+		}
+
+		@Override
+		public Color getBackground(Object element) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}
 
 	@Override
 	protected Control createContents(Composite parent)
@@ -92,40 +202,12 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 		description.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, false, false, 2, 1));
 		description.setText(Messages.SdksPreferencePage_SDKsLabel);
 
-		sdkViewer = new ListViewer(control, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		sdkViewer = new TreeViewer(control, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		sdkViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3));
-
-		sdkViewer.setLabelProvider(new LabelProvider());
+		
+		sdkViewer.setLabelProvider(new SdkLabelProvider());
 		sdkViewer.setComparator(new ViewerComparator());
-		sdkViewer.setContentProvider(new IStructuredContentProvider()
-		{
-			private String[] elements;
-
-			@Override
-			public Object[] getElements(Object inputElement)
-			{
-				return elements;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
-			{
-				if (newInput instanceof String[])
-				{
-					this.elements = (String[]) newInput;
-				} else if (newInput instanceof Collection)
-				{
-					this.elements = (String[]) ((Collection<String>) newInput).toArray(new String[0]);
-				}
-
-				if (viewer instanceof ListViewer)
-				{
-					((ListViewer) viewer).refresh();
-				}
-
-			}
-		});
+		sdkViewer.setContentProvider(new SdksContentProvider());
 		fillViewer();
 
 		Button addButton = new Button(control, SWT.PUSH);
@@ -160,10 +242,17 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 			{
 				if (event.getSelection() instanceof IStructuredSelection)
 				{
-
 					IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 
 					removeButton.setEnabled(selection.size() > 0);
+					
+					Object selectedElement = selection.getFirstElement();
+					
+					
+					if(selectedElement != null && selectedElement instanceof Target)
+					{
+						sdkViewer.setSelection(StructuredSelection.EMPTY);
+					}
 				}
 			}
 		});
@@ -182,8 +271,7 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 		if (result != null)
 		{
 			model.addSdkForSet(result);
-
-			sdkViewer.add(result);
+			sdkViewer.getContentProvider().inputChanged(sdkViewer, null, result);
 		}
 	}
 
@@ -195,45 +283,54 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 		if (result != null)
 		{
 			model.addSdkForInstall(result.getArchive(), result.getDestination(), result.getForce());
-			sdkViewer.add(result.getDestination());
+			sdkViewer.getContentProvider().inputChanged(sdkViewer, null, result.getDestination());
 		}
 	}
 
 	private void handleRemoveButtonSelected()
 	{
 
-		int index = sdkViewer.getList().getSelectionIndex();
-		if (index >= 0)
+		int count = sdkViewer.getTree().getSelectionCount();
+		if (count > 0)
 		{
-			String element = sdkViewer.getList().getItem(index);
-
-			sdkViewer.getList().remove(element);
-			model.removeSdk(element);
+			TreeItem selection = sdkViewer.getTree().getSelection()[0];
+			String text = selection.getText();
+			sdkViewer.getContentProvider().inputChanged(sdkViewer, text, null);
+			model.removeSdk(text);
+			
 			sdkViewer.setSelection(StructuredSelection.EMPTY);
 		}
-
 	}
 
 	private void fillViewer()
 	{
 		try
 		{
-			Map<String, String> options = new HashMap<String, String>();
-			options.put(GetSettingCommand.OPTION_all, null);
 			CommandResult commandResult = commandManager
-					.executeCommand(commandManager.createCommand(options, GetSettingCommand.class), false, null);
-			GetSettingCommandResult sdksCommandResult = commandResult.convertToTypedCommandResult(GetSettingCommandResult.class);
+					.executeCommand(commandManager.createCommand(null, GetSdksCommand.class), false, null);
+			GetSdksCommandResult sdksCommandResult = commandResult.convertToTypedCommandResult(GetSdksCommandResult.class);
 
-			String[] sdks = sdksCommandResult.getSetting().getSdkPaths();
-
-			for (String sdk : sdks)
-			{
-				sdkViewer.add(sdk);
-			}
+			SdkPath[] sdks = sdksCommandResult.getSdkPaths();
+			sdkViewer.setInput(sdks);
+			
 		} catch (ProcessExitedWithErrorException e)
 		{
 			ErrorDialog.openError(getShell(), null, null,
 					new Status(Status.ERROR, Activator.PLUGIN_ID, Messages.SdksPreferencePage_GetSdksError, e));
+			try 
+			{
+				Map<String, String> options = new HashMap<String, String>();
+				options.put(GetSettingCommand.OPTION_all, null);
+				CommandResult commandResult = commandManager
+						.executeCommand(commandManager.createCommand(options, GetSettingCommand.class), false, null);
+				GetSettingCommandResult sdksCommandResult = commandResult.convertToTypedCommandResult(GetSettingCommandResult.class);
+
+				String[] sdks = sdksCommandResult.getSetting().getSdkPaths();
+				sdkViewer.setInput(sdks);
+				
+			} catch (ProcessExitedWithErrorException e1) {
+				Activator.getDefault().logError("Get settings threw an error:", e);
+			}
 		}
 	}
 	

@@ -34,10 +34,9 @@ public class SdkPreferenceDataModel
 		setSdks.add(sdk);
 	}
 	
-	@SuppressWarnings("unlikely-arg-type")
 	protected void removeSdk(String sdk)
 	{
-		if(installSdks.remove(sdk)) return;
+		if(installSdks.removeIf(x -> x.getDestination().equals(sdk))) return;
 		if(setSdks.remove(sdk)) return;
 		
 		removeSdks.add(sdk);
