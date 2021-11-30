@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.phoenixcontact.plcnext.common;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: PHOENIX CONTACT GmbH & Co. KG
 Automatic-Module-Name: com.phoenixcontact.plcnext.common
-Bundle-RequiredExecutionEnvironment: JavaSE-9
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: com.phoenixcontact.plcnext.common,
  com.phoenixcontact.plcnext.common.clicheck,
  com.phoenixcontact.plcnext.common.commands,

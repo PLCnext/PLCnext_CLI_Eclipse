@@ -4,7 +4,7 @@ Bundle-Name: PLCnext C++ Project
 Bundle-SymbolicName: com.phoenixcontact.plcnext.cplusplus.project;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: PHOENIX CONTACT GmbH & Co. KG
-Bundle-RequiredExecutionEnvironment: JavaSE-9
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: com.google.gson;bundle-version="2.8.2",
  com.phoenixcontact.plcnext.common;bundle-version="1.0.0",
  com.phoenixcontact.plcnext.cplusplus.toolchains;bundle-version="1.0.0",
@@ -17,7 +17,8 @@ Require-Bundle: com.google.gson;bundle-version="2.8.2",
  org.eclipse.e4.core.contexts;bundle-version="1.7.0",
  org.eclipse.e4.core.di;bundle-version="1.7.0",
  org.eclipse.ui;bundle-version="3.109.100",
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ jakarta.xml.bind;bundle-version="2.3.3"
 Automatic-Module-Name: PlcNext
 Bundle-Activator: com.phoenixcontact.plcnext.cplusplus.project.Activator
 Bundle-ActivationPolicy: lazy

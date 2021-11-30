@@ -9,9 +9,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!--
     <eclipse-repo.url>http://download.eclipse.org/releases/photon</eclipse-repo.url>
-    -->
     <eclipse-repo.url>http://nts-sw-repo01.europe.phoenixcontact.com:8081/repository/p2-photon-mirror</eclipse-repo.url>
-    <tycho.version>1.2.0</tycho.version>
+    -->
+    <eclipse-repo.url>http://nts-sw-repo01.europe.phoenixcontact.com:8081/repository/p2-2021-09-mirror</eclipse-repo.url>
+    <tycho.version>1.7.0</tycho.version>
     <junit.version>[4.13.1,)</junit.version>
     <maven.compiler.version>3.8.0</maven.compiler.version>
     <maven.surefire.version>2.22.0</maven.surefire.version>
@@ -76,7 +77,7 @@
             <environment>
               <os>win32</os>
               <ws>win32</ws>
-              <arch>x86</arch>
+              <arch>x86_64</arch>
             </environment>
             <environment>
               <os>linux</os>
