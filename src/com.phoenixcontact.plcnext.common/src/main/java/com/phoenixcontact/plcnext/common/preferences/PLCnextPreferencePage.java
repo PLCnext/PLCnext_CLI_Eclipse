@@ -33,8 +33,6 @@ public class PLCnextPreferencePage extends FieldEditorPreferencePage implements 
 	@Override
 	public void init(IWorkbench workbench)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

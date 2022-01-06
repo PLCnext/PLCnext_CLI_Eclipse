@@ -7,6 +7,7 @@ package com.phoenixcontact.plcnext.cplusplus.project.comfortfunction;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -14,9 +15,10 @@ import java.util.stream.Collectors;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.WizardPage;
@@ -44,8 +46,16 @@ public class SelectPortAttributesWizardPage extends WizardPage
 	private CheckboxTableViewer attributesListViewer;
 	private Text commentPreview;
 	private String text;
-	private final String[] allowedAttributes = new String[] { "Input", "Output", "ReadOnly", "Retain", "Opc", "Ehmi",
-			"ProfiCloud", "Archive" };
+	private Map<String, String> attributes = Map.ofEntries(
+			Map.entry("Input", "The variable is defined as IN port."),
+			Map.entry("Output", "The variable is defined as OUT port."),
+			Map.entry("Retain", "The variable value is retained in case of a warm and hot restart (only initialized in case of a cold restart)."),
+			Map.entry("Opc", "The variable is visible for OPC UA."),
+			Map.entry("Ehmi", "The variable is visible for the PLCnext Engineer  HMI.( Note: This attribute is currently not implemented. Implementation is planned.)"),
+			Map.entry("ProfiCloud", "The variable is visible for Proficloud (for OUT ports only)."),
+			Map.entry("Redundant", "This attribute is relevant only for PLCnext Technology controllers with redundancy function.\r\n"
+					+ "This variable is synchronized from PRIMARY controller to BACKUP controller.\r\n"
+					+ "From FW 2022.0 LTS"));
 	private Composite container;
 	private ScrolledComposite scrolledComposite;
 	CachedCliInformation cache;
@@ -111,7 +121,18 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		attributesListViewer = CheckboxTableViewer.newCheckList(container, SWT.PUSH | SWT.BORDER);
 		attributesListViewer.getTable().setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
-		attributesListViewer.setLabelProvider(new LabelProvider());
+		ColumnViewerToolTipSupport.enableFor(attributesListViewer);
+		attributesListViewer.setLabelProvider(new ColumnLabelProvider() 
+		{
+			@Override
+			public String getToolTipText(Object element) {
+				if(element instanceof String) 
+				{
+					return attributes.get(element);
+				}
+				return super.getToolTipText(element);
+			}
+		});
 		attributesListViewer.setContentProvider(new IStructuredContentProvider()
 		{
 			private String[] elements;
@@ -131,8 +152,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 				}
 			}
 		});
-		// TODO fill list with all possible attributes
-		attributesListViewer.setInput(allowedAttributes);
+		attributesListViewer.setInput(attributes.keySet().toArray(new String[0]));
 		attributesListViewer.addSelectionChangedListener(new ISelectionChangedListener()
 		{
 
@@ -149,6 +169,13 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		commentPreview.setEnabled(false);
 		commentPreview.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, true, false, 1, 3));
 
+		
+		// ******************info label*************
+		Label infoLabel = new Label(container, SWT.NONE);
+		infoLabel.setText("For more information visit www.plcnext.help");
+		infoLabel.setLayoutData(new GridData(SWT.CENTER, SWT.BOTTOM, true, true, 4,1));
+				
+				
 		updateCommentPreview();
 	}
 
