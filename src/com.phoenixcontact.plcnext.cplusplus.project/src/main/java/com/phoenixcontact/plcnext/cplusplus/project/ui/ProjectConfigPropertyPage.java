@@ -97,7 +97,8 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 					else
 					{
 						String major = matcher.group(groupName);
-						if(Integer.parseInt(major)<2020)
+						if(Integer.parseInt(major)<2020
+								|| Integer.parseInt(major) >= 2030)
 						{
 							setMessage("No valid version! Please use format: 202x.x or 202x.x.x", ERROR);
 							setValid(false);
