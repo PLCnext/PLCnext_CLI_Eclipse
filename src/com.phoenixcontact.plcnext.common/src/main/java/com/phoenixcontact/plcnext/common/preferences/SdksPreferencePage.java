@@ -438,7 +438,7 @@ public class SdksPreferencePage extends PreferencePage implements IWorkbenchPref
 					try
 					{
 						commandManager.executeCommand(commandManager.createCommand(options, InstallSdkCommand.class),
-								monitor);
+								false, monitor);
 					} catch (ProcessExitedWithErrorException e)
 					{
 						return new Status(Status.ERROR, Activator.PLUGIN_ID,
