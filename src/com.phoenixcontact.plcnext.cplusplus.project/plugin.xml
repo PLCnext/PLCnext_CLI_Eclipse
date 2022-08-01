@@ -275,7 +275,7 @@
             <command
                   commandId="com.phoenixcontact.plcnext.cplusplus.project.generateportcommentcommand"
                   icon="icons/Iec.VariableInport.16.png"
-                  label="&amp;Mark As Port"
+                  label="&amp;Mark As Program Port"
                   style="push"
                   tooltip="Mark the currently selected line as port">
                <visibleWhen
