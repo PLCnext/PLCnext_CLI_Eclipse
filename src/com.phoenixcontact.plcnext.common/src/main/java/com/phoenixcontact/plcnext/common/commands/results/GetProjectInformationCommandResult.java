@@ -31,10 +31,17 @@ public class GetProjectInformationCommandResult extends CommandResult
 	private PLCnCLIProjectType type;
 
 	private ProjectTarget[] targets; 
+	
+	private Path[] externalLibraries;
 
 	public ProjectTarget[] getTargets()
 	{
 		return targets;
+	}
+	
+	public Path[] getExternalLibraries()
+	{
+		return externalLibraries;
 	}
 
 	public String getName()
@@ -114,19 +121,12 @@ public class GetProjectInformationCommandResult extends CommandResult
 		return includePaths;
 	}
 
-	public static class IncludePath
+	public static class IncludePath extends Path
 	{
-		private String path;
-		
 		private boolean exists;
 		
 		private Target[] targets;
 
-		public String getPath()
-		{
-			return path;
-		}
-		
 		public boolean exists()
 		{
 			return exists;
@@ -139,9 +139,23 @@ public class GetProjectInformationCommandResult extends CommandResult
 		
 		public IncludePath(String path, boolean exists, Target[] targets)
 		{
-			this.path = path;
+			super(path);
 			this.exists = exists;
 			this.targets = targets;
+		}
+	}
+	public static class Path
+	{
+		private String path;
+
+		public String getPath()
+		{
+			return path;
+		}
+		
+		public Path(String path)
+		{
+			this.path = path;
 		}
 	}
 }

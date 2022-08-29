@@ -15,6 +15,7 @@ public class ProjectConfiguration {
 	private String libraryVersion = "";
 	private String libraryDescription = "";
 	private String engineerVersion = "";
+	private ExcludedFiles excludedFiles = null;
 		
 	@XmlElement(name="LibraryVersion", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
 	public String getLibraryVersion() {
@@ -38,5 +39,13 @@ public class ProjectConfiguration {
 	}
 	public void setEngineerVersion(String engineerVersion) {
 		this.engineerVersion = engineerVersion;
+	}
+	
+	@XmlElement(name="ExcludedFiles", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
+	public ExcludedFiles getExcludedFiles() {
+		return excludedFiles;
+	}
+	public void setExcludedFiles(ExcludedFiles excludedFiles) {
+		this.excludedFiles = excludedFiles;
 	}
 }

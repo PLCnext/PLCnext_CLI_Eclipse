@@ -114,6 +114,7 @@ public class Messages extends NLS {
 	public static String NewProjectCommand_optionoutput;
 	public static String NewProjectCommand_optionpname;
 	public static String NewProjectCommand_verb;
+	public static String ProjectConfigLibsLabelProvider_TooltipInvalidLib;
 	public static String SetSettingCommand_optionAdd;
 	public static String SetSettingCommand_optionRemove;
 	public static String SetSettingCommand_optionSdkPaths;
