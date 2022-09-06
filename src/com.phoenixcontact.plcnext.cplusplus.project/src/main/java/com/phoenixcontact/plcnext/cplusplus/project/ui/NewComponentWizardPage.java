@@ -86,7 +86,7 @@ public class NewComponentWizardPage extends WizardPage
 			@Override
 			public void run()
 			{
-				setComplete();
+				setPageComplete(false);
 				Composite container = new Composite(parent, SWT.NONE);
 				setControl(container);
 
@@ -246,11 +246,6 @@ public class NewComponentWizardPage extends WizardPage
 
 	}
 
-	private void setComplete()
-	{
-		setPageComplete(nameText != null && !nameText.getText().isEmpty());
-	}
-
 	protected String getComponentName()
 	{
 		return nameText.getText();
@@ -335,6 +330,8 @@ public class NewComponentWizardPage extends WizardPage
 			setExistsError();
 		} else
 		{
+			String errorMessage = null;
+			boolean isValid = false;
 			if (!text.isBlank() && text.trim().length() > 1 && text.trim().length() <= 128)
 			{
 				Pattern pattern = Pattern.compile("^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
@@ -346,24 +343,29 @@ public class NewComponentWizardPage extends WizardPage
 					Matcher namespaceMatch = namespacePattern.matcher(namespaceText.getText());
 					if (namespaceMatch.matches() || namespaceText.getText().isEmpty())
 					{
-						setErrorMessage(null);
-						setComplete();
-						return;
+						if(!namespaceText.getText().equalsIgnoreCase(text))
+						{
+							isValid = true;	
+						}else
+						{
+							errorMessage = "Component name and namespace should not be the same."; 
+						}
 					} else
 					{
-						setErrorMessage(
-								"Component namespace does not match pattern ^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[a-zA-Z](?!.*__)[a-zA-Z0-9_]*$");
+						errorMessage = 
+								"Component namespace does not match pattern ^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[a-zA-Z](?!.*__)[a-zA-Z0-9_]*$";
 					}
 
 				} else
 				{
-					setErrorMessage("Component name does not match pattern ^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
+					errorMessage = "Component name does not match pattern ^[A-Z](?!.*__)[a-zA-Z0-9_]*$";
 				}
 			} else
 			{
-				setErrorMessage("Component name must have a length between 2 and 128 characters.");
+				errorMessage = "Component name must have a length between 2 and 128 characters.";
 			}
-			setPageComplete(false);
+			setErrorMessage(errorMessage);
+			setPageComplete(isValid);
 		}
 	}
 

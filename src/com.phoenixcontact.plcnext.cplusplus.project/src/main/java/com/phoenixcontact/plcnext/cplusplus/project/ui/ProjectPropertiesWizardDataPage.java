@@ -197,11 +197,12 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 		// **** check component name ****
 		Pattern pattern = Pattern.compile("^[A-Z](?!.*__)[a-zA-Z0-9_]*$");
 		Matcher match = null;
-		if(componentText != null)
+		if (componentText != null)
 		{
 			match = pattern.matcher(componentText.getText());
 		}
 		String errorMessage = null;
+		boolean isValid = false;
 		if (match == null || match.matches())
 		{
 			// **** check program name ****
@@ -217,18 +218,27 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 				Matcher namespaceMatch = namespacePattern.matcher(projectNamespace.getText());
 				if (namespaceMatch.matches())
 				{
-					setPageComplete(true);
-					setErrorMessage(null);
-					return true;
+					if(!componentText.getText().equalsIgnoreCase(projectNamespace.getText())) 
+					{
+						isValid = true;
+					}else 
+					{
+						errorMessage = "Namespace and component name should not be the same";
+					}
 				} else
+				{
 					errorMessage = "Namespace does not match pattern ^(?:[a-zA-Z][a-zA-Z0-9_]*\\.)*[a-zA-Z](?!.*__)[a-zA-Z0-9_]*$";
+				}
 			} else
+			{
 				errorMessage = "Program name does not match pattern ^[A-Z](?!.*__)[a-zA-Z0-9_]*$";
+			}
 		} else
+		{
 			errorMessage = "Component name does not match pattern ^[A-Z](?!.*__)[a-zA-Z0-9_]*$";
-
-		setPageComplete(false);
+		}
+		setPageComplete(isValid);
 		setErrorMessage(errorMessage);
-		return false;
+		return isValid;
 	}
 }
