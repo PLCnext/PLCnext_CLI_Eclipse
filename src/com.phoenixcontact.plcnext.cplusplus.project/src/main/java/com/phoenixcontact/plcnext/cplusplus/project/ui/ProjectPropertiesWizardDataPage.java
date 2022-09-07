@@ -218,7 +218,7 @@ public class ProjectPropertiesWizardDataPage extends AbstractWizardDataPage
 				Matcher namespaceMatch = namespacePattern.matcher(projectNamespace.getText());
 				if (namespaceMatch.matches())
 				{
-					if(!componentText.getText().equalsIgnoreCase(projectNamespace.getText())) 
+					if(componentText== null || !componentText.getText().equalsIgnoreCase(projectNamespace.getText())) 
 					{
 						isValid = true;
 					}else 
