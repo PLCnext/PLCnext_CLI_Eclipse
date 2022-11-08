@@ -6,20 +6,20 @@
 package com.phoenixcontact.plcnext.cplusplus.project.comfortfunction;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -44,18 +44,11 @@ public class SelectPortAttributesWizardPage extends WizardPage
 
 	private Text name;
 	private CheckboxTableViewer attributesListViewer;
+	private CheckboxTableViewer datatypeListViewer;
 	private Text commentPreview;
 	private String text;
-	private Map<String, String> attributes = Map.ofEntries(
-			Map.entry("Input", "The variable is defined as IN port."),
-			Map.entry("Output", "The variable is defined as OUT port."),
-			Map.entry("Retain", "The variable value is retained in case of a warm and hot restart (only initialized in case of a cold restart)."),
-			Map.entry("Opc", "The variable is visible for OPC UA."),
-			Map.entry("Ehmi", "The variable is visible for the PLCnext Engineer  HMI.( Note: This attribute is currently not implemented. Implementation is planned.)"),
-			Map.entry("ProfiCloud", "The variable is visible for Proficloud (for OUT ports only)."),
-			Map.entry("Redundant", "This attribute is relevant only for PLCnext Technology controllers with redundancy function.\r\n"
-					+ "This variable is synchronized from PRIMARY controller to BACKUP controller.\r\n"
-					+ "From FW 2022.0 LTS"));
+	private LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
+	private LinkedHashMap<String, String> datatypes = new LinkedHashMap<String, String>();
 	private Composite container;
 	private ScrolledComposite scrolledComposite;
 	CachedCliInformation cache;
@@ -69,6 +62,21 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		IEclipseContext context = EclipseContextHelper.getActiveContext();
 		IDIHost host = ContextInjectionFactory.make(IDIHost.class, context);
 		cache = host.getExport(CachedCliInformation.class);
+		
+		attributes.put("Input", "The variable is defined as IN port.");
+		attributes.put("Output", "The variable is defined as OUT port.");
+		attributes.put("Retain", "The variable value is retained in case of a warm and hot restart (only initialized in case of a cold restart).");
+		attributes.put("Opc", "The variable is visible for OPC UA.");
+		attributes.put("Ehmi", "The variable is visible for the PLCnext Engineer  HMI.( Note: This attribute is currently not implemented. Implementation is planned.)");
+		attributes.put("ProfiCloud", "The variable is visible for Proficloud (for OUT ports only).");
+		attributes.put("Redundant", "This attribute is relevant only for PLCnext Technology controllers with redundancy function.\r\n"
+				+ "This variable is synchronized from PRIMARY controller to BACKUP controller.\r\n"
+				+ "From FW 2022.0 LTS");
+		
+		datatypes.put("BYTE", "Use only for ports of type uint8");
+		datatypes.put("WORD", "Use only for ports of type uint16");
+		datatypes.put("DWORD", "Use only for ports of type uint32");
+		datatypes.put("LWORD", "Use only for ports of type uint64");
 	}
 
 	@Override
@@ -105,7 +113,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 
 		// ********************separator******************
 		Label separator = new Label(container, SWT.SEPARATOR | SWT.VERTICAL | SWT.SHADOW_OUT);
-		separator.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, true, 1, 4));
+		separator.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, true, 1, 5));
 
 		// ******************comment preview*************
 		Label previewLabel = new Label(container, SWT.NONE);
@@ -133,34 +141,16 @@ public class SelectPortAttributesWizardPage extends WizardPage
 				return super.getToolTipText(element);
 			}
 		});
-		attributesListViewer.setContentProvider(new IStructuredContentProvider()
-		{
-			private String[] elements;
-
-			@Override
-			public Object[] getElements(Object inputElement)
-			{
-				return elements;
-			}
-
-			@Override
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
-			{
-				if (newInput instanceof String[])
-				{
-					this.elements = (String[]) newInput;
-				}
-			}
-		});
+		attributesListViewer.setContentProvider(new ObjectArrayContentProvider());
 		attributesListViewer.setInput(attributes.keySet().toArray(new String[0]));
-		attributesListViewer.addSelectionChangedListener(new ISelectionChangedListener()
+		
+		attributesListViewer.addCheckStateListener(new ICheckStateListener()
 		{
-
+			
 			@Override
-			public void selectionChanged(SelectionChangedEvent event)
+			public void checkStateChanged(CheckStateChangedEvent event)
 			{
 				updateCommentPreview();
-
 			}
 		});
 
@@ -169,6 +159,43 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		commentPreview.setEnabled(false);
 		commentPreview.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, true, false, 1, 3));
 
+		// *****************IEC datatype*******************
+		Label datatypeLabel = new Label(container, SWT.NONE);
+		datatypeLabel.setText("Use non-default IEC datatype from list below");
+		datatypeLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+
+		datatypeListViewer = CheckboxTableViewer.newCheckList(container, SWT.PUSH | SWT.BORDER);
+		datatypeListViewer.getTable().setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+
+		ColumnViewerToolTipSupport.enableFor(datatypeListViewer);
+		datatypeListViewer.setLabelProvider(new ColumnLabelProvider() 
+		{
+			@Override
+			public String getToolTipText(Object element) {
+				if(element instanceof String) 
+				{
+					return datatypes.get(element);
+				}
+				return super.getToolTipText(element);
+			}
+		});
+		datatypeListViewer.setContentProvider(new ObjectArrayContentProvider());
+		datatypeListViewer.setInput(datatypes.keySet().toArray(new String[0]));
+		datatypeListViewer.addCheckStateListener(new ICheckStateListener()
+		{
+			
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event)
+			{
+				if(event.getChecked() && datatypeListViewer.getCheckedElements().length > 1)
+				{
+					Object checkedElement = event.getElement();
+					datatypeListViewer.setAllChecked(false);
+					datatypeListViewer.setChecked(checkedElement, true);
+				}
+				updateCommentPreview();
+			}
+		});
 		
 		// ******************info label*************
 		Label infoLabel = new Label(container, SWT.NONE);
@@ -177,6 +204,26 @@ public class SelectPortAttributesWizardPage extends WizardPage
 				
 				
 		updateCommentPreview();
+	}
+	
+	private class ObjectArrayContentProvider implements IStructuredContentProvider
+	{
+		private String[] elements;
+
+		@Override
+		public Object[] getElements(Object inputElement)
+		{
+			return elements;
+		}
+
+		@Override
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+		{
+			if (newInput instanceof String[])
+			{
+				this.elements = (String[]) newInput;
+			}
+		}
 	}
 
 	/**
@@ -195,6 +242,16 @@ public class SelectPortAttributesWizardPage extends WizardPage
 	private String getPortName()
 	{
 		return name.getText();
+	}
+	
+	private String getPortDatatype() 
+	{
+		Object[] checkedElements = datatypeListViewer.getCheckedElements(); 
+		if(checkedElements.length > 0 && checkedElements[0] instanceof String)
+		{
+			return (String) checkedElements[0];
+		}
+		return null;
 	}
 
 	/**
@@ -218,6 +275,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		
 		List<String> attributes = getCheckedAttributes();
 		String name = getPortName();
+		String datatype = getPortDatatype();
 		String prefix = getPrefix();
 
 		String commonLinePrefix = tabs + "//" + prefix; //$NON-NLS-1$
@@ -234,6 +292,11 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		if (name != null && !name.isEmpty())
 		{
 			result += commonLinePrefix + "name(" + name + ")" + lineSuffix; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		
+		if(datatype != null && !datatype.isEmpty())
+		{
+			result += commonLinePrefix + "iecdatatype(" + datatype + ")" +lineSuffix; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		return result;
