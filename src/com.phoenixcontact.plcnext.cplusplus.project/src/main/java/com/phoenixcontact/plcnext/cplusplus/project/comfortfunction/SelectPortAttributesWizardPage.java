@@ -26,9 +26,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -44,7 +49,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 
 	private Text name;
 	private CheckboxTableViewer attributesListViewer;
-	private CheckboxTableViewer datatypeListViewer;
+	private Group datatypeGroup;
 	private Text commentPreview;
 	private String text;
 	private LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
@@ -93,7 +98,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 
 		GridLayout containerLayout = new GridLayout();
 		container.setLayout(containerLayout);
-		containerLayout.numColumns = 4;
+		containerLayout.numColumns = 5;
 		containerLayout.verticalSpacing = 15;
 		containerLayout.horizontalSpacing = 15;
 
@@ -101,7 +106,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		Label nameLabel = new Label(container, SWT.NONE);
 		nameLabel.setText("Port Name:");
 		name = new Text(container, SWT.SINGLE | SWT.BORDER);
-		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		name.addModifyListener(new ModifyListener()
 		{
 			@Override
@@ -113,21 +118,29 @@ public class SelectPortAttributesWizardPage extends WizardPage
 
 		// ********************separator******************
 		Label separator = new Label(container, SWT.SEPARATOR | SWT.VERTICAL | SWT.SHADOW_OUT);
-		separator.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, true, 1, 5));
+		separator.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, true, 1, 7));
 
 		// ******************comment preview*************
 		Label previewLabel = new Label(container, SWT.NONE);
 		previewLabel.setText("Preview:");
 		previewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
+		// ********************separator******************
+		Label separatorH1 = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.SHADOW_OUT);
+		separatorH1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 3, 1));
+				
+		// ******************comment preview*************
+		commentPreview = new Text(container, SWT.MULTI);
+		commentPreview.setEnabled(false);
+		commentPreview.setLayoutData(new GridData(SWT.CENTER, SWT.BEGINNING, true, false, 1, 3));
+		
 		// *****************ATTRIBUTES*******************
 		Label attributesLabel = new Label(container, SWT.NONE);
 		attributesLabel.setText("Select port attributes from list below");
-		
-		attributesLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+		attributesLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
 
 		attributesListViewer = CheckboxTableViewer.newCheckList(container, SWT.PUSH | SWT.BORDER);
-		attributesListViewer.getTable().setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+		attributesListViewer.getTable().setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
 
 		ColumnViewerToolTipSupport.enableFor(attributesListViewer);
 		attributesListViewer.setLabelProvider(new ColumnLabelProvider() 
@@ -154,55 +167,70 @@ public class SelectPortAttributesWizardPage extends WizardPage
 			}
 		});
 
-		// ******************comment preview*************
-		commentPreview = new Text(container, SWT.MULTI);
-		commentPreview.setEnabled(false);
-		commentPreview.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, true, false, 1, 3));
-
+		// ********************separator******************
+		Label separatorH2 = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.SHADOW_OUT);
+		separatorH2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 3, 1));
 		// *****************IEC datatype*******************
-		Label datatypeLabel = new Label(container, SWT.NONE);
-		datatypeLabel.setText("Use non-default IEC datatype from list below");
-		datatypeLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
-		datatypeListViewer = CheckboxTableViewer.newCheckList(container, SWT.PUSH | SWT.BORDER);
-		datatypeListViewer.getTable().setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-
-		ColumnViewerToolTipSupport.enableFor(datatypeListViewer);
-		datatypeListViewer.setLabelProvider(new ColumnLabelProvider() 
+		datatypeGroup = new Group(container, SWT.NONE);
+		datatypeGroup.setText("Overwrite IEC datatype");
+		datatypeGroup.setLayout(new GridLayout(2, false));
+		datatypeGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
+				
+		for(String key : datatypes.keySet())
 		{
-			@Override
-			public String getToolTipText(Object element) {
-				if(element instanceof String) 
-				{
-					return datatypes.get(element);
-				}
-				return super.getToolTipText(element);
-			}
-		});
-		datatypeListViewer.setContentProvider(new ObjectArrayContentProvider());
-		datatypeListViewer.setInput(datatypes.keySet().toArray(new String[0]));
-		datatypeListViewer.addCheckStateListener(new ICheckStateListener()
-		{
+			Button button = new Button(datatypeGroup, SWT.RADIO);
 			
-			@Override
-			public void checkStateChanged(CheckStateChangedEvent event)
+			button.setText(key);
+			button.setToolTipText(datatypes.get(key));
+			button.addSelectionListener(new SelectionListener()
 			{
-				if(event.getChecked() && datatypeListViewer.getCheckedElements().length > 1)
+				
+				@Override
+				public void widgetSelected(SelectionEvent e)
 				{
-					Object checkedElement = event.getElement();
-					datatypeListViewer.setAllChecked(false);
-					datatypeListViewer.setChecked(checkedElement, true);
+					if(e.getSource() instanceof Button)
+					{
+						Button button = (Button) e.getSource();
+						if(button.getSelection() == true)
+						{
+							updateCommentPreview();	
+						}
+					}
 				}
-				updateCommentPreview();
-			}
-		});
+				
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e)
+				{
+				}
+			});
+		}
+		
+		Button clearSelectionButton = new Button(container, SWT.PUSH);
+		clearSelectionButton.setText("Clear datatype selection");
+		clearSelectionButton.addListener(SWT.Selection, event -> handleClearButtonSelected());
+		clearSelectionButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		
 		// ******************info label*************
 		Label infoLabel = new Label(container, SWT.NONE);
 		infoLabel.setText("For more information visit www.plcnext.help");
-		infoLabel.setLayoutData(new GridData(SWT.CENTER, SWT.BOTTOM, true, true, 4,1));
+		infoLabel.setLayoutData(new GridData(SWT.CENTER, SWT.BOTTOM, true, true, 5,1));
 				
 				
+		updateCommentPreview();
+	}
+	
+	private void handleClearButtonSelected()
+	{
+		Control[] children = datatypeGroup.getChildren();
+		for (Control control : children)
+		{
+			if(control instanceof Button)
+			{
+				Button button = (Button) control;
+				button.setSelection(false);
+			}
+		}
 		updateCommentPreview();
 	}
 	
@@ -246,10 +274,15 @@ public class SelectPortAttributesWizardPage extends WizardPage
 	
 	private String getPortDatatype() 
 	{
-		Object[] checkedElements = datatypeListViewer.getCheckedElements(); 
-		if(checkedElements.length > 0 && checkedElements[0] instanceof String)
+		 Button selectedButton = Arrays.stream(datatypeGroup.getChildren())
+								  		.filter(element -> element instanceof Button)
+								  		.map(element -> (Button) element)
+								  		.filter(button -> button.getSelection() == true)
+								  		.findFirst().orElse(null);
+		
+		if(selectedButton != null)
 		{
-			return (String) checkedElements[0];
+			return selectedButton.getText();
 		}
 		return null;
 	}
@@ -283,15 +316,15 @@ public class SelectPortAttributesWizardPage extends WizardPage
 
 		String result = commonLinePrefix + "port" + lineSuffix; //$NON-NLS-1$
 
+		if (name != null && !name.isEmpty())
+		{
+			result += commonLinePrefix + "name(" + name + ")" + lineSuffix; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		
 		if (attributes != null && !attributes.isEmpty())
 		{
 			String joinedAttributes = attributes.stream().collect(Collectors.joining("|", "(", ")")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			result += commonLinePrefix + "attributes" + joinedAttributes + lineSuffix; //$NON-NLS-1$
-		}
-
-		if (name != null && !name.isEmpty())
-		{
-			result += commonLinePrefix + "name(" + name + ")" + lineSuffix; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		if(datatype != null && !datatype.isEmpty())
