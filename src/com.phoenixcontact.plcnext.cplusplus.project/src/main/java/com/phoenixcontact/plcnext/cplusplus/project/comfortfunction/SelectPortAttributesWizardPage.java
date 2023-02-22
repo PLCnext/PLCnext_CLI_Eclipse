@@ -32,7 +32,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -56,6 +55,8 @@ public class SelectPortAttributesWizardPage extends WizardPage
 	private LinkedHashMap<String, String> datatypes = new LinkedHashMap<String, String>();
 	private Composite container;
 	private ScrolledComposite scrolledComposite;
+	
+	private final String defaultButtonText = "Default";
 	CachedCliInformation cache;
 
 	protected SelectPortAttributesWizardPage(String text)
@@ -78,6 +79,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 				+ "This variable is synchronized from PRIMARY controller to BACKUP controller.\r\n"
 				+ "From FW 2022.0 LTS");
 		
+		datatypes.put(defaultButtonText, "Use default datatype mapping");
 		datatypes.put("BYTE", "Use only for ports of type uint8");
 		datatypes.put("WORD", "Use only for ports of type uint16");
 		datatypes.put("DWORD", "Use only for ports of type uint32");
@@ -173,7 +175,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		// *****************IEC datatype*******************
 
 		datatypeGroup = new Group(container, SWT.NONE);
-		datatypeGroup.setText("Overwrite IEC datatype");
+		datatypeGroup.setText("IEC datatype mapping");
 		datatypeGroup.setLayout(new GridLayout(2, false));
 		datatypeGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
 				
@@ -182,6 +184,10 @@ public class SelectPortAttributesWizardPage extends WizardPage
 			Button button = new Button(datatypeGroup, SWT.RADIO);
 			
 			button.setText(key);
+			if(key.equals(defaultButtonText)) 
+			{
+				button.setSelection(true);
+			}
 			button.setToolTipText(datatypes.get(key));
 			button.addSelectionListener(new SelectionListener()
 			{
@@ -206,10 +212,6 @@ public class SelectPortAttributesWizardPage extends WizardPage
 			});
 		}
 		
-		Button clearSelectionButton = new Button(container, SWT.PUSH);
-		clearSelectionButton.setText("Clear datatype selection");
-		clearSelectionButton.addListener(SWT.Selection, event -> handleClearButtonSelected());
-		clearSelectionButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		
 		// ******************info label*************
 		Label infoLabel = new Label(container, SWT.NONE);
@@ -217,20 +219,6 @@ public class SelectPortAttributesWizardPage extends WizardPage
 		infoLabel.setLayoutData(new GridData(SWT.CENTER, SWT.BOTTOM, true, true, 5,1));
 				
 				
-		updateCommentPreview();
-	}
-	
-	private void handleClearButtonSelected()
-	{
-		Control[] children = datatypeGroup.getChildren();
-		for (Control control : children)
-		{
-			if(control instanceof Button)
-			{
-				Button button = (Button) control;
-				button.setSelection(false);
-			}
-		}
 		updateCommentPreview();
 	}
 	
@@ -280,7 +268,7 @@ public class SelectPortAttributesWizardPage extends WizardPage
 								  		.filter(button -> button.getSelection() == true)
 								  		.findFirst().orElse(null);
 		
-		if(selectedButton != null)
+		if(selectedButton != null && !selectedButton.getText().equals(defaultButtonText))
 		{
 			return selectedButton.getText();
 		}
