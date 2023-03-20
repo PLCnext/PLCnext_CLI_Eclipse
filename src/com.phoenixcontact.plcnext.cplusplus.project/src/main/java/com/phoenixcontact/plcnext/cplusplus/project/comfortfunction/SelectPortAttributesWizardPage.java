@@ -171,14 +171,25 @@ public class SelectPortAttributesWizardPage extends WizardPage
 
 		// ********************separator******************
 		Label separatorH2 = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.SHADOW_OUT);
-		separatorH2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 3, 1));
+		GridData sep2Data = new GridData(SWT.FILL, SWT.CENTER, false, true, 3, 1);
+		
+		sep2Data.exclude = true;
+		separatorH2.setVisible(false);
+		
+		separatorH2.setLayoutData(sep2Data);
 		// *****************IEC datatype*******************
 
 		datatypeGroup = new Group(container, SWT.NONE);
 		datatypeGroup.setText("IEC datatype mapping");
 		datatypeGroup.setLayout(new GridLayout(2, false));
-		datatypeGroup.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
-				
+		GridData groupData = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
+		
+		groupData.exclude = true;
+		datatypeGroup.setVisible(false);
+		
+		datatypeGroup.setLayoutData(groupData);
+		
+		
 		for(String key : datatypes.keySet())
 		{
 			Button button = new Button(datatypeGroup, SWT.RADIO);
