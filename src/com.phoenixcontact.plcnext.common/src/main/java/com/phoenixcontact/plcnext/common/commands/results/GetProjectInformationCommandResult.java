@@ -33,6 +33,8 @@ public class GetProjectInformationCommandResult extends CommandResult
 	private ProjectTarget[] targets; 
 	
 	private Path[] externalLibraries;
+	
+	private boolean generateNamespaces;
 
 	public ProjectTarget[] getTargets()
 	{
@@ -42,6 +44,11 @@ public class GetProjectInformationCommandResult extends CommandResult
 	public Path[] getExternalLibraries()
 	{
 		return externalLibraries;
+	}
+	
+	public boolean getGenerateNamespaces()
+	{
+		return generateNamespaces;
 	}
 
 	public String getName()

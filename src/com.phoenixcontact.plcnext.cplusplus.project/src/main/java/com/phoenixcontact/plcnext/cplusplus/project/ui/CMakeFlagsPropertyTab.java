@@ -11,10 +11,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import org.eclipse.cdt.core.settings.model.ICResourceDescription;
-import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -23,16 +21,19 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbenchPropertyPage;
+import org.eclipse.ui.dialogs.PropertyPage;
 
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
-import com.phoenixcontact.plcnext.cplusplus.project.PlcProjectNature;
 
 /**
  *
  */
-public class CMakeFlagsPropertyTab extends AbstractCPropertyTab {
+public class CMakeFlagsPropertyTab extends PropertyPage implements IWorkbenchPropertyPage {
 
 	private IProject project;
 	private final String cmakeFlagsFileName = "CMakeFlags.txt";
@@ -46,28 +47,38 @@ public class CMakeFlagsPropertyTab extends AbstractCPropertyTab {
 	private File cmakeFlagsFile;
 	
 	@Override
-	public void createControls(Composite parent) {
-		super.createControls(parent);
-		project = page.getProject();
+	protected Control createContents(Composite parent)
+	{
+		noDefaultAndApplyButton();
+
+		IAdaptable element = getElement();
+		if (element instanceof IProject)
+		{
+			project = (IProject) element;
+		}
 		IPath directory = project.getLocation();
 		cmakeFlagsFile = new File(directory.toOSString(), cmakeFlagsFileName);
 		
+		Composite container = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginBottom = 5;
 		gridLayout.marginTop = 5;
 		gridLayout.marginLeft = 5;
 		gridLayout.marginRight = 5;
-		usercomp.setLayout(gridLayout);
-				
-		setupLabel(usercomp, topLabel, 1, SWT.MULTI);
+		container.setLayout(gridLayout);
+			
+		Label description = new Label(container, SWT.NONE);
+		description.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		description.setText(topLabel);
 		
 		
-		text = new Text(usercomp, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		text = new Text(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		GridData layout = new GridData(SWT.FILL, SWT.FILL, true, true);
 		layout.verticalIndent = 5;
 		text.setLayoutData(layout);
 		
 		initializeText();
+		return container;
 	}
 
 	private void initializeText() {
@@ -105,7 +116,7 @@ public class CMakeFlagsPropertyTab extends AbstractCPropertyTab {
 		}
 	}
 	
-	private void writeFileWithTextContent()
+	private boolean writeFileWithTextContent()
 	{
 		if(!exampleIsShown)
 		{
@@ -115,6 +126,7 @@ public class CMakeFlagsPropertyTab extends AbstractCPropertyTab {
 						StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
 			} catch (IOException e) {
 				Activator.getDefault().logError("Error while trying to write "+cmakeFlagsFileName, e);
+				return false;
 			}
 		}
 		else 
@@ -124,6 +136,7 @@ public class CMakeFlagsPropertyTab extends AbstractCPropertyTab {
 				cmakeFlagsFile.delete();
 			}
 		}
+		return true;
 	}
 	
 	private void setExampleIfEmpty() 
@@ -147,46 +160,18 @@ public class CMakeFlagsPropertyTab extends AbstractCPropertyTab {
 		}
 	}
 
-	@Override
-	public boolean canBeVisible() {
-		
-		if(project != null)
-		{
-			try {
-				if(project.hasNature(PlcProjectNature.NATURE_ID))
-				{
-					return true;
-				}
-			} catch (CoreException e) {
-			}
-		}
-		return false;
-	}
-
-
-	@Override
-	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
-		writeFileWithTextContent();
-	}
 	
 	@Override
-	protected void performOK() {
-		writeFileWithTextContent();
+	public boolean performOk(){
+		boolean result = writeFileWithTextContent();
+		if(!result)
+		{
+			return false;
+		}
+		return super.performOk();
 	}
 
 
-	@Override
-	protected void performDefaults() {
-	}
 
-
-	@Override
-	protected void updateData(ICResourceDescription cfg) {
-	}
-
-
-	@Override
-	protected void updateButtons() {
-	}
 
 }

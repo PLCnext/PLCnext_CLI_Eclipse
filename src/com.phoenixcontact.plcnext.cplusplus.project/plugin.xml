@@ -186,6 +186,19 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
+            class="com.phoenixcontact.plcnext.cplusplus.project.ui.PlcnextOverviewPropertyPage"
+            id="com.phoenixcontact.plcnext.cplusplus.project.propertypage.plcnext"
+            name="PLCnext Technology">
+            <enabledWhen>
+            <or>
+               <reference
+                     definitionId="com.phoenixcontact.plcnext.cplusplus.project.hasNature">
+               </reference>
+            </or>
+         </enabledWhen>
+      </page>
+      <page
+            category="com.phoenixcontact.plcnext.cplusplus.project.propertypage.plcnext"
             class="com.phoenixcontact.plcnext.cplusplus.project.ui.SupportedTargetsPropertyPage"
             id="com.phoenixcontact.plcnext.cplusplus.project.propertypage.target"
             name="PLCnext Targets">
@@ -198,6 +211,20 @@
          </enabledWhen>
       </page>
       <page
+            category="com.phoenixcontact.plcnext.cplusplus.project.propertypage.plcnext"
+            class="com.phoenixcontact.plcnext.cplusplus.project.ui.CMakeFlagsPropertyTab"
+            id="com.phoenixcontact.plcnext.cplusplus.project.propertypage.CMakeFlagsPropertyTab"
+            name="PLCnext CMake Flags">
+            <enabledWhen>
+            <or>
+               <reference
+                     definitionId="com.phoenixcontact.plcnext.cplusplus.project.hasNature">
+               </reference>
+            </or>
+         </enabledWhen>
+      </page>
+      <page
+            category="com.phoenixcontact.plcnext.cplusplus.project.propertypage.plcnext"
             class="com.phoenixcontact.plcnext.cplusplus.project.ui.ProjectConfigPropertyPage"
             id="com.phoenixcontact.plcnext.cplusplus.project.propertypage.projectconfig"
             name="PLCnext Configuration">
@@ -309,13 +336,5 @@
             id="com.phoenixcontact.plcnext.cplusplus.project.importplcprojectcategory"
             name="PLCnext Technology">
       </category>
-   </extension>
-   <extension
-         point="org.eclipse.cdt.ui.cPropertyTab">
-      <tab
-            class="com.phoenixcontact.plcnext.cplusplus.project.ui.CMakeFlagsPropertyTab"
-            name="PLCnext CMake Flags"
-            parent="org.eclipse.cdt.managedbuilder.ui.properties.Page_BuildSettings">
-      </tab>
    </extension>
 </plugin>

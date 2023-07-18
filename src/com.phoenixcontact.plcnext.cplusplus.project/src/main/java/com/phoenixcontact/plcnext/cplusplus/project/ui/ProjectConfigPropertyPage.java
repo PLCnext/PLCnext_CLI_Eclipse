@@ -42,6 +42,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -71,14 +72,16 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 	private IPath path;
 	private Pattern pattern = Pattern.compile("^(?<major>\\d+)\\.\\d+(.\\d+)?(.\\d+)?$");
 	private final String groupName = "major";
-	private final String ConfigFileName = "PLCnextSettings.xml";
+	private final String configFileName = "PLCnextSettings.xml";
 	private Text libraryDescription;
 	private Text libraryVersion;
 	private Text engineerVersion;
 	private CheckboxTableViewer libsViewer;
+	private Button generateNamespaces;
 	private String[] savedExcludedFiles = null;
 	private IProject project;
 	private GetProjectInformationCommandResult projectInformation = null;
+	private ProjectSettingsProvider settingsProvider;
 
 	private boolean updated = false;
 	private Path[] externalLibs = null;
@@ -271,9 +274,19 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		{
 			fillLibsViewer();
 		}
+		
+		IPath projectPath = project.getLocation();
+		settingsProvider = new ProjectSettingsProvider(projectPath);
+		
+		generateNamespaces = new Button(container, SWT.CHECK);
+		generateNamespaces.setText("Generate Namespaces in Datatypes Worksheet");
+		generateNamespaces.setSelection(settingsProvider.getGenerateNamespaces());
+		
 
 		return container;
 	}
+	
+	
 
 	private void fillLibsViewer()
 	{
@@ -326,7 +339,7 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 
 	private void LoadFileContent()
 	{
-		path = project.getLocation().append(ConfigFileName);
+		path = project.getLocation().append(configFileName);
 		File file = path.toFile();
 		if (file.exists())
 		{
@@ -373,9 +386,18 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 			config.setExcludedFiles(new ExcludedFiles(excludedFiles));
 			WriteFile(config);
 		}
+		
+		updateProjectFile();
+		
 		return super.performOk();
 	}
 
+	private void updateProjectFile()
+	{
+		settingsProvider.setGenerateNamespaces(generateNamespaces.getSelection());
+		settingsProvider.writeProjectFile();
+	}
+	
 	private void WriteFile(ProjectConfiguration config)
 	{
 		try
