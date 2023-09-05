@@ -1,11 +1,13 @@
-# Welcome to the PLCnCLI eclipse plugin repository
+# Welcome to the PLCnCLI Eclipse plugin repository
 
-This repository is part of the PLCnext Toolchain and provides an Eclipse IDE plugin for programming for PLCnext Technology in high level language. The PLCnext CLI provides the entire toolchain for programming on the PLCnext Technology platform. The main repository for the CLI can be found [here](https://github.com/PLCnext/PLCnext_CLI).
+This repository is part of the PLCnext Toolchain and provides an Eclipse IDE plugin for programming for PLCnext Technology in high level language. The PLCnext CLI provides the entire toolchain for programming on the PLCnext Technology platform.
+
+The main repository for the CLI can be found [here](https://github.com/PLCnext/PLCnext_CLI).
 
 ## Installation & First Steps
 
-If you want the latest release version of the PLCnext CLI, you can find it in the [PLCnext Technology controller download area](https://www.phoenixcontact.com/qr/2404267/softw).
-For more information and first steps with PLCnext Technology please visit our [PLCnext Community](https://www.plcnext.help/te/Programming/Introduction.htm).
+If you want the latest release version of the PLCnext CLI, you can find it in the [PLCnext toolchain product page](https://www.phoenixcontact.com/qr/1639782).<br/>
+For more information and first steps with PLCnext Technology please visit our [PLCnext Community](https://www.plcnext-community.net/infocenter/programming/plcnext-programming_introduction).
 
 ## Test a local build
 
@@ -19,23 +21,23 @@ The following steps describe how to build a fully functional PLCnCLI eclipse plu
 ### Build steps
 
 - `cd src/build`
-- `mvn clean compile package`
+- `mvn -D eclipse-repo.url=https://download.eclipse.org/releases/2021-09 clean compile package`
 - Update site can be found in `../com.phoenixcontact.plcnext.updatesite/target/com.phoenixcontact.plcnext.updatesite-XXX.zip`
 
 ## Contribute
 
-Currently not supported. We are working on a process for contribution.
+You can participate in this project by submitting bugs and feature requests.<br/>
+Furthermore you can help us by discussing issues and let us know where you have problems or where others could struggle.
 
 ## Feedback
 
 You can give feedback to this project in different ways:
 
-- Ask a question in our [Forum](https://www.plcnext-community.net/index.php?option=com_easydiscuss&view=categories&Itemid=221&lang=en).
-- Request a new feature via [GitHub Issues](https://github.com/PLCnext/PLCnext_CLI_Eclipse/issues).
-- Vote for [Popular Feature Requests](https://github.com/PLCnext/PLCnext_CLI_Eclipse/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc).
-- File a bug in [GitHub Issues](https://github.com/PLCnext/PLCnext_CLI_Eclipse/issues).
+- Ask a question in our [PLCnext Community Forum](https://www.plcnext-community.net/forum).
+- File a bug or request a new feature in [GitHub Issues](https://github.com/PLCnext/PLCnext_CLI_Eclipse/issues).
 
 ## License
 
-Copyright (c) Phoenix Contact Gmbh & Co KG. All rights reserved.
+Copyright (c) Phoenix Contact GmbH & Co KG. All rights reserved.<br/>
+
 Licensed under the [EPL-2.0](LICENSE) License.
