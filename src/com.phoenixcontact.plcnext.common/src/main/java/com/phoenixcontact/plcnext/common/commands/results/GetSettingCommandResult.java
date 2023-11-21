@@ -8,12 +8,11 @@ package com.phoenixcontact.plcnext.common.commands.results;
 import java.util.List;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 
 public class GetSettingCommandResult extends CommandResult
 {
 
-	public GetSettingCommandResult(JsonObject reply, List<ServerMessageMessage> messages)
+	public GetSettingCommandResult(JsonObject reply, List<PlcncliMessage> messages)
 	{
 		super(reply, messages);
 	}

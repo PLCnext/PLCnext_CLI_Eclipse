@@ -10,7 +10,6 @@ import org.eclipse.e4.core.di.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.phoenixcontact.plcnext.common.internal.plcncliclient.PlcncliServerConversation;
 import com.phoenixcontact.plcnext.commonImpl.Cli;
 import com.phoenixcontact.plcnext.commonImpl.CommandManager;
 import com.phoenixcontact.plcnext.commonImpl.DIHost;
@@ -52,7 +51,6 @@ public class Activator extends AbstractUIPlugin
 		InjectorFactory.getDefault().addBinding(ICommandReceiver.class).implementedBy(Cli.class);
 //		InjectorFactory.getDefault().addBinding(ICommandReceiver.class).implementedBy(NamedPipeCommandReceiver.class);
 		InjectorFactory.getDefault().addBinding(CliDescription.class);
-		InjectorFactory.getDefault().addBinding(PlcncliServerConversation.class);
 	}
 
 	/*

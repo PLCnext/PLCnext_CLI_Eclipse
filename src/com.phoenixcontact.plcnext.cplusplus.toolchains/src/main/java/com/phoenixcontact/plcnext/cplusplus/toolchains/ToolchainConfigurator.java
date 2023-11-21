@@ -59,7 +59,7 @@ import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationC
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.ProjectTarget;
 import com.phoenixcontact.plcnext.common.commands.results.Target;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
+import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage.MessageType;
 
 /**
  * Class which implements needed configurations for the toolchain

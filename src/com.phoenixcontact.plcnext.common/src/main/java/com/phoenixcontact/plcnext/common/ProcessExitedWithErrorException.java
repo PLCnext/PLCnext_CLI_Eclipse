@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.phoenixcontact.plcnext.common.commands.results.ErrorResult;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
+import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage;
+import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage.MessageType;
 
 /**
  * Exception with message describing, that a process stopped with error
@@ -23,7 +23,7 @@ public class ProcessExitedWithErrorException extends Exception
 {
 
 	private static final long serialVersionUID = 8477895725966036900L;
-	private List<ServerMessageMessage> messages = null;
+	private List<PlcncliMessage> messages = null;
 	private JsonObject reply = null;
 
 	/**
@@ -51,14 +51,14 @@ public class ProcessExitedWithErrorException extends Exception
 	{
 		super(message);
 		if(messages == null)
-			messages = new ArrayList<ServerMessageMessage>();
+			messages = new ArrayList<PlcncliMessage>();
 		if(outputLines != null)
-			outputLines.stream().forEach(l -> messages.add(new ServerMessageMessage(l, MessageType.information)));
+			outputLines.stream().forEach(l -> messages.add(new PlcncliMessage(l, MessageType.information)));
 		if(errorLines != null)
-			errorLines.stream().forEach(l -> messages.add(new ServerMessageMessage(l, MessageType.error)));
+			errorLines.stream().forEach(l -> messages.add(new PlcncliMessage(l, MessageType.error)));
 	}
 	
-	public ProcessExitedWithErrorException(JsonObject reply, String command, List<ServerMessageMessage> messages)
+	public ProcessExitedWithErrorException(JsonObject reply, String command, List<PlcncliMessage> messages)
 	{
 		super(messages != null 
 				? Messages.ProcessExitedWithErrorExceptionMessage + command + "\n" + messages.stream().filter(m -> m.getMessageType() == MessageType.error).map(m -> m.getMessage()).collect(Collectors.toList()) 
@@ -72,9 +72,9 @@ public class ProcessExitedWithErrorException extends Exception
 		super(message);
 	}
 	
-	public List<ServerMessageMessage> getMessages()
+	public List<PlcncliMessage> getMessages()
 	{
-		return messages == null ? new ArrayList<ServerMessageMessage>() : messages;
+		return messages == null ? new ArrayList<PlcncliMessage>() : messages;
 	}
 	
 	public JsonObject getReply()

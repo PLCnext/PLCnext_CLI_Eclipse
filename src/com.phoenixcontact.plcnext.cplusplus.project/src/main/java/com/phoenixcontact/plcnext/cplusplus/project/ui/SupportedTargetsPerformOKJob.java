@@ -35,7 +35,7 @@ import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult.IncludePath;
 import com.phoenixcontact.plcnext.common.commands.results.Target;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
+import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator.MacrosAndIncludesWrapper;

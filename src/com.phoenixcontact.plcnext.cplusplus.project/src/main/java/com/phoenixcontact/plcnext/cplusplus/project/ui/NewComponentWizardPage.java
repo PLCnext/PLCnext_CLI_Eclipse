@@ -42,7 +42,7 @@ import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
+import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 import com.phoenixcontact.plcnext.cplusplus.project.PlcProjectNature;
 import com.phoenixcontact.plcnext.cplusplus.project.consumablelibrary.PlcnextConsumableLibraryNature;

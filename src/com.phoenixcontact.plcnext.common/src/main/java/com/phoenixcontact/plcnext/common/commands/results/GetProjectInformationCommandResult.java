@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonObject;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
 
 public class GetProjectInformationCommandResult extends CommandResult
 {
@@ -19,7 +18,7 @@ public class GetProjectInformationCommandResult extends CommandResult
 		project, acfproject, consumablelibrary
 	}
 
-	public GetProjectInformationCommandResult(JsonObject reply, List<ServerMessageMessage> messages)
+	public GetProjectInformationCommandResult(JsonObject reply, List<PlcncliMessage> messages)
 	{
 		super(reply, messages);
 	}

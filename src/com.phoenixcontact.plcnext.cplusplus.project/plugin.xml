@@ -337,4 +337,10 @@
             name="PLCnext Technology">
       </category>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <scope
+            name="com.phoenixcontact.plcnext.cplusplus.project.projectscope">
+      </scope>
+   </extension>
 </plugin>

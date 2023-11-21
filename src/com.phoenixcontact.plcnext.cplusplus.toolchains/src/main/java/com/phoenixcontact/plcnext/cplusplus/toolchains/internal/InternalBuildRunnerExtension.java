@@ -45,8 +45,8 @@ import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
+import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage;
+import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage.MessageType;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.Activator;
 
 /**
@@ -276,13 +276,13 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 		return true;
 	}
 
-	private void parseForErrorsOrWarnings(IBuilder builder, List<ServerMessageMessage> messages, IProject project,
+	private void parseForErrorsOrWarnings(IBuilder builder, List<PlcncliMessage> messages, IProject project,
 			IConfiguration configuration, IMarkerGenerator markerGenerator)
 	{
 		if (messages != null)
 		{
 
-			List<ServerMessageMessage> errorsAndWarnings = messages.stream()
+			List<PlcncliMessage> errorsAndWarnings = messages.stream()
 					.filter(m -> m.getMessageType() == MessageType.error || m.getMessageType() == MessageType.warning)
 					.collect(Collectors.toList());
 
@@ -293,7 +293,7 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 						ManagedBuildManager.getBuildLocationURI(configuration, builder), markerGenerator, errorParsers))
 				{
 
-					for (ServerMessageMessage message : errorsAndWarnings)
+					for (PlcncliMessage message : errorsAndWarnings)
 					{
 						epm.processLine(message.getMessage());
 					}

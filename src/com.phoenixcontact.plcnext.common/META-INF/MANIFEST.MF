@@ -10,7 +10,6 @@ Export-Package: com.phoenixcontact.plcnext.common,
  com.phoenixcontact.plcnext.common.clicheck,
  com.phoenixcontact.plcnext.common.commands,
  com.phoenixcontact.plcnext.common.commands.results,
- com.phoenixcontact.plcnext.common.plcncliclient,
  com.phoenixcontact.plcnext.common.preferences
 Bundle-Activator: com.phoenixcontact.plcnext.common.Activator
 Require-Bundle: com.google.gson;bundle-version="2.8.2",

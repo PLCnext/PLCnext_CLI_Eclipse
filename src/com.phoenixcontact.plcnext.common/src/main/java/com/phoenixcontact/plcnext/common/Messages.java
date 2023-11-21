@@ -13,6 +13,8 @@ public class Messages extends NLS {
 	public static String AddSdkDialog_LocationLabel;
 	public static String AddSdkDialog_NoDirectoryError;
 	public static String AddSdkDialog_SelectButton;
+	public static String CheckProjectCommand_verb;
+	public static String CheckProjectCommand_optionpath;
 	public static String CliPreferencePageId;
 	public static String CliWebsite;
 	public static String CliAvailabilityChecker_CliZip;
@@ -114,7 +116,11 @@ public class Messages extends NLS {
 	public static String NewProjectCommand_optionoutput;
 	public static String NewProjectCommand_optionpname;
 	public static String NewProjectCommand_verb;
+	public static String PlcProjectNatureId;
 	public static String ProjectConfigLibsLabelProvider_TooltipInvalidLib;
+	public static String ProjectScopeId;
+	public static String ProjectVersionKey;
+	public static String ProjectVersionValue;
 	public static String SetSettingCommand_optionAdd;
 	public static String SetSettingCommand_optionRemove;
 	public static String SetSettingCommand_optionSdkPaths;

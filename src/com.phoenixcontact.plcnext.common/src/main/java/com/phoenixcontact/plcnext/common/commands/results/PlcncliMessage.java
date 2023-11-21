@@ -3,16 +3,13 @@
 *  This software is licensed under EPL-2.0
 ********************************************************************************/
 
-package com.phoenixcontact.plcnext.common.plcncliclient;
-
-import java.util.Map;
+package com.phoenixcontact.plcnext.common.commands.results;
 
 
-public class ServerMessageMessage extends ServerMessage
+public class PlcncliMessage
 {
-	public ServerMessageMessage(String message, MessageType type)
+	public PlcncliMessage(String message, MessageType type)
 	{
-		super(Type.message);
 		this.message = message;
 		this.messageType = type;
 	}
@@ -24,20 +21,9 @@ public class ServerMessageMessage extends ServerMessage
 		verbose
 	}
 	
-	private String command;
-	private Map<String, String> arguments;
 	private String message;
 	private MessageType messageType;
 	
-	public String getCommand()
-	{
-		return command;
-	}
-	
-	public Map<String, String> getArguments()
-	{
-		return arguments;
-	}
 	
 	public String getMessage()
 	{

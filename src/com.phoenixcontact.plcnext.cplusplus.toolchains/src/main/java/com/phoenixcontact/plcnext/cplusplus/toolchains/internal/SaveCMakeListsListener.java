@@ -31,7 +31,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
-import com.phoenixcontact.plcnext.common.plcncliclient.ServerMessageMessage.MessageType;
+import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage.MessageType;
 import com.phoenixcontact.plcnext.common.preferences.PreferenceConstants;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.Activator;
 import com.phoenixcontact.plcnext.cplusplus.toolchains.ToolchainConfigurator;

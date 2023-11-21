@@ -9,6 +9,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
+import com.phoenixcontact.plcnext.common.Messages;
+
 /**
  *
  */
@@ -18,7 +20,7 @@ public class PlcProjectNature implements IProjectNature {
 	/**
 	 * The ID of this project nature
 	 */
-	public static final String NATURE_ID = "com.phoenixcontact.plcnext.cplusplus.project.plcprojectnature";
+	public static final String NATURE_ID = Messages.PlcProjectNatureId;
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.resources.IProjectNature#configure()
 	 */
