@@ -16,24 +16,18 @@ import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPageManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
-import org.osgi.service.prefs.BackingStoreException;
-
 import com.phoenixcontact.plcnext.common.CliNotExistingException;
 import com.phoenixcontact.plcnext.common.EclipseContextHelper;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
-import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GenerateCodeCommand;
@@ -131,7 +125,6 @@ public class CreateProjectWithCLI extends ProcessRunner
 			}
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			setProjectNature(project, projectType);
-			setProjectVersion(project);
 			
 			addTargets(projectPath, commandManager, monitor);
 
@@ -193,21 +186,6 @@ public class CreateProjectWithCLI extends ProcessRunner
 		{
 			Activator.getDefault().logError("Error while trying to set project nature.", e);
 		}
-	}
-	
-	private void setProjectVersion(IProject project)
-	{
-		IScopeContext projectScope = new ProjectScope(project);
-		IEclipsePreferences node = projectScope.getNode(Messages.ProjectScopeId);
-		node.put(Messages.ProjectVersionKey, Messages.ProjectVersionValue);
-		try
-		{
-			node.flush();
-		} catch (BackingStoreException e)
-		{
-			Activator.getDefault().logError("Error while trying to set project version.", e);
-		}
-
 	}
 
 	private void addLocation(String projectName, Map<String, String> options)
