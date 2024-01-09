@@ -9,6 +9,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -63,6 +64,7 @@ import com.phoenixcontact.plcnext.common.EclipseContextHelper;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
+import com.phoenixcontact.plcnext.common.commands.CheckProjectCommand;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GenerateCodeCommand;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
@@ -268,6 +270,23 @@ public class WizardImportPlcProjectPage extends WizardPage
 		return true;
 	}
 
+	private IStatus checkProjectVersion(ICommandManager commandManager, String projectFileLocation)
+	{
+		Map<String, String> options = new HashMap<String, String>();
+
+		options.put(CheckProjectCommand.OPTION_PATH, projectFileLocation);
+		Command command = commandManager.createCommand(options, CheckProjectCommand.class);
+		try {
+			commandManager.executeCommand(command, false, null);
+			return Status.OK_STATUS;
+		}
+		catch(ProcessExitedWithErrorException e)
+		{
+			return Status.error("Found problem with project "+projectFileLocation+"\n"+e.getMessages().stream().map(m -> m.getMessage()).collect(Collectors.joining("")));
+		}
+		
+	}
+	
 	private IStatus createPLCProject(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 	{
 		SubMonitor subMonitor = SubMonitor.convert(monitor);
@@ -290,6 +309,10 @@ public class WizardImportPlcProjectPage extends WizardPage
 		IDIHost host = ContextInjectionFactory.make(IDIHost.class, context);
 		ICommandManager commandManager = host.getExport(ICommandManager.class);
 
+		IStatus projectStatus = checkProjectVersion(commandManager, projectFileLocation);
+		if(! projectStatus.isOK())
+			return projectStatus;
+		
 		Map<String, String> options = new HashMap<>();
 		options.put(GetProjectInformationCommand.OPTION_PATH, projectFileLocation);
 		options.put(GetProjectInformationCommand.OPTION_NO_INCLUDE_DETECTION, null);
