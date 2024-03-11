@@ -7,10 +7,6 @@
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!--
-    <eclipse-repo.url>http://download.eclipse.org/releases/photon</eclipse-repo.url>
-    <eclipse-repo.url>http://nts-sw-repo01.europe.phoenixcontact.com:8081/repository/p2-photon-mirror</eclipse-repo.url>
-    -->
     <eclipse-repo.url>http://nts-sw-repo01.europe.phoenixcontact.com:8081/repository/p2-2021-09-mirror</eclipse-repo.url>
     <tycho.version>1.7.0</tycho.version>
     <junit.version>[4.13.1,)</junit.version>
