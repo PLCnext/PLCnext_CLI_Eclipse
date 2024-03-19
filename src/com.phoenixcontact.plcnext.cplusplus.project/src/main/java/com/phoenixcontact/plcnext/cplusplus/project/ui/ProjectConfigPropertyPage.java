@@ -20,6 +20,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.cdt.managedbuilder.core.BuildException;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IOption;
+import org.eclipse.cdt.managedbuilder.core.ITool;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
@@ -110,6 +115,37 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 					Map<String, String> options = new HashMap<String, String>();
 
 					options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
+					
+					// get buildconfiguration to set build type option
+					IConfiguration config =  ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration();
+					if(config != null)
+					{
+						ITool[] tools = config.getToolChain().getToolsBySuperClassId(
+								"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool");
+						if (tools.length == 1)
+						{
+							IOption optionBuildType = tools[0].getOptionBySuperClassId(
+									"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionbuildtype");
+							if(optionBuildType != null) 
+							{
+								try
+								{
+									String buildType = optionBuildType.getStringValue();
+									if(buildType != null && !buildType.isBlank())
+									{
+										options.put(GetProjectInformationCommand.OPTION_BUILDTYPE, buildType);
+									}
+								} catch (BuildException e)
+								{
+									Activator.getDefault().logError("Error while trying to get active build configuration.", e); //$NON-NLS-1$
+								}
+							}
+						}
+					}
+					
+					
+					
+					
 					try
 					{
 						IEclipseContext context = EclipseContextHelper.getActiveContext();

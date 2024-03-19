@@ -26,6 +26,7 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.managedbuilder.core.BuildException;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IOption;
@@ -547,6 +548,32 @@ public class ToolchainConfigurator
 
 		options.clear();
 		options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
+		// get buildconfiguration to set build type option
+		IConfiguration buildConfig =  ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration();
+		if(buildConfig != null)
+		{
+			ITool[] tools = buildConfig.getToolChain().getToolsBySuperClassId(
+					"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool");
+			if (tools.length == 1)
+			{
+				IOption optionBuildType = tools[0].getOptionBySuperClassId(
+						"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionbuildtype");
+				if(optionBuildType != null) 
+				{
+					try
+					{
+						String buildType = optionBuildType.getStringValue();
+						if(buildType != null && !buildType.isBlank())
+						{
+							options.put(GetProjectInformationCommand.OPTION_BUILDTYPE, buildType);
+						}
+					} catch (BuildException e)
+					{
+						Activator.getDefault().logError("Error while trying to get active build configuration.", e); //$NON-NLS-1$
+					}
+				}
+			}
+		}
 		if(noIncludePathDetection)
 			options.put(GetProjectInformationCommand.OPTION_NO_INCLUDE_DETECTION, null);
 
@@ -648,6 +675,33 @@ public class ToolchainConfigurator
 			Map<String, String> options = new HashMap<String, String>();
 			options.put(GetProjectInformationCommand.OPTION_PATH, project.getLocation().toOSString());
 
+			// get buildconfiguration to set build type option
+			IConfiguration buildConfig =  ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration();
+			if(buildConfig != null)
+			{
+				ITool[] tools = buildConfig.getToolChain().getToolsBySuperClassId(
+						"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool");
+				if (tools.length == 1)
+				{
+					IOption optionBuildType = tools[0].getOptionBySuperClassId(
+							"com.phoenixcontact.plcnext.cplusplus.toolchains.buildtool.optionbuildtype");
+					if(optionBuildType != null) 
+					{
+						try
+						{
+							String buildType = optionBuildType.getStringValue();
+							if(buildType != null && !buildType.isBlank())
+							{
+								options.put(GetProjectInformationCommand.OPTION_BUILDTYPE, buildType);
+							}
+						} catch (BuildException e)
+						{
+							Activator.getDefault().logError("Error while trying to get active build configuration.", e); //$NON-NLS-1$
+						}
+					}
+				}
+			}
+						
 			if (projectInformation == null)
 				projectInformation = commandManager
 						.executeCommand(commandManager.createCommand(options, GetProjectInformationCommand.class),

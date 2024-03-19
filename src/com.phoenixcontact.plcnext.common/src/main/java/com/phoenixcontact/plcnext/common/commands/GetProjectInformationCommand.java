@@ -36,6 +36,11 @@ public class GetProjectInformationCommand extends Command
 	public final static String OPTION_NO_INCLUDE_DETECTION = Messages.GetProjectInformationCommand_optionnoincludedetection;
 	
 	/**
+	 * option buildtype
+	 */
+	public final static String OPTION_BUILDTYPE = Messages.GetProjectInformationCommand_optionbuildtype;
+	
+	/**
 	 * @param options the options to add to the command
 	 * @see com.phoenixcontact.plcnext.common.commands.Command#Constructor
 	 */
