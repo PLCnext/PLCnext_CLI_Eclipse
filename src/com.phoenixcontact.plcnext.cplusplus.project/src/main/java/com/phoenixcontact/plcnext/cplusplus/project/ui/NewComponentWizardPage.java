@@ -291,7 +291,7 @@ public class NewComponentWizardPage extends WizardPage
 				programAndComponentNames.add(result);
 			}
 
-			// TODO namespaces are not considered when checking for existing component,
+			// namespaces are not considered when checking for existing component,
 			// this way no two components with same name in different namespaces can be
 			// created
 
