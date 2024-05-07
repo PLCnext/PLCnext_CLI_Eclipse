@@ -19,15 +19,17 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Version;
-
 import com.phoenixcontact.plcnext.common.commands.CheckProjectCommand;
 import com.phoenixcontact.plcnext.common.commands.Command;
 
@@ -118,16 +120,54 @@ public class PlcncliResourceChangeListener implements IResourceChangeListener
 		
 		IScopeContext scope = new ProjectScope(project);
 		
-		Version projectVersion = Version.parseVersion(scope.getNode(Messages.ProjectScopeId).get(Messages.ProjectVersionKey, "1.0.0"));
-		Version allowedMaxVersion = Version.parseVersion(Messages.ProjectVersionValue);
+		IEclipsePreferences prefsNode = scope.getNode(Messages.ProjectScopeId);
 		
-		if(projectVersion.getMajor() > allowedMaxVersion.getMajor())
+		if(prefsNode.get(Messages.ProjectVersionKey, null) == null)
 		{
-			return Status.error("Found problem with project "+project.getName()+
-					"\nThe project version ("+projectVersion+") is higher than the currently installed plugin allows ("+allowedMaxVersion+"). Please update the PLCnext Technology plugin!" );
-			
+			//if a project is imported from outside the workspace, the prefsNode is not loaded yet and will return the default value
+			// in this case the check is outsourced to a job which refereshes the project first to ensure load of the preferences.
+			// This has to be done in a separate job which is scheduled using the refreshRule(project) bec. the resourcechangelistener
+			// blocks the workspace and does not allow a refresh directly
+			Job job = new Job("Check Imported Projects")
+			{
+				@Override
+				protected IStatus run(IProgressMonitor monitor)
+				{
+					try
+					{
+						project.refreshLocal(0, null);
+					} catch (CoreException e)
+					{
+						return Status.warning("Checking imported project failed. ",e);
+					}
+					Version projectVersion = Version.parseVersion(prefsNode.get(Messages.ProjectVersionKey, "1.0.0"));
+					Version allowedMaxVersion = Version.parseVersion(Messages.ProjectVersionValue);
+					
+					if(projectVersion.getMajor() > allowedMaxVersion.getMajor())
+					{
+						return Status.error("Found problem with project "+project.getName()+
+								"\nThe project version ("+projectVersion+") is higher than the currently installed plugin allows ("+allowedMaxVersion+"). Please update the PLCnext Technology plugin!" );
+					}
+					return Status.OK_STATUS;
+				}
+			};
+			job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().refreshRule(project));
+			job.schedule();
+			return Status.OK_STATUS;
 		}
+		else 
+		{
+			Version projectVersion = Version.parseVersion(prefsNode.get(Messages.ProjectVersionKey, "1.0.0"));
+			Version allowedMaxVersion = Version.parseVersion(Messages.ProjectVersionValue);
 		
-		return Status.OK_STATUS;
+			if(projectVersion.getMajor() > allowedMaxVersion.getMajor())
+			{
+				return Status.error("Found problem with project "+project.getName()+
+						"\nThe project version ("+projectVersion+") is higher than the currently installed plugin allows ("+allowedMaxVersion+"). Please update the PLCnext Technology plugin!" );
+			
+			}
+		
+			return Status.OK_STATUS;
+		}
 	}
 }
