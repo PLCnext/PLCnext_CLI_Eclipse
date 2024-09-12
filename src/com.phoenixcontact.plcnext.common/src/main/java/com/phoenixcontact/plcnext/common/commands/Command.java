@@ -42,6 +42,7 @@ public abstract class Command {
 	}
 	
 	private String executionCommand = "";
+	private String loggableExecutionCommand = "";
 		
 	/**
 	 * @return the execution command consisting of the verb and the options passed via constructor
@@ -50,13 +51,20 @@ public abstract class Command {
 		return executionCommand;
 	}
 	
+	public String getLoggableExecutionCommand() {
+		if(loggableExecutionCommand != null && !loggableExecutionCommand.isBlank()) {
+			return loggableExecutionCommand;
+		}
+		else {
+			return executionCommand;
+		}
+	}
+	
 	private void setExecutionCommand(Map<String, String> options) {
 		List<String> command = new ArrayList<String>();
-//		String[] splited = verb.split("\\s+");
-//		for (String part : splited) {
-//			command.add(part);
-//		}
+
 		command.add(verb);
+		
 		if (options != null) {
 			for (Entry<String, String> entry : options.entrySet()) {
 				String[] formattedOption = formatOption(entry.getKey(), entry.getValue());
@@ -66,14 +74,39 @@ public abstract class Command {
 			}
 		}
 		
+//		boolean skipNext = false;
 		for (String string : command.toArray(new String[0])) {
 			executionCommand += " " + string; //$NON-NLS-1$
+//			
+//			// check for "--password" and skip 2 entries if found
+//			if(string != Messages.DeployCommand_optionPassword)
+//			{
+//				if(!skipNext)
+//				{
+//					loggableExecutionCommand += " " + string; //$NON-NLS-1$
+//				}
+//				else 
+//				{
+//					skipNext = false;
+//					loggableExecutionCommand += " *"; //$NON-NLS-1$
+//				}
+//			}
+//			else 
+//			{
+//				skipNext = true;
+//				loggableExecutionCommand += " " + string; //$NON-NLS-1$
+//			}
 		}
 	}
 	
 	private void setExecutionCommand(String command)
 	{
 		executionCommand = command;
+	}
+	
+	public void setLoggableExecutionCommand(String loggableExecutionCommand)
+	{
+		this.loggableExecutionCommand = loggableExecutionCommand;
 	}
 	
 	protected String[] formatOption(String key, String value) {

@@ -45,22 +45,19 @@ public class CommandManager implements ICommandManager
 	public CommandResult executeCommand(Command command, IProgressMonitor monitor)
 			throws ProcessExitedWithErrorException
 	{
-
-		return receiver.executeCommand(command.getExecutionCommand(), monitor);
+		return receiver.executeCommand(command, monitor);
 	}
 
 	public CommandResult executeCommand(Command command, boolean logging, IProgressMonitor monitor)
 			throws ProcessExitedWithErrorException
 	{
-
-		return receiver.executeCommand(command.getExecutionCommand(), logging, monitor);
+		return receiver.executeCommand(command, logging, monitor);
 	}
 
 	public CommandResult executeCommand(Command command, boolean logging, boolean clearConsole,
 			IProgressMonitor monitor) throws ProcessExitedWithErrorException
 	{
-
-		return receiver.executeCommand(command.getExecutionCommand(), logging, clearConsole, monitor);
+		return receiver.executeCommand(command, logging, clearConsole, monitor);
 	}
 
 	public Command createCommand(Map<String, String> options, Class<? extends Command> commandClass)
@@ -73,7 +70,8 @@ public class CommandManager implements ICommandManager
 		try
 		{
 			return commandClass.getDeclaredConstructor(Map.class).newInstance(options);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+		} 
+		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e)
 		{
 			return null;

@@ -18,7 +18,8 @@ Require-Bundle: com.google.gson;bundle-version="2.8.2",
  org.eclipse.e4.core.di;bundle-version="1.7.0",
  org.eclipse.ui;bundle-version="3.109.100",
  org.eclipse.ui.ide,
- jakarta.xml.bind;bundle-version="2.3.3"
+ jakarta.xml.bind;bundle-version="2.3.3",
+ org.eclipse.equinox.security;bundle-version="1.3.700"
 Automatic-Module-Name: PlcNext
 Bundle-Activator: com.phoenixcontact.plcnext.cplusplus.project.Activator
 Bundle-ActivationPolicy: lazy

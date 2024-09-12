@@ -236,6 +236,19 @@
             </or>
          </enabledWhen>
       </page>
+      <page
+            category="com.phoenixcontact.plcnext.cplusplus.project.propertypage.plcnext"
+            class="com.phoenixcontact.plcnext.cplusplus.project.ui.SigningPropertyPage"
+            id="com.phoenixcontact.plcnext.cplusplus.project.propertypage.signingconfig"
+            name="PLCnext Signing">
+         <enabledWhen>
+            <or>
+               <reference
+                     definitionId="com.phoenixcontact.plcnext.cplusplus.project.hasNature">
+               </reference>
+            </or>
+         </enabledWhen>
+      </page>
    </extension>
    <extension
          id="com.phoenixcontact.plcnext.cplusplus.project.plcprojectnature"

@@ -40,6 +40,7 @@ import com.phoenixcontact.plcnext.common.ICommandReceiver;
 import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.clicheck.CliAvailabilityChecker;
+import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 
 /**
@@ -70,15 +71,15 @@ public class Cli implements ICommandReceiver, PropertyChangeListener {
 		cliChecker = new CliAvailabilityChecker(cliInformation);
 	}
 
-	public CommandResult executeCommand(String command, IProgressMonitor monitor) throws ProcessExitedWithErrorException {
+	public CommandResult executeCommand(Command command, IProgressMonitor monitor) throws ProcessExitedWithErrorException {
 		return executeCommand(command, true, monitor);
 	}
 	
-	public CommandResult executeCommand(String command, boolean logging, IProgressMonitor monitor) throws ProcessExitedWithErrorException {
+	public CommandResult executeCommand(Command command, boolean logging, IProgressMonitor monitor) throws ProcessExitedWithErrorException {
 		return executeCommand(command, logging, false, monitor);
 	}
 
-	public CommandResult executeCommand(String c, boolean logging, boolean clearConsole, IProgressMonitor monitor) throws ProcessExitedWithErrorException {
+	public CommandResult executeCommand(Command c, boolean logging, boolean clearConsole, IProgressMonitor monitor) throws ProcessExitedWithErrorException {
 		if(monitor == null)
 			monitor = new NullProgressMonitor();
 		
@@ -112,7 +113,8 @@ public class Cli implements ICommandReceiver, PropertyChangeListener {
 		}
 		
 		
-		String command = "\"" + cliLocation + Path.SEPARATOR + cliName + "\" " + c; //$NON-NLS-1$ //$NON-NLS-2$
+		String command = "\"" + cliLocation + Path.SEPARATOR + cliName + "\" " + c.getExecutionCommand(); //$NON-NLS-1$ //$NON-NLS-2$
+		String loggedCommand = "\"" + cliLocation + Path.SEPARATOR + cliName + "\" " + c.getLoggableExecutionCommand(); //$NON-NLS-1$ //$NON-NLS-2$
 
 
 		MessageConsole myConsole = findConsole(Messages.CliConsoleName);
@@ -135,19 +137,19 @@ public class Cli implements ICommandReceiver, PropertyChangeListener {
 			if (Platform.getOS().equals(Platform.OS_LINUX)) {
 				if (logging) {
 					out.println();
-					out.println("/bin/sh -c " + command); //$NON-NLS-1$
+					out.println("/bin/sh -c " + loggedCommand); //$NON-NLS-1$
 				}
 				builder = new ProcessBuilder("/bin/sh", "-c", command); //$NON-NLS-1$ //$NON-NLS-2$
 
 			} else {
 				if (logging) {
 					out.println();
-					out.println("cmd.exe /c \"" + command + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+					out.println("cmd.exe /c \"" + loggedCommand + "\""); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				builder = new ProcessBuilder("cmd.exe", "/c", "\"" + command + "\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 			}
-			Activator.getDefault().logInfo("Executing "+command);
+			Activator.getDefault().logInfo("Executing "+loggedCommand);
 			
 			builder.directory(new Path(cliLocation).toFile());
 			proc = builder.start();
@@ -216,7 +218,7 @@ public class Cli implements ICommandReceiver, PropertyChangeListener {
 				
 				
 				if (proc.exitValue() != 0) {
-					throw new ProcessExitedWithErrorException(command, outputLines, errorLines);
+					throw new ProcessExitedWithErrorException(loggedCommand, outputLines, errorLines);
 				}
 			} catch (InterruptedException e) {
 				Activator.getDefault().logError("Error while waiting for cli to finish", e);

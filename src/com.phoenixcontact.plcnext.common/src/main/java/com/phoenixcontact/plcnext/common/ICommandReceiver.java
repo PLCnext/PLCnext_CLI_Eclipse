@@ -7,6 +7,7 @@ package com.phoenixcontact.plcnext.common;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 
 /**
@@ -21,7 +22,7 @@ public interface ICommandReceiver {
 	 * @return the CommandResult containing standard and error output
 	 * @throws ProcessExitedWithErrorException 
 	 */
-	public CommandResult executeCommand(String command, IProgressMonitor monitor) throws ProcessExitedWithErrorException;
+	public CommandResult executeCommand(Command command, IProgressMonitor monitor) throws ProcessExitedWithErrorException;
 	
 	/**
 	 * @param command the command to execute
@@ -30,7 +31,7 @@ public interface ICommandReceiver {
 	 * @return the CommandResult containing standard and error output
 	 * @throws ProcessExitedWithErrorException 
 	 */
-	public CommandResult executeCommand(String command, boolean logging, IProgressMonitor monitor) throws ProcessExitedWithErrorException;
+	public CommandResult executeCommand(Command command, boolean logging, IProgressMonitor monitor) throws ProcessExitedWithErrorException;
 	
 	/**
 	 * @param command the command to execute
@@ -40,5 +41,5 @@ public interface ICommandReceiver {
 	 * @return the CommandResult containing standard and error output
 	 * @throws ProcessExitedWithErrorException 
 	 */
-	public CommandResult executeCommand(String command, boolean logging, boolean clearConsole, IProgressMonitor monitor) throws ProcessExitedWithErrorException;
+	public CommandResult executeCommand(Command command, boolean logging, boolean clearConsole, IProgressMonitor monitor) throws ProcessExitedWithErrorException;
 }

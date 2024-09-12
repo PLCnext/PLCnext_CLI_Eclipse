@@ -3,7 +3,7 @@
 *  This software is licensed under EPL-2.0
 ********************************************************************************/
 
-package com.phoenixcontact.plcnext.cplusplus.project.ui;
+package com.phoenixcontact.plcnext.common;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,6 +24,7 @@ public class ExcludedFiles{
 	public ExcludedFiles() {
 		
 	}
+	
 	@XmlElement(name="File", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
 	public String[] getFiles() {
 		return files;

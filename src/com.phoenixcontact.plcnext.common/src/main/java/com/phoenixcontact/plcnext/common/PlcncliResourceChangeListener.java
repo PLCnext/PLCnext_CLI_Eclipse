@@ -5,6 +5,7 @@
 
 package com.phoenixcontact.plcnext.common;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,8 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Version;
@@ -78,6 +81,8 @@ public class PlcncliResourceChangeListener implements IResourceChangeListener
 				}
 			}
 		}
+		
+		removeDeployPasswordForDeletedProjects(workspace);
 	}
 	
 	public IStatus checkOpenProjects()
@@ -169,5 +174,36 @@ public class PlcncliResourceChangeListener implements IResourceChangeListener
 		
 			return Status.OK_STATUS;
 		}
+	}
+	
+	private void removeDeployPasswordForDeletedProjects(IResourceDelta workspace)
+	{
+		IResourceDelta[] moreProjects = workspace.getAffectedChildren(IResourceDelta.REMOVED);
+		for (IResourceDelta resourceDelta : moreProjects)
+		{
+			IProject project = resourceDelta.getResource().getProject();
+			try
+			{
+				if(project != null)
+				{
+					removePassword(project);
+				}
+			} catch (IOException e)
+			{
+				Activator.getDefault().logError(Messages.PlcncliResourceChangeListener_errorRemovePassword, e);
+			}
+		}
+	}
+
+	private void removePassword(IProject project) throws IOException 
+	{
+		ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault();
+		ISecurePreferences node = securePreferences.node(Messages.SecureStorageNodeName);
+		if(!node.nodeExists(project.getName()))
+				return;
+		
+		node = node.node(project.getName());
+		node.removeNode();
+		securePreferences.flush();
 	}
 }

@@ -5,7 +5,6 @@
 
 package com.phoenixcontact.plcnext.cplusplus.project.ui;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,11 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.cdt.managedbuilder.core.BuildException;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
@@ -56,10 +50,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 
+import com.phoenixcontact.plcnext.common.ConfigFileProvider;
 import com.phoenixcontact.plcnext.common.EclipseContextHelper;
+import com.phoenixcontact.plcnext.common.ExcludedFiles;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
+import com.phoenixcontact.plcnext.common.ProjectConfiguration;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
@@ -74,10 +71,9 @@ import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenchPropertyPage
 {
 
-	private IPath path;
 	private Pattern pattern = Pattern.compile("^(?<major>\\d+)\\.\\d+(.\\d+)?(.\\d+)?$");
 	private final String groupName = "major";
-	private final String configFileName = "PLCnextSettings.xml";
+	
 	private Text libraryDescription;
 	private Text libraryVersion;
 	private Text engineerVersion;
@@ -300,7 +296,7 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 			}
 		});
 
-		LoadFileContent();
+		LoadConfigFile();
 
 		if (!updated)
 		{
@@ -373,26 +369,16 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		}
 	}
 
-	private void LoadFileContent()
+	private void LoadConfigFile()
 	{
-		path = project.getLocation().append(configFileName);
-		File file = path.toFile();
-		if (file.exists())
+		ProjectConfiguration configuration = ConfigFileProvider.LoadFromConfig(project.getLocation());
+		if(configuration != null )
 		{
-			try
-			{
-				JAXBContext context = JAXBContext.newInstance(ProjectConfiguration.class);
-				Unmarshaller unmarshaller = context.createUnmarshaller();
-				ProjectConfiguration configuration = (ProjectConfiguration) unmarshaller.unmarshal(file);
-				engineerVersion.setText(configuration.getEngineerVersion());
-				libraryDescription.setText(configuration.getLibraryDescription());
-				libraryVersion.setText(configuration.getLibraryVersion());
-				savedExcludedFiles = configuration.getExcludedFiles().getFiles();
-			} catch (JAXBException e)
-			{
-				Activator.getDefault().logError("Project configuration file could not be loaded.", e);
-			}
-		}
+			engineerVersion.setText(configuration.getEngineerVersion());
+			libraryDescription.setText(configuration.getLibraryDescription());
+			libraryVersion.setText(configuration.getLibraryVersion());
+			savedExcludedFiles = configuration.getExcludedFiles() != null ? configuration.getExcludedFiles().getFiles() : null;
+		}		
 	}
 
 	@Override
@@ -402,26 +388,17 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		String description = libraryDescription.getText();
 		String libVersion = libraryVersion.getText();
 		Object[] checkedLibs = libsViewer.getCheckedElements();
-		if ((engineerText == null || engineerText.isBlank()) && (description == null || description.isBlank())
-				&& (libVersion == null || libVersion.isBlank()) && (checkedLibs == null || checkedLibs.length < 1))
-		{
-			File file = path.toFile();
-			if (file.exists())
-			{
-				file.delete();
-			}
-		} else
-		{
-			ProjectConfiguration config = new ProjectConfiguration();
-			description = description.replaceAll("\r", "");
-			String[] excludedFiles = Arrays.stream(checkedLibs).filter(l -> !((LibModel)l).equals(allLibs))
-					.map(l -> ((LibModel)l).value).toArray(String[]::new);
-			config.setLibraryDescription(description);
-			config.setLibraryVersion(libVersion);
-			config.setEngineerVersion(engineerText);
-			config.setExcludedFiles(new ExcludedFiles(excludedFiles));
-			WriteFile(config);
-		}
+		
+		ProjectConfiguration config = new ProjectConfiguration();
+		description = description.replaceAll("\r", "");
+		String[] excludedFiles = Arrays.stream(checkedLibs).filter(l -> !((LibModel)l).equals(allLibs))
+				.map(l -> ((LibModel)l).value).toArray(String[]::new);
+		config.setLibraryDescription(description);
+		config.setLibraryVersion(libVersion);
+		config.setEngineerVersion(engineerText);
+		config.setExcludedFiles(new ExcludedFiles(excludedFiles));
+		
+		ConfigFileProvider.WriteConfigFile(config, project.getLocation());		
 		
 		updateProjectFile();
 		
@@ -434,22 +411,6 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		settingsProvider.writeProjectFile();
 	}
 	
-	private void WriteFile(ProjectConfiguration config)
-	{
-		try
-		{
-			JAXBContext context = JAXBContext.newInstance(ProjectConfiguration.class);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-			marshaller.marshal(config, path.toFile());
-		} catch (JAXBException e)
-		{
-			Activator.getDefault().logError("Project configuration file could not be saved.", e);
-		}
-
-	}
-
 	protected class LibModel
 	{
 		boolean valid;

@@ -18,6 +18,7 @@ import org.eclipse.cdt.managedbuilder.core.BuildException;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.InternalBuildRunner;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
@@ -36,13 +37,20 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import com.phoenixcontact.plcnext.common.CliNotExistingException;
+import com.phoenixcontact.plcnext.common.ConfigFileProvider;
 import com.phoenixcontact.plcnext.common.EclipseContextHelper;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
+import com.phoenixcontact.plcnext.common.Messages;
+import com.phoenixcontact.plcnext.common.PasswordPersistFileType;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
+import com.phoenixcontact.plcnext.common.ProjectConfiguration;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage;
@@ -170,7 +178,6 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 	private CommandResult executeToolCommand(ITool tool, boolean logging, boolean clearConsole, IConfiguration config,
 			IProgressMonitor monitor) throws CliNotExistingException, ProcessExitedWithErrorException
 	{
-
 		String commandline = "";
 		try
 		{
@@ -187,9 +194,76 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 		{
 			Activator.getDefault().logError("Error while getting tool command flags.", e);
 		}
+		
+		String commandlineWithoutPassword = commandline;
+		if(tool.getBaseId().contains("com.phoenixcontact.plcnext.cplusplus.toolchains.librarybuilder"))
+		{
+			String password = getDeployPasswordForCommandLine(config);
+			if(password != null && !password.isEmpty()) {
+				commandlineWithoutPassword += " " + Messages.DeployCommand_optionPassword + " *";
+				commandline += password;
+			}
+			
+		}
 
 		Command command = commandManager.createCommand(commandline);
+		command.setLoggableExecutionCommand(commandlineWithoutPassword);
 		return commandManager.executeCommand(command, logging, clearConsole, monitor);
+	}
+	
+	private String getDeployPasswordForCommandLine(IConfiguration buildConfiguration)
+	{
+		if (buildConfiguration != null)
+		{
+			if (buildConfiguration instanceof IConfiguration)
+			{
+				IConfiguration conf = (IConfiguration) buildConfiguration;
+				IManagedProject managedProject = conf.getManagedProject();
+				if (managedProject != null)
+				{
+					IResource resource = managedProject.getOwner();
+					if (resource != null && resource instanceof IProject)
+					{
+						IProject project = resource.getProject();
+						ProjectConfiguration config = ConfigFileProvider.LoadFromConfig(project.getLocation());
+						if(config != null && config.getSign())
+						{
+							String password = null;
+							if(config.getPkcs12() != null && config.getPkcs12().isBlank())
+							{
+								password = getPassword(PasswordPersistFileType.PEMKeyFile, project);
+							}
+							else 
+							{
+								password = getPassword(PasswordPersistFileType.PKCS12, project);
+							}
+							if(password != null && !password.isBlank())
+							{
+								return " " +Messages.DeployCommand_optionPassword + " " + password;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return "";
+	}
+	
+	private String getPassword(PasswordPersistFileType type, IProject project)
+	{
+		try
+		{
+			ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault();
+			ISecurePreferences node = securePreferences.node(Messages.SecureStorageNodeName);
+			node = node.node(project.getName());
+			return node.get(type.toString(), "");
+		} 
+		catch (StorageException e1)
+		{
+			e1.printStackTrace();
+			return null;
+		}
 	}
 
 	private boolean clean_generate = true;

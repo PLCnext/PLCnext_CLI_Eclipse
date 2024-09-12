@@ -33,6 +33,7 @@ public class Messages extends NLS {
 	public static String CommandReceiverPreferencePage_nameLabel;
 	public static String CommandReceiverPreferencePage_pathLabel;
 	public static String CommandReceiverPreferencePage_websiteLabel;
+	public static String DeployCommand_optionPassword;
 	public static String DownloadSuggestionWizard_pagetitle;
 	public static String DownloadSuggestionWizardPage_chooseDestinationButton;
 	public static String DownloadSuggestionWizardPage_description;
@@ -49,6 +50,7 @@ public class Messages extends NLS {
 	public static String GetSettingCommand_optionCliRepositoryFileName;
 	public static String GetSettingCommand_optionAttributePrefix;
 	public static String GetSettingCommand_optionAll;
+	public static String PlcncliResourceChangeListener_errorRemovePassword;
 	public static String PLCnextPreferencePage_description;
 	public static String PLUGIN_ID;
 	public static String PreferenceInitializer_cliFilenameLinux;
@@ -62,6 +64,9 @@ public class Messages extends NLS {
 	public static String SdksPreferencePage_ToolTipAddButton;
 	public static String SdksPreferencePage_ToolTipInstallButton;
 	public static String SdksPreferencePage_ToolTipRemoveButton;
+	public static String SecureStorageNodeName;
+	public static String SetPasswordDialog_DialogTitle;
+	public static String SetPasswordDialog_InfoText;
 	public static String Startup_CheckCliJobName;
 	public static String Startup_CachingCliInformationJobName;
 	public static String GenerateCodeCommand_optionpath;
