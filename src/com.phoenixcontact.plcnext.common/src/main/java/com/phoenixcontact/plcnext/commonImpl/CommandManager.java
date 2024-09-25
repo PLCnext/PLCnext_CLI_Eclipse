@@ -9,9 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
@@ -21,6 +18,9 @@ import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.GenericCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * This class manages the creation and execution of commands

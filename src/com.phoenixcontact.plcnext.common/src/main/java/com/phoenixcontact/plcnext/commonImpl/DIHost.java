@@ -5,15 +5,15 @@
 
 package com.phoenixcontact.plcnext.commonImpl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.phoenixcontact.plcnext.common.CachedCliInformation;
 import com.phoenixcontact.plcnext.common.CliDescription;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * Implements the interface IDIHost

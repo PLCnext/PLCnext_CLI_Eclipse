@@ -9,14 +9,14 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 
-import javax.inject.Singleton;
-
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import com.phoenixcontact.plcnext.common.preferences.PreferenceConstants;
+
+import jakarta.inject.Singleton;
 
 /**
  * Instance of this class holds information about the cli like path or name

@@ -78,6 +78,7 @@ Java and all Java-based trademarks are trademarks of Oracle Corporation in the U
       <import plugin="org.eclipse.e4.core.contexts" version="1.7.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui" version="3.109.100" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.console" version="3.8.0" match="greaterOrEqual"/>
+      <import plugin="jakarta.xml.bind" version="2.3.3" match="greaterOrEqual"/>
       <import plugin="com.phoenixcontact.plcnext.common" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.phoenixcontact.plcnext.cplusplus.toolchains" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.cdt.core" version="6.5.0" match="greaterOrEqual"/>
@@ -85,9 +86,10 @@ Java and all Java-based trademarks are trademarks of Oracle Corporation in the U
       <import plugin="org.eclipse.cdt.managedbuilder.ui" version="9.1.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.cdt.ui" version="6.3.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.ide" version="3.14.0" match="greaterOrEqual"/>
-      <import plugin="jakarta.xml.bind" version="2.3.3" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.equinox.security" version="1.3.700" match="greaterOrEqual"/>
+      <import plugin="jakarta.inject.jakarta.inject-api"/>
    </requires>
 
    <plugin

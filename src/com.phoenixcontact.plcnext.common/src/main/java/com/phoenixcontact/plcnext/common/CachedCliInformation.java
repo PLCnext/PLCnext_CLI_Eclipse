@@ -8,11 +8,11 @@ package com.phoenixcontact.plcnext.common;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Singleton;
-
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.phoenixcontact.plcnext.common.commands.results.Target;
+
+import jakarta.inject.Singleton;
 
 /**
  * Observable object which caches information obtained from the cli

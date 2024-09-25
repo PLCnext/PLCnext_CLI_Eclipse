@@ -7,14 +7,14 @@
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <eclipse-repo.url>http://nts-sw-repo01.europe.phoenixcontact.com:8081/repository/p2-2021-09-mirror</eclipse-repo.url>
-    <tycho.version>1.7.0</tycho.version>
+    <eclipse-repo.url>https://nts-sw-repo01.europe.phoenixcontact.com/repository/p2-2024-03-mirror</eclipse-repo.url>
+    <tycho.version>4.0.9</tycho.version>
     <junit.version>[4.13.1,)</junit.version>
     <maven.compiler.version>3.8.0</maven.compiler.version>
     <maven.surefire.version>2.22.0</maven.surefire.version>
     <exec.maven.version>1.6.0</exec.maven.version>
-    <maven.compiler.source>9</maven.compiler.source>
-    <maven.compiler.target>9</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
   </properties>
   
   <repositories>

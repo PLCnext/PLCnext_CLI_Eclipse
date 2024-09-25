@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -42,6 +39,9 @@ import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.clicheck.CliAvailabilityChecker;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * Describes the command line tool which can be set via eclipse preferences The
