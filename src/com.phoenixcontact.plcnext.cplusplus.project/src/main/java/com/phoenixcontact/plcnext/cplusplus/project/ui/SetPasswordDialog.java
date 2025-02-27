@@ -9,7 +9,10 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.StatusDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -17,6 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.phoenixcontact.plcnext.common.Messages;
+import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 
 /**
  *
@@ -24,6 +28,8 @@ import com.phoenixcontact.plcnext.common.Messages;
 public class SetPasswordDialog extends StatusDialog
 {
 	private String password;
+	private char echoCharHidden;
+	private final char echoCharVisible = '\0';
 	
 	/**
 	 * @param parent
@@ -42,16 +48,34 @@ public class SetPasswordDialog extends StatusDialog
 		Composite composite = (Composite) super.createDialogArea(parent);
 		initializeDialogUnits(composite);
 		
-		Label infoLabel = new Label(composite, SWT.NONE);
-		infoLabel.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false));
+		
+		Composite container = new Composite(composite, SWT.NONE);
+		GridLayout layout = new GridLayout(2, false);
+		layout.horizontalSpacing = 0;
+		layout.marginLeft = 0;
+		layout.marginRight = 0;
+		layout.marginWidth = 0;
+		container.setLayout(layout);
+		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		Label infoLabel = new Label(container, SWT.NONE);
+		infoLabel.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 2, 1));
 		infoLabel.setText(Messages.SetPasswordDialog_InfoText);
 		
-		Text passwordText = new Text(composite, SWT.BORDER | SWT.PASSWORD);
+		Text passwordText = new Text(container, SWT.BORDER | SWT.PASSWORD);
 		GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		gd.widthHint = convertHorizontalDLUsToPixels(IDialogConstants.ENTRY_FIELD_WIDTH);
 		passwordText.setLayoutData(gd);
 		passwordText.setText(password);
 		passwordText.addListener(SWT.Modify, event -> password = passwordText.getText());
+		echoCharHidden = passwordText.getEchoChar();
+		
+		Button showPasswordButton = new Button(container, SWT.PUSH|SWT.TRANSPARENT);
+		showPasswordButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
+		showPasswordButton.setToolTipText("Show Password");
+		showPasswordButton.setImage(new Image(parent.getDisplay(), Activator.class.getResourceAsStream("/icons/ShowPasswordIcon.png")));
+		showPasswordButton.addListener(SWT.MouseDown,  event -> passwordText.setEchoChar(echoCharVisible));
+		showPasswordButton.addListener(SWT.MouseUp,  event -> passwordText.setEchoChar(echoCharHidden));
 		
 		return composite;
 	}

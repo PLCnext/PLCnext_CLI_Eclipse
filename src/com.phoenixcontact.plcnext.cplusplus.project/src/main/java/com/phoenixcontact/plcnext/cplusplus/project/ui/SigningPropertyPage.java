@@ -92,23 +92,14 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		signingCheckBox = new Button(container, SWT.CHECK);
 		signingCheckBox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
 		signingCheckBox.setText("Sign Library");
-		signingCheckBox.addListener(SWT.Selection, event -> 
-		{
-			Button button = (Button) event.widget;
-			handleSigningButtonSelected(button);
-		});
-		
+		signingCheckBox.addListener(SWT.Selection, event -> handleSigningButtonSelected(signingCheckBox));		
 		
 		radioButtonPKCS12 = new Button(container, SWT.RADIO);
 		GridData data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
 		data.horizontalIndent = 15;
 		radioButtonPKCS12.setLayoutData(data);
 		radioButtonPKCS12.setText("PKCS#12 Container");
-		radioButtonPKCS12.addListener(SWT.Selection, event -> 
-		{
-			Button button = (Button) event.widget;
-			handlePKCS12ButtonSelected(button);
-		});
+		radioButtonPKCS12.addListener(SWT.Selection, event -> handlePKCS12ButtonSelected(radioButtonPKCS12));
 		
 		pkcs12Text = new Text(container, SWT.SINGLE | SWT.BORDER);
 		data = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -118,10 +109,7 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		pkcs12browseButton = new Button(container, SWT.PUSH);
 		setButtonLayoutData(pkcs12browseButton);
 		pkcs12browseButton.setText("Browse...");
-		pkcs12browseButton.addListener(SWT.Selection, event -> 
-		{
-			handleBrowseButtonSelected(pkcs12browseButton, pkcs12Text);
-		});
+		pkcs12browseButton.addListener(SWT.Selection, event -> handleBrowseButtonSelected(pkcs12browseButton, pkcs12Text));
 		
 		passwordButton = new Button(container, SWT.PUSH);
 		setButtonLayoutData(passwordButton);
@@ -147,10 +135,7 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		browseButton2 = new Button(container, SWT.PUSH);
 		setButtonLayoutData(browseButton2);
 		browseButton2.setText("Browse...");
-		browseButton2.addListener(SWT.Selection, event -> 
-		{
-			handleBrowseButtonSelected(browseButton2, privateKeyText);
-		});
+		browseButton2.addListener(SWT.Selection, event -> handleBrowseButtonSelected(browseButton2, privateKeyText));
 		
 		passwordButton2 = new Button(container, SWT.PUSH);
 		setButtonLayoutData(passwordButton2);
@@ -170,10 +155,7 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		browseButton3 = new Button(container, SWT.PUSH);
 		setButtonLayoutData(browseButton3);
 		browseButton3.setText("Browse...");
-		browseButton3.addListener(SWT.Selection, event -> 
-		{
-			handleBrowseButtonSelected(browseButton3, publicKeyText);
-		});
+		browseButton3.addListener(SWT.Selection, event -> handleBrowseButtonSelected(browseButton3, publicKeyText));
 		
 		certificatesLabel = new Label(container, SWT.NONE);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
@@ -189,29 +171,20 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		browseButton4 = new Button(container, SWT.PUSH);
 		setButtonLayoutData(browseButton4);
 		browseButton4.setText("Browse...");
-		browseButton4.addListener(SWT.Selection, event -> 
-		{
-			handleViewerBrowseButtonSelected(browseButton4, certificatesViewer);
-		});
+		browseButton4.addListener(SWT.Selection, event -> handleViewerBrowseButtonSelected(browseButton4, certificatesViewer));
 		
 		deleteButton = new Button(container, SWT.PUSH);
 		data = new GridData(SWT.FILL, SWT.BEGINNING, false, false);
 		deleteButton.setLayoutData(data);
 		deleteButton.setText("Delete");
-		deleteButton.addListener(SWT.Selection, event -> 
-		{
-			handleDeleteButtonSelected(certificatesViewer);
-		});
+		deleteButton.addListener(SWT.Selection, event -> handleDeleteButtonSelected(certificatesViewer));
 		
 		timestampCheckBox = new Button(container, SWT.CHECK);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
 		data.horizontalIndent = 15;
 		timestampCheckBox.setLayoutData(data);
 		timestampCheckBox.setText("Timestamp");
-		timestampCheckBox.addListener(SWT.Selection, event ->
-		{
-			handleTimestampCheckBoxSelected();
-		});
+		timestampCheckBox.addListener(SWT.Selection, event -> handleTimestampCheckBoxSelected());
 		
 		timestampConfigLabel = new Label(container, SWT.NONE);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
@@ -222,18 +195,12 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		data = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
 		data.horizontalIndent = 15;
 		timestampConfigText.setLayoutData(data);
-		timestampConfigText.addModifyListener(arg0 -> 
-		{
-			handleTimestampCheckBoxSelected();
-		});
+		timestampConfigText.addModifyListener(arg0 -> handleTimestampCheckBoxSelected());
 		
 		configBrowseButton = new Button(container, SWT.PUSH);
 		setButtonLayoutData(configBrowseButton);
 		configBrowseButton.setText("Browse...");
-		configBrowseButton.addListener(SWT.Selection, event -> 
-		{
-			handleBrowseButtonSelected(configBrowseButton, timestampConfigText);
-		});
+		configBrowseButton.addListener(SWT.Selection, event -> handleBrowseButtonSelected(configBrowseButton, timestampConfigText));
 		
 		LoadConfigFile();
 		handleSigningButtonSelected(signingCheckBox);
