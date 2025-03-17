@@ -34,6 +34,7 @@ import com.phoenixcontact.plcnext.common.ConfigFileProvider;
 import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.PasswordPersistFileType;
 import com.phoenixcontact.plcnext.common.ProjectConfiguration;
+import com.phoenixcontact.plcnext.common.SetPasswordDialog;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 
 /**
@@ -347,7 +348,7 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		
 	private void handleSetPasswordButtonSelected(PasswordPersistFileType type)
 	{
-		SetPasswordDialog passwordDialog = new SetPasswordDialog(getShell());
+		SetPasswordDialog passwordDialog = new SetPasswordDialog(getShell(), "Save", Messages.SetPasswordDialog_DialogTitle, "");
 		passwordDialog.setPassword(getPassword(type));
 		String password = passwordDialog.openWithResult();
 		if(password != null)

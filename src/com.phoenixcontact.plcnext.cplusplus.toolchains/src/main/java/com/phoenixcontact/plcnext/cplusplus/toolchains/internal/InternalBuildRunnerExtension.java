@@ -51,6 +51,7 @@ import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.PasswordPersistFileType;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
 import com.phoenixcontact.plcnext.common.ProjectConfiguration;
+import com.phoenixcontact.plcnext.common.SetPasswordDialog;
 import com.phoenixcontact.plcnext.common.commands.Command;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.PlcncliMessage;
@@ -257,7 +258,38 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 			ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault();
 			ISecurePreferences node = securePreferences.node(Messages.SecureStorageNodeName);
 			node = node.node(project.getName());
-			return node.get(type.toString(), "");
+			String password  = node.get(type.toString(), "");
+			
+			if(password != null && !password.isBlank())
+				return password;
+			
+			class RunnableResult implements Runnable
+			{
+				private String result = "";
+				@Override
+				public void run()
+				{
+					SetPasswordDialog passwordDialog = 
+							new SetPasswordDialog(null, 
+									"Apply", 
+									Messages.DeployWithPasswordDialog_DialogTitle,
+									Messages.DeployWithPasswordDialog_AdditionalInformation);
+					passwordDialog.setPassword("");
+					result = passwordDialog.openWithResult();
+				}
+				public String getResult()
+				{
+					return result;
+				}
+			}
+			RunnableResult runnable = new RunnableResult();
+			
+			Display.getDefault().syncExec(runnable);
+			password = runnable.getResult();
+			
+			return password;
+			
+			
 		} 
 		catch (StorageException e1)
 		{

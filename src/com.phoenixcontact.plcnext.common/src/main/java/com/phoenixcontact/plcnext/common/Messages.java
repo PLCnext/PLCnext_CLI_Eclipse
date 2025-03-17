@@ -65,8 +65,10 @@ public class Messages extends NLS {
 	public static String SdksPreferencePage_ToolTipInstallButton;
 	public static String SdksPreferencePage_ToolTipRemoveButton;
 	public static String SecureStorageNodeName;
+	public static String DeployWithPasswordDialog_DialogTitle;
 	public static String SetPasswordDialog_DialogTitle;
 	public static String SetPasswordDialog_InfoText;
+	public static String DeployWithPasswordDialog_AdditionalInformation;
 	public static String Startup_CheckCliJobName;
 	public static String Startup_CachingCliInformationJobName;
 	public static String GenerateCodeCommand_optionpath;

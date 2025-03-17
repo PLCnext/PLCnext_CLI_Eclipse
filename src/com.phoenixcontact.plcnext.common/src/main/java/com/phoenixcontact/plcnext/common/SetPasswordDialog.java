@@ -3,7 +3,7 @@
 *  This software is licensed under EPL-2.0
 ********************************************************************************/
 
-package com.phoenixcontact.plcnext.cplusplus.project.ui;
+package com.phoenixcontact.plcnext.common;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.StatusDialog;
@@ -19,9 +19,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.phoenixcontact.plcnext.common.Messages;
-import com.phoenixcontact.plcnext.cplusplus.project.Activator;
-
 /**
  *
  */
@@ -30,16 +27,20 @@ public class SetPasswordDialog extends StatusDialog
 	private String password;
 	private char echoCharHidden;
 	private final char echoCharVisible = '\0';
+	private String okButtonText;
+	private String additionalInformation;
 	
 	/**
 	 * @param parent
 	 * @see org.eclipse.jface.dialogs.StatusDialog#Constructor
 	 */
-	public SetPasswordDialog(Shell parent)
+	public SetPasswordDialog(Shell parent, String okButtonText, String dialogTitle, String additionalInformation)
 	{
 		super(parent);
-		setTitle(Messages.SetPasswordDialog_DialogTitle);
+		setTitle(dialogTitle);
 		setHelpAvailable(false);
+		this.okButtonText = okButtonText;
+		this.additionalInformation = additionalInformation;
 	}
 	
 	@Override
@@ -77,6 +78,10 @@ public class SetPasswordDialog extends StatusDialog
 		showPasswordButton.addListener(SWT.MouseDown,  event -> passwordText.setEchoChar(echoCharVisible));
 		showPasswordButton.addListener(SWT.MouseUp,  event -> passwordText.setEchoChar(echoCharHidden));
 		
+		Label additionalInformationLabel = new Label(container, SWT.NONE);
+		additionalInformationLabel.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 2, 1));
+		additionalInformationLabel.setText(additionalInformation);
+		
 		return composite;
 	}
 	
@@ -85,7 +90,7 @@ public class SetPasswordDialog extends StatusDialog
 	{
 		Control composite = super.createContents(parent);
 		
-		getButton(IDialogConstants.OK_ID).setText("Save");
+		getButton(IDialogConstants.OK_ID).setText(okButtonText);
 		
 		return composite;
 	}
