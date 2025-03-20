@@ -214,7 +214,7 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 
 		Label libraryVersionLabel = new Label(container, SWT.NONE);
 		libraryVersionLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		libraryVersionLabel.setText("Library Version");
+		libraryVersionLabel.setText("Library Version - if required set it also in <library>Info.hpp (projects >= 2025.0)");
 
 		libraryVersion = new Text(container, SWT.SINGLE | SWT.BORDER);
 		libraryVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
