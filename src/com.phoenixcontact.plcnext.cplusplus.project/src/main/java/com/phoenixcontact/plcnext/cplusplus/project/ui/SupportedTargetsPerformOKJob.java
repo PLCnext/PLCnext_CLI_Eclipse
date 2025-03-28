@@ -121,9 +121,13 @@ public class SupportedTargetsPerformOKJob extends Job
 							try
 							{
 								String buildType = optionBuildType.getStringValue();
-								if(buildType != null && !buildType.isBlank())
-								{
-									options.put(GetProjectInformationCommand.OPTION_BUILDTYPE, buildType);
+								if(buildType != null) {
+									buildType = optionBuildType.getEnumName(buildType);
+								
+									if(buildType != null && !buildType.isBlank())
+									{
+										options.put(GetProjectInformationCommand.OPTION_BUILDTYPE, buildType);
+									}
 								}
 							} catch (BuildException e)
 							{
