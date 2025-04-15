@@ -182,7 +182,7 @@ public class SaveCMakeListsListener implements IExecutionListener
 								wrapper = configurator.findMacrosAndIncludes(project, null);
 							} catch (ProcessExitedWithErrorException e)
 							{
-								Activator.getDefault().logError("Fetching project configuration failed", e);
+								Activator.getDefault().logError("Fetching project macros and includes failed", e);
 							}
 
 						}
