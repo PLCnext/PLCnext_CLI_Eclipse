@@ -396,13 +396,17 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		{
 			signingCheckBox.setSelection(configuration.getSign());
 			pkcs12Text.setText(configuration.getPkcs12());
-			if(configuration.getPkcs12() != null && !configuration.getPkcs12().isBlank())
+			if((configuration.getPrivateKey() != null && !configuration.getPrivateKey().isBlank())
+			    || (configuration.getPublicKey() != null && !configuration.getPublicKey().isBlank())
+			    || (configuration.getCertificates() != null 
+			    	&& configuration.getCertificates().getFiles() != null 
+			    	&& configuration.getCertificates().getFiles().length > 0))
 			{
-				radioButtonPKCS12.setSelection(true);
+				radioButtonPEM.setSelection(true);
 			}
 			else
 			{
-				radioButtonPEM.setSelection(true);
+				radioButtonPKCS12.setSelection(true);
 			}
 			privateKeyText.setText(configuration.getPrivateKey());
 			publicKeyText.setText(configuration.getPublicKey());
