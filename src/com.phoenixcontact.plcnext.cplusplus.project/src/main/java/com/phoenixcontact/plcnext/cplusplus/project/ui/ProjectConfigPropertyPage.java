@@ -393,7 +393,11 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		String libVersion = libraryVersion.getText();
 		Object[] checkedLibs = libsViewer.getCheckedElements();
 		
-		ProjectConfiguration config = new ProjectConfiguration();
+		ProjectConfiguration config = ConfigFileProvider.LoadFromConfig(project.getLocation());
+		if(config == null) 
+		{
+			config = new ProjectConfiguration();
+		}
 		description = description.replaceAll("\r", "");
 		String[] excludedFiles = Arrays.stream(checkedLibs).filter(l -> !((LibModel)l).equals(allLibs))
 				.map(l -> ((LibModel)l).value).toArray(String[]::new);

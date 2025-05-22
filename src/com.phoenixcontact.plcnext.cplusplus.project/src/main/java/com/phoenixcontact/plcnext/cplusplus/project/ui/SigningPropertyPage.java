@@ -440,8 +440,11 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 			}
 		}
 		
-		ProjectConfiguration config = new ProjectConfiguration();
-		
+		ProjectConfiguration config = ConfigFileProvider.LoadFromConfig(project.getLocation());
+		if(config == null) 
+		{
+			config = new ProjectConfiguration();
+		}
 		config.setSign(signingCheckBox.getSelection()); 
 		
 		config.setPkcs12(radioButtonPKCS12.getSelection() ? pkcs12Text.getText() : null);
