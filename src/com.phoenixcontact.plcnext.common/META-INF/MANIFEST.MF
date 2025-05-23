@@ -7,6 +7,7 @@ Bundle-Vendor: PHOENIX CONTACT GmbH & Co. KG
 Automatic-Module-Name: com.phoenixcontact.plcnext.common
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: com.phoenixcontact.plcnext.common,
+ com.phoenixcontact.plcnext.common.ConfigFile,
  com.phoenixcontact.plcnext.common.clicheck,
  com.phoenixcontact.plcnext.common.commands,
  com.phoenixcontact.plcnext.common.commands.results,

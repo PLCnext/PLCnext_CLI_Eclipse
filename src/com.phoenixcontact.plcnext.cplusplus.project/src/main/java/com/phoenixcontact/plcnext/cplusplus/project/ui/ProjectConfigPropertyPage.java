@@ -50,13 +50,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 
-import com.phoenixcontact.plcnext.common.ConfigFileProvider;
 import com.phoenixcontact.plcnext.common.EclipseContextHelper;
-import com.phoenixcontact.plcnext.common.ExcludedFiles;
 import com.phoenixcontact.plcnext.common.ICommandManager;
 import com.phoenixcontact.plcnext.common.IDIHost;
 import com.phoenixcontact.plcnext.common.ProcessExitedWithErrorException;
-import com.phoenixcontact.plcnext.common.ProjectConfiguration;
+import com.phoenixcontact.plcnext.common.ConfigFile.ConfigFileProvider;
+import com.phoenixcontact.plcnext.common.ConfigFile.ExcludedFiles;
+import com.phoenixcontact.plcnext.common.ConfigFile.LibraryInfo;
+import com.phoenixcontact.plcnext.common.ConfigFile.ProjectConfiguration;
 import com.phoenixcontact.plcnext.common.commands.GetProjectInformationCommand;
 import com.phoenixcontact.plcnext.common.commands.results.CommandResult;
 import com.phoenixcontact.plcnext.common.commands.results.GetProjectInformationCommandResult;
@@ -83,6 +84,7 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 	private IProject project;
 	private GetProjectInformationCommandResult projectInformation = null;
 	private ProjectSettingsProvider settingsProvider;
+	private LibraryInfo[] libraryInfos = null;
 
 	private boolean updated = false;
 	private Path[] externalLibs = null;
@@ -382,6 +384,8 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 			libraryDescription.setText(configuration.getLibraryDescription());
 			libraryVersion.setText(configuration.getLibraryVersion());
 			savedExcludedFiles = configuration.getExcludedFiles() != null ? configuration.getExcludedFiles().getFiles() : null;
+		
+			libraryInfos = configuration.getLibraryInfos();
 		}		
 	}
 
@@ -405,6 +409,7 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		config.setLibraryVersion(libVersion);
 		config.setEngineerVersion(engineerText);
 		config.setExcludedFiles(new ExcludedFiles(excludedFiles));
+		config.setLibraryInfos(libraryInfos);
 		
 		ConfigFileProvider.WriteConfigFile(config, project.getLocation());		
 		

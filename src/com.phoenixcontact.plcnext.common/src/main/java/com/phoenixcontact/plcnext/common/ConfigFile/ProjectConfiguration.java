@@ -3,7 +3,7 @@
 *  This software is licensed under EPL-2.0
 ********************************************************************************/
 
-package com.phoenixcontact.plcnext.common;
+package com.phoenixcontact.plcnext.common.ConfigFile;
 
 import javax.xml.bind.annotation.*;
 
@@ -16,6 +16,7 @@ public class ProjectConfiguration {
 	private String libraryVersion = "";
 	private String libraryDescription = "";
 	private String engineerVersion = "";
+	private LibraryInfo[] libraryInfos = null;
 	private ExcludedFiles excludedFiles = null;
 	private boolean sign = false;
 	private String pkcs12 = "";
@@ -48,6 +49,14 @@ public class ProjectConfiguration {
 	}
 	public void setEngineerVersion(String engineerVersion) {
 		this.engineerVersion = engineerVersion;
+	}
+	
+	@XmlElements(value = { @XmlElement(name = "LibraryInfo", type=LibraryInfo.class, namespace = "http://www.phoenixcontact.com/schema/projectconfiguration") })
+	public LibraryInfo[] getLibraryInfos() {
+		return libraryInfos;
+	}
+	public void setLibraryInfos(LibraryInfo[] libraryInfos) {
+		this.libraryInfos = libraryInfos;
 	}
 	
 	@XmlElement(name="ExcludedFiles", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")

@@ -3,7 +3,7 @@
 *  This software is licensed under EPL-2.0
 ********************************************************************************/
 
-package com.phoenixcontact.plcnext.common;
+package com.phoenixcontact.plcnext.common.ConfigFile;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

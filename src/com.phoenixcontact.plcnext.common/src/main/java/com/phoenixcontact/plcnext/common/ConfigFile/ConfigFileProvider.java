@@ -3,7 +3,7 @@
 *  This software is licensed under EPL-2.0
 ********************************************************************************/
 
-package com.phoenixcontact.plcnext.common;
+package com.phoenixcontact.plcnext.common.ConfigFile;
 
 import java.io.File;
 
@@ -13,6 +13,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.core.runtime.IPath;
+
+import com.phoenixcontact.plcnext.common.Activator;
 
 
 public class ConfigFileProvider
@@ -51,6 +53,7 @@ public class ConfigFileProvider
 		if ((config.getEngineerVersion() == null || config.getEngineerVersion().isBlank()) 
 				&& (config.getLibraryDescription() == null || config.getLibraryDescription().isBlank())
 				&& (config.getLibraryVersion() == null || config.getLibraryVersion().isBlank()) 
+				&& (config.getLibraryInfos() == null || config.getLibraryInfos().length < 1)
 				&& (config.getExcludedFiles() == null || config.getExcludedFiles().getFiles().length < 1)
 				&& config.getSign() == false
 				&& (config.getPkcs12() == null || config.getPkcs12().isBlank())

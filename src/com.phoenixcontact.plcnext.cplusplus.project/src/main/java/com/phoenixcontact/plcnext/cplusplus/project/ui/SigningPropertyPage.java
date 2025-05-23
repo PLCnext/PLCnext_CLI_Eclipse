@@ -29,12 +29,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 
-import com.phoenixcontact.plcnext.common.Certificates;
-import com.phoenixcontact.plcnext.common.ConfigFileProvider;
 import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.PasswordPersistFileType;
-import com.phoenixcontact.plcnext.common.ProjectConfiguration;
 import com.phoenixcontact.plcnext.common.SetPasswordDialog;
+import com.phoenixcontact.plcnext.common.ConfigFile.Certificates;
+import com.phoenixcontact.plcnext.common.ConfigFile.ConfigFileProvider;
+import com.phoenixcontact.plcnext.common.ConfigFile.ProjectConfiguration;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
 
 /**
