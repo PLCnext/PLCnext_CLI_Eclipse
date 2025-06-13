@@ -15,13 +15,13 @@ The following steps describe how to build a fully functional PLCnCLI eclipse plu
 
 ### Prerequisite
 
-- [Java 13 or newer](http://www.oracle.com/technetwork/java/javase/downloads/index.html "Java 13 or newer")
+- [Java JDK 21 or newer](http://www.oracle.com/technetwork/java/javase/downloads/index.html "Java JDK 21 or newer")
 - [Maven](https://maven.apache.org/download.cgi "Maven")
 
 ### Build steps
 
 - `cd src/build`
-- `mvn -D eclipse-repo.url=https://download.eclipse.org/releases/2021-09 clean compile package`
+- `mvn -D eclipse-repo.url=https://download.eclipse.org/releases/2024-03 clean compile package`
 - Update site can be found in `../com.phoenixcontact.plcnext.updatesite/target/com.phoenixcontact.plcnext.updatesite-XXX.zip`
 
 ## Contribute
