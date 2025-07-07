@@ -34,18 +34,26 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
@@ -78,6 +86,8 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 	private Text libraryDescription;
 	private Text libraryVersion;
 	private Text engineerVersion;
+	private TableViewer libInfosViewer;
+	private TableViewerColumn keyColumn;
 	private CheckboxTableViewer libsViewer;
 	private Button generateNamespaces;
 	private String[] savedExcludedFiles = null;
@@ -199,34 +209,34 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		});
 
 		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(1, false));
+		container.setLayout(new GridLayout(2, false));
 		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		Label description = new Label(container, SWT.NONE);
-		description.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		description.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		description.setText("Project properties for PLCnext C++ Projects.\r\n"
 				+ "Rebuild the project after saving your changes to transfer the configuration to the library.");
 
 		Label libraryDescriptionLabel = new Label(container, SWT.NONE);
-		libraryDescriptionLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		libraryDescriptionLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		libraryDescriptionLabel.setText("Library Description");
 
 		libraryDescription = new Text(container, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
-		libraryDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		libraryDescription.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
 		Label libraryVersionLabel = new Label(container, SWT.NONE);
-		libraryVersionLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		libraryVersionLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		libraryVersionLabel.setText("Library Version - if required set it also in <library>Info.hpp (projects >= 2025.0)");
 
 		libraryVersion = new Text(container, SWT.SINGLE | SWT.BORDER);
-		libraryVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		libraryVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 
 		Label engineerVersionLabel = new Label(container, SWT.NONE);
-		engineerVersionLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		engineerVersionLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		engineerVersionLabel.setText("PLCnext Engineer Version");
 
 		engineerVersion = new Text(container, SWT.SINGLE | SWT.BORDER);
-		engineerVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		engineerVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		engineerVersion.addModifyListener(new ModifyListener()
 		{
 
@@ -259,17 +269,85 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 			}
 		});
 
+		Label libraryInfosLabel = new Label(container, SWT.NONE);
+		libraryInfosLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+		libraryInfosLabel.setText("Library Infos");
+		
+		libInfosViewer = new TableViewer(container, SWT.MULTI|SWT.BORDER|SWT.FULL_SELECTION);
+		libInfosViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 4));
+		libInfosViewer.setContentProvider(ArrayContentProvider.getInstance());
+		
+		keyColumn = new TableViewerColumn(libInfosViewer, SWT.NONE);
+		keyColumn.getColumn().setText("Key");
+		keyColumn.getColumn().setWidth(100);
+		keyColumn.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				LibraryInfo info = (LibraryInfo) element;
+				return info.getName();
+			}
+		});
+		TableViewerColumn valueColumn = new TableViewerColumn(libInfosViewer, SWT.MULTI);
+		valueColumn.getColumn().setText("Value");
+		valueColumn.getColumn().setWidth(400);
+		valueColumn.setLabelProvider(new OwnerDrawLabelProvider()
+		{
+			
+			@Override
+			protected void paint(Event arg0, Object arg1)
+			{
+				LibraryInfo info = (LibraryInfo) arg1;
+				arg0.gc.drawText(info.getText(), arg0.x, arg0.y);
+			}
+			
+			@Override
+			protected void measure(Event arg0, Object arg1)
+			{
+				LibraryInfo info = (LibraryInfo) arg1;
+				arg0.setBounds(new Rectangle(arg0.x, arg0.y, 
+						100, 
+						info.getText().lines().toArray(String[]::new).length*15));
+				
+			}
+			
+			@Override
+			protected void erase(Event event, Object element)
+			{}
+		});
+				
+		libInfosViewer.getTable().setHeaderVisible(true);
+		libInfosViewer.getTable().setLinesVisible(true);
+		libInfosViewer.getTable().setHeaderBackground(new Color(255, 255, 255));
+		
+		Button addButton = new Button(container, SWT.PUSH);
+		setButtonLayoutData(addButton);
+		((GridData)addButton.getLayoutData()).horizontalAlignment = SWT.LEFT;
+		addButton.setText("Add...");
+		addButton.addListener(SWT.Selection, event -> handleAddButtonSelected(addButton, libInfosViewer));
+		
+		Button removeButton = new Button(container, SWT.PUSH);
+		setButtonLayoutData(removeButton);
+		((GridData)removeButton.getLayoutData()).horizontalAlignment = SWT.LEFT;
+		removeButton.setText("Remove");
+		removeButton.addListener(SWT.Selection, event -> handleRemoveButtonSelected(removeButton, libInfosViewer));
+		
+		Button editButton = new Button(container, SWT.PUSH);
+		setButtonLayoutData(editButton);
+		((GridData)editButton.getLayoutData()).horizontalAlignment = SWT.LEFT;
+		editButton.setText("Edit...");
+		editButton.addListener(SWT.Selection, event -> handleEditButtonSelected(editButton, libInfosViewer));
+		
 		Label excludedFilesLabel = new Label(container, SWT.NONE);
-		excludedFilesLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		excludedFilesLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		excludedFilesLabel.setText("Excluded Files");
 
 		Label excludeDescription = new Label(container, SWT.NONE);
-		excludeDescription.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		excludeDescription.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		excludeDescription.setText("The checked elements will not be added to the library.");
 
 		libsViewer = CheckboxTableViewer.newCheckList(container,
 				SWT.PUSH | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION);
-		GridData layout = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2);
+		GridData layout = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2);
 		layout.minimumWidth = 220;
 		libsViewer.getTable().setLayoutData(layout);
 		libsViewer.setLabelProvider(new ProjectConfigLibsLabelProvider());
@@ -304,6 +382,8 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 
 		LoadConfigFile();
 
+		libInfosViewer.setInput(libraryInfos);
+		
 		if (!updated)
 		{
 			libsViewer.add("Fetching project information..."); //$NON-NLS-1$
@@ -322,6 +402,48 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		
 
 		return container;
+	}
+	
+	private void handleAddButtonSelected(Button button, TableViewer tableViewer)
+	{
+		AddLibInfosDialog addDialog = new AddLibInfosDialog(getShell(), 
+				Arrays.stream(libInfosViewer.getTable().getItems())
+			     .map(item -> ((LibraryInfo)item.getData()).getName()).toArray(String[]::new));
+		LibraryInfo info = addDialog.openWithResult();
+		if(info != null)
+		{
+			libInfosViewer.add(info);
+		}
+	}
+	
+	private void handleEditButtonSelected(Button button, TableViewer tableViewer)
+	{
+		TableItem[] selection = tableViewer.getTable().getSelection();
+		LibraryInfo currentSelection = null;
+		if(selection.length > 0)
+		{
+			currentSelection = (LibraryInfo) selection[0].getData();
+		
+		AddLibInfosDialog editDialog = new AddLibInfosDialog(getShell(), 
+				Arrays.stream(libInfosViewer.getTable().getItems())
+			     .map(item -> ((LibraryInfo)item.getData()).getName()).toArray(String[]::new),
+			     currentSelection.getName(), currentSelection.getText());
+		LibraryInfo info = editDialog.openWithResult();
+		if(info != null)
+		{
+			tableViewer.getTable().remove(tableViewer.getTable().getSelectionIndex());
+			libInfosViewer.add(info);
+		}
+		}
+	}
+	
+	private void handleRemoveButtonSelected(Button button, TableViewer tableViewer)
+	{
+		int selectionIndex = tableViewer.getTable().getSelectionIndex();
+		if(selectionIndex > -1)
+		{
+			tableViewer.getTable().remove(selectionIndex);
+		}
 	}
 	
 	
@@ -396,6 +518,8 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		String description = libraryDescription.getText();
 		String libVersion = libraryVersion.getText();
 		Object[] checkedLibs = libsViewer.getCheckedElements();
+		libraryInfos = Arrays.stream(libInfosViewer.getTable().getItems())
+						     .map(item -> item.getData()).toArray(LibraryInfo[]::new);
 		
 		ProjectConfiguration config = ConfigFileProvider.LoadFromConfig(project.getLocation());
 		if(config == null) 
