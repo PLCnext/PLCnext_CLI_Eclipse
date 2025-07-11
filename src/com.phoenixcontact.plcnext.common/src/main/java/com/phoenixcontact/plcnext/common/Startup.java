@@ -5,10 +5,16 @@
 
 package com.phoenixcontact.plcnext.common;
 
+import java.io.IOException;
+
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.ui.IStartup;
 
 /**
@@ -34,9 +40,60 @@ public class Startup implements IStartup {
 		job.setRule(new MutexSchedulingRule());
 		job.schedule();
 		
+		
+		
 		Job cachingJob = new CliInformationCacher();
 		cachingJob.schedule();
 		
 		
+		
+		Job updateSecureStorageJob = new Job("UpdateSecureStorage")
+		{
+			
+			@Override
+			protected IStatus run(IProgressMonitor arg0)
+			{
+				ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault();
+				ISecurePreferences rootNode = securePreferences.node(Messages.SecureStorageNodeName);
+				ISecurePreferences wspNode = rootNode.node(Messages.SecureStorageWorkspacesKey);
+				
+				boolean nodeRemoved = false;
+				
+				for(String key : wspNode.keys())
+				{
+					if(!keyIsExistingWorkspaceLocation(key))
+					{
+						wspNode.node(key).removeNode();
+						nodeRemoved = true;
+					}
+				}
+				
+				if(nodeRemoved)
+				{
+					try
+					{
+						securePreferences.flush();
+					} catch (IOException e)
+					{
+						return Status.warning("Problem during writing of secure preferences.", e);
+					}
+				}
+				
+				
+				return Status.OK_STATUS;
+			}
+			
+			private boolean keyIsExistingWorkspaceLocation(String key)
+			{
+				if(new Path(key).append(".metadata").toFile().exists())
+				{
+					return true;
+				}
+				
+				return false;
+			}
+		};
+		updateSecureStorageJob.setRule(new MutexSchedulingRule());
+		updateSecureStorageJob.schedule();
 	}
 }

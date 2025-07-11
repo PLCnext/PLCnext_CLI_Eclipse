@@ -255,13 +255,24 @@ public class InternalBuildRunnerExtension extends InternalBuildRunner
 	{
 		try
 		{
+			String workspaceLocation = project.getWorkspace().getRoot().getLocation().toOSString();
 			ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault();
 			ISecurePreferences node = securePreferences.node(Messages.SecureStorageNodeName);
-			node = node.node(project.getName());
-			String password  = node.get(type.toString(), "");
+			ISecurePreferences wspNode = node.node(Messages.SecureStorageWorkspacesKey).node(workspaceLocation);
+			ISecurePreferences projectNode = null;
+			if(wspNode.nodeExists(project.getName()))
+			{
+				projectNode = wspNode.node(project.getName());
+			}else 
+			{
+				projectNode = node.node(project.getName());
+			}
+			String password  = projectNode.get(type.toString(), "");
 			
 			if(password != null && !password.isBlank())
 				return password;
+			
+			
 			
 			class RunnableResult implements Runnable
 			{

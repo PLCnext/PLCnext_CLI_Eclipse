@@ -198,12 +198,29 @@ public class PlcncliResourceChangeListener implements IResourceChangeListener
 	private void removePassword(IProject project) throws IOException 
 	{
 		ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault();
-		ISecurePreferences node = securePreferences.node(Messages.SecureStorageNodeName);
-		if(!node.nodeExists(project.getName()))
-				return;
+		ISecurePreferences rootNode = securePreferences.node(Messages.SecureStorageNodeName);
+		boolean nodeRemoved = false;
+		if(rootNode.nodeExists(project.getName()))
+		{
+			ISecurePreferences projectNode = rootNode.node(project.getName());
+			projectNode.removeNode();
+			nodeRemoved = true;
+		}
 		
-		node = node.node(project.getName());
-		node.removeNode();
-		securePreferences.flush();
+		
+		String workspaceLocation = project.getWorkspace().getRoot().getLocation().toOSString();
+		ISecurePreferences wspNode = rootNode.node(Messages.SecureStorageWorkspacesKey).node(workspaceLocation);
+		if(wspNode.nodeExists(project.getName()))
+		{
+			ISecurePreferences projectNode = wspNode.node(project.getName());
+			projectNode.removeNode();
+			nodeRemoved = true;
+		}
+		
+		if(nodeRemoved)
+		{
+			securePreferences.flush();
+		}
+		
 	}
 }

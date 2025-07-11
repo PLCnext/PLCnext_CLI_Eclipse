@@ -359,12 +359,23 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 	
 	private String getPassword(PasswordPersistFileType type)
 	{
+		String wspLocation = getWorkspaceLocation();
+		
 		try
 		{
 			ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault();
-			ISecurePreferences node = securePreferences.node(Messages.SecureStorageNodeName);
-			node = node.node(project.getName());
-			return node.get(type.toString(), "");
+			ISecurePreferences rootNode = securePreferences.node(Messages.SecureStorageNodeName);
+			ISecurePreferences wspNode = rootNode.node(Messages.SecureStorageWorkspacesKey).node(wspLocation);
+			if(wspNode.nodeExists(project.getName()))
+			{
+				return wspNode.node(project.getName()).get(type.toString(), "");
+			}
+			
+			if(rootNode.nodeExists(project.getName())) 
+			{
+				return rootNode.node(project.getName()).get(type.toString(), "");
+			}
+			return "";
 		} 
 		catch (StorageException e1)
 		{
@@ -373,20 +384,55 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		}
 	}
 	
+	private String getWorkspaceLocation() {
+		return project.getWorkspace().getRoot().getLocation().toOSString();
+	}
+	
 	private void setPassword(String password, PasswordPersistFileType type)
 	{
 		try
 		{
+			String workspaceLocation = getWorkspaceLocation();
 			ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault();
 			ISecurePreferences node = securePreferences.node(Messages.SecureStorageNodeName);
-			node = node.node(project.getName());
-			node.put(type.toString(), password, true);
+			ISecurePreferences wspNode = node.node(Messages.SecureStorageWorkspacesKey).node(workspaceLocation);
+			
+			if(node.nodeExists(project.getName())) {
+				movePasswordsFromNameToWSPLocation(node, wspNode);
+			}
+			
+			ISecurePreferences projectNode = wspNode.node(project.getName());
+			projectNode.put(type.toString(), password, true);
 			securePreferences.flush();
 		}
-		catch (StorageException | IOException e1)
+		catch (StorageException | IOException e)
 		{
-			Activator.getDefault().logError("Error while trying to set password in secure storage", e1);
+			Activator.getDefault().logError("Error while trying to set password in secure storage", e);
 		}
+	}
+	
+	//version 25.0 saved projectName without workspace loc therefore this conversion is necessary
+	private void movePasswordsFromNameToWSPLocation(ISecurePreferences namesNode, ISecurePreferences wspNode)
+	{
+			ISecurePreferences nodeToDelete = namesNode.node(project.getName());
+			ISecurePreferences newNode = wspNode.node(project.getName());
+			for (String key : nodeToDelete.keys())
+			{
+				String value;
+				try
+				{
+					value = nodeToDelete.get(key, null);
+
+					if (value != null && !value.isBlank())
+					{
+						newNode.put(key, value, true);
+					}
+				} catch (StorageException e)
+				{
+					Activator.getDefault().logError("Error while trying to move password in secure storage", e);
+				}
+			}
+			nodeToDelete.removeNode();
 	}
 	
 	private void LoadConfigFile()
