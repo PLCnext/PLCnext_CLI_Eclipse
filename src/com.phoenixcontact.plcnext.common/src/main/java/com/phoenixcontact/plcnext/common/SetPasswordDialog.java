@@ -5,8 +5,12 @@
 
 package com.phoenixcontact.plcnext.common;
 
+import java.util.Optional;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.StatusDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ResourceLocator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -74,7 +78,16 @@ public class SetPasswordDialog extends StatusDialog
 		Button showPasswordButton = new Button(container, SWT.PUSH|SWT.TRANSPARENT);
 		showPasswordButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
 		showPasswordButton.setToolTipText("Show Password");
-		showPasswordButton.setImage(new Image(parent.getDisplay(), Activator.class.getResourceAsStream("/icons/ShowPasswordIcon.png")));
+		
+		Optional<ImageDescriptor> descriptor = ResourceLocator.imageDescriptorFromBundle(Activator.PLUGIN_ID, "icons/ShowPasswordIcon.png");
+		if(!descriptor.isEmpty()) {
+			Image image = descriptor.get().createImage();
+			if(image != null)
+			{
+				showPasswordButton.setImage(image);
+			}
+		}
+		
 		showPasswordButton.addListener(SWT.MouseDown,  event -> passwordText.setEchoChar(echoCharVisible));
 		showPasswordButton.addListener(SWT.MouseUp,  event -> passwordText.setEchoChar(echoCharHidden));
 		
