@@ -273,7 +273,7 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 		libraryInfosLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 		libraryInfosLabel.setText("Library Infos");
 		
-		libInfosViewer = new TableViewer(container, SWT.MULTI|SWT.BORDER|SWT.FULL_SELECTION);
+		libInfosViewer = new TableViewer(container, SWT.BORDER|SWT.FULL_SELECTION);
 		libInfosViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 4));
 		libInfosViewer.setContentProvider(ArrayContentProvider.getInstance());
 		
@@ -297,7 +297,8 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 			protected void paint(Event arg0, Object arg1)
 			{
 				LibraryInfo info = (LibraryInfo) arg1;
-				arg0.gc.drawText(info.getText(), arg0.x, arg0.y);
+				arg0.gc.drawText(info.getText(), arg0.x, arg0.y, true);
+				
 			}
 			
 			@Override
@@ -313,6 +314,8 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 			@Override
 			protected void erase(Event event, Object element)
 			{}
+			
+			
 		});
 				
 		libInfosViewer.getTable().setHeaderVisible(true);
