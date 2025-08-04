@@ -79,12 +79,12 @@ public class SetPasswordDialog extends StatusDialog
 		showPasswordButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
 		showPasswordButton.setToolTipText("Show Password");
 		
-		Optional<ImageDescriptor> descriptor = ResourceLocator.imageDescriptorFromBundle(Activator.PLUGIN_ID, "icons/ShowPasswordIcon.png");
+		Optional<ImageDescriptor> descriptor = ResourceLocator.imageDescriptorFromBundle(Activator.PLUGIN_ID, "icons/Show-Password.16.png");
 		if(!descriptor.isEmpty()) {
-			Image image = descriptor.get().createImage();
-			if(image != null)
+			Image showPassword = descriptor.get().createImage();
+			if(showPassword != null)
 			{
-				showPasswordButton.setImage(image);
+				showPasswordButton.setImage(showPassword);
 			}
 		}
 		
