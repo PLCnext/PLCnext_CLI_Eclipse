@@ -416,6 +416,7 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 	{
 			ISecurePreferences nodeToDelete = namesNode.node(project.getName());
 			ISecurePreferences newNode = wspNode.node(project.getName());
+			boolean deleteNode = true;
 			for (String key : nodeToDelete.keys())
 			{
 				String value;
@@ -427,12 +428,29 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 					{
 						newNode.put(key, value, true);
 					}
-				} catch (StorageException e)
+				} catch (Exception e)
 				{
+					deleteNode = false;
 					Activator.getDefault().logError("Error while trying to move password in secure storage", e);
 				}
 			}
-			nodeToDelete.removeNode();
+			
+			if(!deleteNode)
+			{
+				// due to security reasons it is not allowed to delete the node if an exception occurs.
+				deleteNode = MessageDialog.openQuestion(getShell(),"Password Conversion Problem", 
+						"An attempt was done to update password storage structure in secure storage but "
+						+ "the conversion to an updated storage structure threw an error. "+ System.lineSeparator()
+						+ "See 'Error Log' View for details." + System.lineSeparator()
+						+ "You can resolve the problem by deleting the old password node or by keeping the old node."
+						+ System.lineSeparator()
+						+ System.lineSeparator()
+						+ "Remove old password node? (You might need to reenter your password.)" );
+			}
+			if(deleteNode) 
+			{
+				nodeToDelete.removeNode();
+			}
 	}
 	
 	private void LoadConfigFile()
