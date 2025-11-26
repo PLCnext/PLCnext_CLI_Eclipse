@@ -15,6 +15,8 @@ import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -64,7 +66,7 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 	private Label timestampConfigLabel;
 	private Text timestampConfigText;
 	private Button configBrowseButton;
-
+	
 	@Override
 	protected Control createContents(Composite parent)
 	{
@@ -179,6 +181,8 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		deleteButton.setLayoutData(data);
 		deleteButton.setText("Delete");
 		deleteButton.addListener(SWT.Selection, event -> handleDeleteButtonSelected(certificatesViewer));
+		deleteButton.setEnabled(false);
+		certificatesViewer.addSelectionChangedListener(event -> handleCertificatesSelectionChanged(event));
 		
 		timestampCheckBox = new Button(container, SWT.CHECK);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
@@ -208,6 +212,15 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		handleTimestampCheckBoxSelected();
 		
 		return container;
+	}
+	
+	private void handleCertificatesSelectionChanged(SelectionChangedEvent event)
+	{
+		if (event != null && event.getSelection() instanceof IStructuredSelection)
+		{
+			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+			deleteButton.setEnabled(selection.size() > 0);
+		}
 	}
 	
 	private void handleTimestampCheckBoxSelected()
@@ -267,7 +280,12 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 			certificatesLabel.setEnabled(isSelected);
 			certificatesViewer.getTable().setEnabled(isSelected);
 			browseButton4.setEnabled(isSelected);
-			deleteButton.setEnabled(isSelected);
+			
+			if(!isSelected)
+			{
+				deleteButton.setEnabled(false);
+				certificatesViewer.setSelection(StructuredSelection.EMPTY);
+			}
 		}
 		
 		timestampCheckBox.setEnabled(isSelected);
@@ -295,7 +313,13 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		certificatesLabel.setEnabled(!isSelected);
 		certificatesViewer.getTable().setEnabled(!isSelected);
 		browseButton4.setEnabled(!isSelected);
-		deleteButton.setEnabled(!isSelected);
+		
+		if(isSelected)
+		{
+			// delete button should not be enabled if no element is selected
+			deleteButton.setEnabled(false);
+			certificatesViewer.setSelection(StructuredSelection.EMPTY);
+		}
 	}
 	
 	private void handleBrowseButtonSelected(Button button, Text text)
