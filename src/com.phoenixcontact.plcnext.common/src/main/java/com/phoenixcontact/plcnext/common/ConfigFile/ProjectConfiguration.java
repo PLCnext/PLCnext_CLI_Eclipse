@@ -7,6 +7,8 @@ package com.phoenixcontact.plcnext.common.ConfigFile;
 
 import javax.xml.bind.annotation.*;
 
+import com.phoenixcontact.plcnext.common.Activator;
+
 /**
  * Model for the project configuration file
  */
@@ -21,8 +23,10 @@ public class ProjectConfiguration {
 	private boolean sign = false;
 	private String pkcs12 = "";
 	private String privateKey = "";
+	private String signingCertificate = "";
 	private String publicKey = "";
 	private Certificates certificates = null;
+	private CertificateChain certificateChain = null;
 	private String timestampConfiguration = "";
 	private boolean timestamp = false;
 	private boolean noTimestamp = false;
@@ -91,17 +95,46 @@ public class ProjectConfiguration {
 		this.privateKey = privateKey;
 	}
 	
+	@XmlElement(name="SigningCertificate", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
+	public String getSigningCertificate() {
+		if((signingCertificate == null || signingCertificate.isEmpty())
+				&& publicKey != null && !publicKey.isEmpty())
+		{
+			return publicKey;
+		}
+		return signingCertificate;
+	}
+	public void setSigningCertificate(String signingCertificate) {
+		this.signingCertificate = signingCertificate;
+	}
 	@XmlElement(name="PublicKey", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
 	public String getPublicKey() {
-		return publicKey;
+		return null;
 	}
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
 	}
 	
+	@XmlElement(name="CertificateChain", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
+	public CertificateChain getCertificateChain() {
+		if((certificateChain == null || certificateChain.getFiles() == null
+				|| certificateChain.getFiles().length < 1)
+				&& certificates != null && certificates.getFiles() != null)			
+		{
+			CertificateChain result = new CertificateChain();
+			result.setFiles(certificates.getFiles());
+			return result;
+		}
+		
+		return certificateChain;
+	}
+	public void setCertificateChain(CertificateChain certificateChain) {
+		this.certificateChain = certificateChain;
+	}
+	
 	@XmlElement(name="Certificates", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
 	public Certificates getCertificates() {
-		return certificates;
+		return null;
 	}
 	public void setCertificates(Certificates certificates) {
 		this.certificates = certificates;
@@ -130,4 +163,96 @@ public class ProjectConfiguration {
 	public void setNoTimestamp(boolean noTimestamp) {
 		this.noTimestamp = noTimestamp;
 	}
+	
+	public boolean validateAndUpdateFile()
+	{
+		if(publicKey != null && !publicKey.isEmpty()
+				&& signingCertificate != null && !signingCertificate.isEmpty())
+		{
+			Activator.getDefault().logWarning("PublicKey and SigningCertificate cannot both be inside the Config File.");
+			return false;
+		}
+		
+		if(certificates != null && certificates.getFiles() != null 
+				&& certificates.getFiles().length > 0
+				&& certificateChain != null && certificateChain.getFiles() != null
+				&& certificateChain.getFiles().length > 0)
+		{
+			Activator.getDefault().logWarning("Certificates and CertificateChain cannot both be inside the Config File.");
+			return false;
+		}
+		
+		
+		return true;
+	}
+	
+	public boolean hasContent()
+	{
+		return !((engineerVersion == null || engineerVersion.isBlank()) 
+		&& (libraryDescription == null || libraryDescription.isBlank())
+		&& (libraryVersion == null || libraryVersion.isBlank()) 
+		&& (libraryInfos == null || libraryInfos.length < 1)
+		&& (excludedFiles == null || excludedFiles.getFiles().length < 1)
+		&& sign == false
+		&& (pkcs12 == null || pkcs12.isBlank())
+		&& (privateKey == null || privateKey.isBlank())
+		&& (publicKey == null || publicKey.isBlank())
+		&& (signingCertificate == null || signingCertificate.isBlank())
+		&& (certificates == null || certificates.getFiles().length < 1)
+		&& (certificateChain == null || certificateChain.getFiles().length < 1)
+		&& (timestamp == false)
+		&& (timestampConfiguration == null || timestampConfiguration.isBlank()));
+	}
+	
+	public void setEmptyPropertiesToNull()
+	{
+		libraryVersion = setEmptyStringToNull(libraryVersion);
+		libraryDescription = setEmptyStringToNull(libraryDescription);
+		engineerVersion = setEmptyStringToNull(engineerVersion);
+		pkcs12 = setEmptyStringToNull(pkcs12);
+		privateKey = setEmptyStringToNull(privateKey);
+		signingCertificate = setEmptyStringToNull(signingCertificate);
+		publicKey = setEmptyStringToNull(publicKey);
+		timestampConfiguration = setEmptyStringToNull(timestampConfiguration);
+		
+//		if(libraryInfos != null && libraryInfos.length == 0)
+//			libraryInfos = null;
+		
+		if(excludedFiles != null)
+		{
+			if(excludedFiles.getFiles() == null
+					|| excludedFiles.getFiles().length == 0)
+			{
+				excludedFiles = null;
+			}
+		}
+		
+		if(certificateChain != null)
+		{
+			if(certificateChain.getFiles() == null
+					|| certificateChain.getFiles().length == 0)
+			{
+				certificateChain = null;
+			}
+		}
+		
+		if(certificates != null)
+		{
+			if(certificates.getFiles() == null
+					|| certificates.getFiles().length == 0)
+			{
+				certificates = null;
+			}
+		}
+	}
+	
+	private static String setEmptyStringToNull(String input)
+	{
+		if(input == null) return null;
+		
+		if(input.isEmpty())return null;
+		
+		return input;
+	}
+	
 }

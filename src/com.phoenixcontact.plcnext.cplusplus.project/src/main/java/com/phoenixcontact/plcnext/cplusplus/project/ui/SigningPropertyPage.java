@@ -34,7 +34,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import com.phoenixcontact.plcnext.common.Messages;
 import com.phoenixcontact.plcnext.common.PasswordPersistFileType;
 import com.phoenixcontact.plcnext.common.SetPasswordDialog;
-import com.phoenixcontact.plcnext.common.ConfigFile.Certificates;
+import com.phoenixcontact.plcnext.common.ConfigFile.CertificateChain;
 import com.phoenixcontact.plcnext.common.ConfigFile.ConfigFileProvider;
 import com.phoenixcontact.plcnext.common.ConfigFile.ProjectConfiguration;
 import com.phoenixcontact.plcnext.cplusplus.project.Activator;
@@ -55,11 +55,11 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 	private Text privateKeyText;
 	private Button browseButton2;
 	private Button passwordButton2;
-	private Label publicKeyLabel;
-	private Text publicKeyText;
+	private Label signingCertLabel;
+	private Text signingCertText;
 	private Button browseButton3;
-	private Label certificatesLabel;
-	private TableViewer certificatesViewer;
+	private Label certChainLabel;
+	private TableViewer certChainViewer;
 	private Button browseButton4;
 	private Button deleteButton;
 	private Button timestampCheckBox;
@@ -89,7 +89,7 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		
 		Label subDescription = new Label(container, SWT.NONE);
 		container.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false, 3, 1));
-		subDescription.setText("Choose a PKCS#12 container or select the certificates, private and public key \r\n"
+		subDescription.setText("Choose a PKCS#12 container or select the private key, signing certificate and certificate chain\r\n"
 				+ "as separate PEM files, set a password and decide whether a timestamp shall be added");
 		
 		signingCheckBox = new Button(container, SWT.CHECK);
@@ -145,44 +145,44 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		passwordButton2.setText("Password...");
 		passwordButton2.addListener(SWT.Selection, event -> handleSetPasswordButtonSelected(PasswordPersistFileType.PEMKeyFile));
 				
-		publicKeyLabel = new Label(container, SWT.NONE);
+		signingCertLabel = new Label(container, SWT.NONE);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
 		data.horizontalIndent = 30;
-		publicKeyLabel.setLayoutData(data);
-		publicKeyLabel.setText("Public Key File (PEM)");
-		publicKeyText = new Text(container, SWT.SINGLE | SWT.BORDER);
+		signingCertLabel.setLayoutData(data);
+		signingCertLabel.setText("Signing Certificate (PEM)");
+		signingCertText = new Text(container, SWT.SINGLE | SWT.BORDER);
 		data = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
 		data.horizontalIndent = 30;
-		publicKeyText.setLayoutData(data);
+		signingCertText.setLayoutData(data);
 		
 		browseButton3 = new Button(container, SWT.PUSH);
 		setButtonLayoutData(browseButton3);
 		browseButton3.setText("Browse...");
-		browseButton3.addListener(SWT.Selection, event -> handleBrowseButtonSelected(browseButton3, publicKeyText));
+		browseButton3.addListener(SWT.Selection, event -> handleBrowseButtonSelected(browseButton3, signingCertText));
 		
-		certificatesLabel = new Label(container, SWT.NONE);
+		certChainLabel = new Label(container, SWT.NONE);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
 		data.horizontalIndent = 30;
-		certificatesLabel.setLayoutData(data);
-		certificatesLabel.setText("Certificate Files (PEM)");
-		certificatesViewer = new TableViewer(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		certChainLabel.setLayoutData(data);
+		certChainLabel.setText("Certificate Chain (PEM)");
+		certChainViewer = new TableViewer(container, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		data = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2);
 		data.horizontalIndent = 30;
-		certificatesViewer.getTable().setLayoutData(data);
-		certificatesViewer.setContentProvider(ArrayContentProvider.getInstance());
+		certChainViewer.getTable().setLayoutData(data);
+		certChainViewer.setContentProvider(ArrayContentProvider.getInstance());
 		
 		browseButton4 = new Button(container, SWT.PUSH);
 		setButtonLayoutData(browseButton4);
 		browseButton4.setText("Browse...");
-		browseButton4.addListener(SWT.Selection, event -> handleViewerBrowseButtonSelected(browseButton4, certificatesViewer));
+		browseButton4.addListener(SWT.Selection, event -> handleViewerBrowseButtonSelected(browseButton4, certChainViewer));
 		
 		deleteButton = new Button(container, SWT.PUSH);
 		data = new GridData(SWT.FILL, SWT.BEGINNING, false, false);
 		deleteButton.setLayoutData(data);
 		deleteButton.setText("Delete");
-		deleteButton.addListener(SWT.Selection, event -> handleDeleteButtonSelected(certificatesViewer));
+		deleteButton.addListener(SWT.Selection, event -> handleDeleteButtonSelected(certChainViewer));
 		deleteButton.setEnabled(false);
-		certificatesViewer.addSelectionChangedListener(event -> handleCertificatesSelectionChanged(event));
+		certChainViewer.addSelectionChangedListener(event -> handleCertificatesSelectionChanged(event));
 		
 		timestampCheckBox = new Button(container, SWT.CHECK);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1);
@@ -209,7 +209,10 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		
 		LoadConfigFile();
 		handleSigningButtonSelected(signingCheckBox);
-		handleTimestampCheckBoxSelected();
+		if(getMessage() == null || getMessage().isEmpty() )
+		{
+			handleTimestampCheckBoxSelected();
+		}
 		
 		return container;
 	}
@@ -250,8 +253,8 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		if(!radioButtonPKCS12.getSelection() && !radioButtonPEM.getSelection())
 		{
 			if((privateKeyText.getText() != null && !privateKeyText.getText().isEmpty())
-		    	|| (publicKeyText.getText() != null && !publicKeyText.getText().isEmpty())
-		    	|| (certificatesViewer.getTable() != null && certificatesViewer.getTable().getItemCount() > 0))
+		    	|| (signingCertText.getText() != null && !signingCertText.getText().isEmpty())
+		    	|| (certChainViewer.getTable() != null && certChainViewer.getTable().getItemCount() > 0))
 			{
 				radioButtonPEM.setSelection(true);
 			}else {
@@ -274,17 +277,17 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 			privateKeyText.setEnabled(isSelected);
 			browseButton2.setEnabled(isSelected);
 			passwordButton2.setEnabled(isSelected);
-			publicKeyLabel.setEnabled(isSelected);
-			publicKeyText.setEnabled(isSelected);
+			signingCertLabel.setEnabled(isSelected);
+			signingCertText.setEnabled(isSelected);
 			browseButton3.setEnabled(isSelected);
-			certificatesLabel.setEnabled(isSelected);
-			certificatesViewer.getTable().setEnabled(isSelected);
+			certChainLabel.setEnabled(isSelected);
+			certChainViewer.getTable().setEnabled(isSelected);
 			browseButton4.setEnabled(isSelected);
 			
 			if(!isSelected)
 			{
 				deleteButton.setEnabled(false);
-				certificatesViewer.setSelection(StructuredSelection.EMPTY);
+				certChainViewer.setSelection(StructuredSelection.EMPTY);
 			}
 		}
 		
@@ -307,18 +310,18 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		privateKeyText.setEnabled(!isSelected);
 		browseButton2.setEnabled(!isSelected);
 		passwordButton2.setEnabled(!isSelected);
-		publicKeyLabel.setEnabled(!isSelected);
-		publicKeyText.setEnabled(!isSelected);
+		signingCertLabel.setEnabled(!isSelected);
+		signingCertText.setEnabled(!isSelected);
 		browseButton3.setEnabled(!isSelected);
-		certificatesLabel.setEnabled(!isSelected);
-		certificatesViewer.getTable().setEnabled(!isSelected);
+		certChainLabel.setEnabled(!isSelected);
+		certChainViewer.getTable().setEnabled(!isSelected);
 		browseButton4.setEnabled(!isSelected);
 		
 		if(isSelected)
 		{
 			// delete button should not be enabled if no element is selected
 			deleteButton.setEnabled(false);
-			certificatesViewer.setSelection(StructuredSelection.EMPTY);
+			certChainViewer.setSelection(StructuredSelection.EMPTY);
 		}
 	}
 	
@@ -477,47 +480,55 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 			}
 	}
 	
-	private void LoadConfigFile()
+	private void LoadConfigFile() 
 	{
 		ProjectConfiguration configuration = ConfigFileProvider.LoadFromConfig(project.getLocation());
-		if(configuration != null )
+		
+		if (configuration == null) return;
+		
+		if(!configuration.validateAndUpdateFile())
 		{
-			signingCheckBox.setSelection(configuration.getSign());
-			pkcs12Text.setText(configuration.getPkcs12());
-			if((configuration.getPrivateKey() != null && !configuration.getPrivateKey().isBlank())
-			    || (configuration.getPublicKey() != null && !configuration.getPublicKey().isBlank())
-			    || (configuration.getCertificates() != null 
-			    	&& configuration.getCertificates().getFiles() != null 
-			    	&& configuration.getCertificates().getFiles().length > 0))
-			{
-				radioButtonPEM.setSelection(true);
-			}
-			else
-			{
-				radioButtonPKCS12.setSelection(true);
-			}
-			privateKeyText.setText(configuration.getPrivateKey());
-			publicKeyText.setText(configuration.getPublicKey());
-			if(configuration.getCertificates() != null) {
-				certificatesViewer.setInput(configuration.getCertificates().getFiles());
-			}
-			timestampConfigText.setText(configuration.getTimestampConfiguration());
-			
-			if(configuration.getTimestamp() && configuration.getNoTimestamp())
-			{
-				MessageDialog.openError(getShell(), "Invalid configuration", "Timestamp and NoTimestamp cannot be combined together.");
-			}
-			
-			timestampCheckBox.setSelection(configuration.getTimestamp());
-		}		
+			setMessage("Invalid configuration file found, please check error log", WARNING);
+			return;
+		}
+
+		signingCheckBox.setSelection(configuration.getSign());
+		pkcs12Text.setText(configuration.getPkcs12());
+		if ((configuration.getPrivateKey() != null && !configuration.getPrivateKey().isBlank())
+				|| (configuration.getSigningCertificate() != null && !configuration.getSigningCertificate().isBlank())
+				|| (configuration.getCertificateChain() != null && configuration.getCertificateChain().getFiles() != null
+						&& configuration.getCertificateChain().getFiles().length > 0)) 
+		{
+			radioButtonPEM.setSelection(true);
+		} 
+		else 
+		{
+			radioButtonPKCS12.setSelection(true);
+		}
+		privateKeyText.setText(configuration.getPrivateKey());
+		signingCertText.setText(configuration.getSigningCertificate());
+		if (configuration.getCertificateChain() != null) 
+		{
+			certChainViewer.setInput(configuration.getCertificateChain().getFiles());
+		}
+		timestampConfigText.setText(configuration.getTimestampConfiguration());
+
+		if (configuration.getTimestamp() && configuration.getNoTimestamp()) 
+		{
+			MessageDialog.openError(getShell(), "Invalid configuration",
+					"Timestamp and NoTimestamp cannot be combined together.");
+		}
+
+		timestampCheckBox.setSelection(configuration.getTimestamp());
+
 	}
 	
 	@Override
 	public boolean performOk()
 	{	
 		if(!pkcs12Text.getText().isBlank() && (!privateKeyText.getText().isBlank() ||
-											   !publicKeyText.getText().isBlank() || 
-											   certificatesViewer.getTable().getItemCount() > 0))
+											   !signingCertText.getText().isBlank() || 
+											   certChainViewer.getTable().getItemCount() > 0))
 		{
 			String unpersistedValue = radioButtonPKCS12.getSelection() ? "PEM" : "PKCS#12";
 			boolean confirmed = MessageDialog.openConfirm(getShell(), "Value will not be saved", 
@@ -538,8 +549,8 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		config.setPkcs12(radioButtonPKCS12.getSelection() ? pkcs12Text.getText() : null);
 		
 		config.setPrivateKey(radioButtonPEM.getSelection() ? privateKeyText.getText() : null);
-		config.setPublicKey(radioButtonPEM.getSelection() ? publicKeyText.getText() : null);
-		config.setCertificates(radioButtonPEM.getSelection() ? new Certificates(Arrays.stream(certificatesViewer.getTable().getItems()).map(item -> item.getText()).toArray(String[]::new)) : null);
+		config.setSigningCertificate(radioButtonPEM.getSelection() ? signingCertText.getText() : null);
+		config.setCertificateChain(radioButtonPEM.getSelection() ? new CertificateChain(Arrays.stream(certChainViewer.getTable().getItems()).map(item -> item.getText()).toArray(String[]::new)) : null);
 		config.setTimestampConfiguration(timestampConfigText.getText());
 		
 		if(timestampCheckBox.getSelection())

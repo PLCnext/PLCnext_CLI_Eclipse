@@ -37,7 +37,9 @@ public class ConfigFileProvider
 				JAXBContext context = JAXBContext.newInstance(ProjectConfiguration.class);
 				Unmarshaller unmarshaller = context.createUnmarshaller();
 				ProjectConfiguration configuration = (ProjectConfiguration) unmarshaller.unmarshal(file);
+				
 				return configuration;
+				
 			} catch (JAXBException e)
 			{
 				Activator.getDefault().logError("Project configuration file could not be loaded.", e);
@@ -50,19 +52,7 @@ public class ConfigFileProvider
 	{
 		File file = GetConfigFile(projectDirectory);
 		
-		if ((config.getEngineerVersion() == null || config.getEngineerVersion().isBlank()) 
-				&& (config.getLibraryDescription() == null || config.getLibraryDescription().isBlank())
-				&& (config.getLibraryVersion() == null || config.getLibraryVersion().isBlank()) 
-				&& (config.getLibraryInfos() == null || config.getLibraryInfos().length < 1)
-				&& (config.getExcludedFiles() == null || config.getExcludedFiles().getFiles().length < 1)
-				&& config.getSign() == false
-				&& (config.getPkcs12() == null || config.getPkcs12().isBlank())
-				&& (config.getPrivateKey() == null || config.getPrivateKey().isBlank())
-				&& (config.getPublicKey() == null || config.getPublicKey().isBlank())
-				&& (config.getCertificates() == null || config.getCertificates().getFiles().length < 1)
-				&& (config.getTimestamp() == false)
-				&& (config.getTimestampConfiguration() == null || config.getTimestampConfiguration().isBlank())
-				)
+		if (!config.hasContent())
 		{
 			if (file.exists())
 			{
@@ -75,6 +65,7 @@ public class ConfigFileProvider
 				JAXBContext context = JAXBContext.newInstance(ProjectConfiguration.class);
 				Marshaller marshaller = context.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				config.setEmptyPropertiesToNull();
 				marshaller.marshal(config, file);
 			} 
 			catch (JAXBException e)

@@ -503,15 +503,22 @@ public class ProjectConfigPropertyPage extends PropertyPage implements IWorkbenc
 	private void LoadConfigFile()
 	{
 		ProjectConfiguration configuration = ConfigFileProvider.LoadFromConfig(project.getLocation());
-		if(configuration != null )
-		{
-			engineerVersion.setText(configuration.getEngineerVersion());
-			libraryDescription.setText(configuration.getLibraryDescription());
-			libraryVersion.setText(configuration.getLibraryVersion());
-			savedExcludedFiles = configuration.getExcludedFiles() != null ? configuration.getExcludedFiles().getFiles() : null;
+		if (configuration == null) return;
 		
-			libraryInfos = configuration.getLibraryInfos();
-		}		
+		if(!configuration.validateAndUpdateFile())
+		{
+			setMessage("Invalid configuration file found, please check error log", WARNING);
+			return;
+		}
+
+		engineerVersion.setText(configuration.getEngineerVersion());
+		libraryDescription.setText(configuration.getLibraryDescription());
+		libraryVersion.setText(configuration.getLibraryVersion());
+		savedExcludedFiles = configuration.getExcludedFiles() != null 
+								? configuration.getExcludedFiles().getFiles() 
+										: null;
+		libraryInfos = configuration.getLibraryInfos();
+				
 	}
 
 	@Override

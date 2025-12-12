@@ -86,6 +86,7 @@ public class SetPasswordDialog extends StatusDialog
 			{
 				showPasswordButton.setImage(showPassword);
 			}
+			container.addDisposeListener(event -> showPassword.dispose());
 		}
 		
 		showPasswordButton.addListener(SWT.MouseDown,  event -> passwordText.setEchoChar(echoCharVisible));
