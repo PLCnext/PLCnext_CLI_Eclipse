@@ -148,7 +148,7 @@ public class AddLibInfosDialog extends StatusDialog
 		{
 			LibraryInfo result = new LibraryInfo();
 			result.setName(key);
-			result.setText(value);
+			result.setText(value.replaceAll("\r\n", "\n"));
 			return result;
 		}
 		return null;
