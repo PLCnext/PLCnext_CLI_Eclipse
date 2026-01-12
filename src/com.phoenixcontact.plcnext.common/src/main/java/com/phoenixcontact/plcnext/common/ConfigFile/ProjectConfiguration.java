@@ -28,8 +28,8 @@ public class ProjectConfiguration {
 	private Certificates certificates = null;
 	private CertificateChain certificateChain = null;
 	private String timestampConfiguration = "";
-	private boolean timestamp = false;
-	private boolean noTimestamp = false;
+	private Boolean timestamp = null;
+	private Boolean noTimestamp = null;
 		
 	@XmlElement(name="LibraryVersion", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
 	public String getLibraryVersion() {
@@ -149,18 +149,18 @@ public class ProjectConfiguration {
 	}
 	
 	@XmlElement(name="Timestamp", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
-	public boolean getTimestamp() {
+	public Boolean getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(boolean timestamp) {
+	public void setTimestamp(Boolean timestamp) {
 		this.timestamp = timestamp;
 	}
 	
 	@XmlElement(name="NoTimestamp", namespace = "http://www.phoenixcontact.com/schema/projectconfiguration")
-	public boolean getNoTimestamp() {
+	public Boolean getNoTimestamp() {
 		return noTimestamp;
 	}
-	public void setNoTimestamp(boolean noTimestamp) {
+	public void setNoTimestamp(Boolean noTimestamp) {
 		this.noTimestamp = noTimestamp;
 	}
 	
@@ -200,7 +200,7 @@ public class ProjectConfiguration {
 		&& (signingCertificate == null || signingCertificate.isBlank())
 		&& (certificates == null || certificates.getFiles().length < 1)
 		&& (certificateChain == null || certificateChain.getFiles().length < 1)
-		&& (timestamp == false)
+		&& (timestamp == null || timestamp == false)
 		&& (timestampConfiguration == null || timestampConfiguration.isBlank()));
 	}
 	

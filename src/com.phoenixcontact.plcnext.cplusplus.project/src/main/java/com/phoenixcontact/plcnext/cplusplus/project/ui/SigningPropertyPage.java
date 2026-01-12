@@ -513,13 +513,14 @@ public class SigningPropertyPage extends PropertyPage implements IWorkbenchPrope
 		}
 		timestampConfigText.setText(configuration.getTimestampConfiguration());
 
-		if (configuration.getTimestamp() && configuration.getNoTimestamp()) 
+		if (configuration.getTimestamp()!= null && configuration.getTimestamp() 
+				&& configuration.getNoTimestamp() != null && configuration.getNoTimestamp()) 
 		{
 			MessageDialog.openError(getShell(), "Invalid configuration",
 					"Timestamp and NoTimestamp cannot be combined together.");
 		}
 
-		timestampCheckBox.setSelection(configuration.getTimestamp());
+		timestampCheckBox.setSelection(configuration.getTimestamp() != null && configuration.getTimestamp());
 
 	}
 	
