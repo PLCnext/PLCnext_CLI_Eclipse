@@ -59,7 +59,7 @@ public class Startup implements IStartup {
 				
 				boolean nodeRemoved = false;
 				
-				for(String key : wspNode.keys())
+				for(String key : wspNode.childrenNames())
 				{
 					if(!keyIsExistingWorkspaceLocation(key))
 					{
